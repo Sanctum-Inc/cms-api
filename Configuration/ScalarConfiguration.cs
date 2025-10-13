@@ -8,9 +8,7 @@ public static class ScalarConfiguration
     {
         endpoints.MapScalarApiReference(options =>
         {
-            options.WithTitle("E-Commerce API")
-                   .AddServer("https://api.company.com", "Production")
-                   .AddServer("https://staging-api.company.com", "Staging")
+            options.WithTitle("CAse Management System API")
                    .WithDarkModeToggle()
                    .WithSidebar();
         });
