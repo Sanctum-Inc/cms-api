@@ -15,13 +15,12 @@ builder.Services.AddOpenApi();
 
 var app = builder.Build();
 
-//ToDo: Setup prod and dev environment and move this into the isDevelopment block
-ScalarConfiguration.AddScalar(app);
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
+    ScalarConfiguration.AddScalar(app);
 }
 
 app.UseHttpsRedirection();
