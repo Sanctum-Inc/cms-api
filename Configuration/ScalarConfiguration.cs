@@ -8,7 +8,7 @@ public static class ScalarConfiguration
     {
         endpoints.MapScalarApiReference(options =>
         {
-            options.WithTitle("CAse Management System API")
+            options.WithTitle("Case Management System API")
                    .WithDarkModeToggle()
                    .WithSidebar();
         });
