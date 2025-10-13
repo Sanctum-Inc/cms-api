@@ -1,3 +1,10 @@
+// Ensure the Scalar namespace is correctly referenced and the AddScalar method exists.
+// If the Scalar.AspNetCore package is missing, install it via NuGet Package Manager or CLI:
+// dotnet add package Scalar.AspNetCore
+
+using cms_api.Configuration;
+using Scalar.AspNetCore; // Ensure this namespace is correct and the package is installed.
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -7,6 +14,9 @@ builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 
 var app = builder.Build();
+
+//ToDo: Setup prod and dev environment and move this into the isDevelopment block
+ScalarConfiguration.AddScalar(app);
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
