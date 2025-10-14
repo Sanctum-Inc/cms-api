@@ -3,11 +3,18 @@
 // dotnet add package Scalar.AspNetCore
 
 using Api.Configuration;
-using Scalar.AspNetCore; // Ensure this namespace is correct and the package is installed.
+using FluentValidation;
+using Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
-PersistenceConfigurator.ConfigureServices(builder.Services, builder.Configuration);
+DependecyInjection.AddInfrastructure(builder.Services, builder.Configuration);
+
+builder.Services.AddPersistence(builder.Configuration);
+builder.Services.AddMediatR(builder.Configuration);
+
+builder.Services.AddValidatorsFromAssemblyContaining<Program>();
+
 
 // Add services to the container.
 
@@ -15,7 +22,13 @@ builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
+builder.Services.AddMapsterMappings();
+
+builder.Services.AddHttpContextAccessor();
+
 var app = builder.Build();
+
+app.ExecutePendingMigrations();
 
 
 // Configure the HTTP request pipeline.
@@ -30,5 +43,6 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+
 
 app.Run();

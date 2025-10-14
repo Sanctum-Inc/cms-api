@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Domain.CourtCaseDates;
+using Domain.CourtCases;
 using Domain.Users;
 
 namespace Domain.Lawyers;

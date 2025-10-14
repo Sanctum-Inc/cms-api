@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Domain.CourtCases;
 using Domain.Documents;
 using Domain.InvoiceItems;
 using Domain.Lawyers;

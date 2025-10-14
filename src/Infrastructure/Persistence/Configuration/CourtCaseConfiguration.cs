@@ -1,4 +1,5 @@
-﻿using Domain.Lawyers;
+﻿using Domain.CourtCases;
+using Domain.Lawyers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -10,6 +11,7 @@ public class CourtCaseConfiguration : IEntityTypeConfiguration<CourtCase>
         builder.HasKey(c => c.Id);
 
         builder.Property(c => c.CaseNumber)
+            .HasMaxLength(50)
             .IsRequired();
 
         builder.Property(c => c.Location)
@@ -25,8 +27,10 @@ public class CourtCaseConfiguration : IEntityTypeConfiguration<CourtCase>
             .IsRequired();
 
         builder.Property(c => c.DateCreated);
+
         builder.Property(c => c.UserId)
             .IsRequired();
+
         builder.HasOne(c => c.User)
             .WithMany(u => u.CourtCases)
             .HasForeignKey(c => c.UserId)

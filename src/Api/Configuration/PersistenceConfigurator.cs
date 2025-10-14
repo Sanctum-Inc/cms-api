@@ -1,16 +1,17 @@
 ﻿using Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 
-namespace Api.Configuration
+namespace Api.Configuration;
+
+public static class PersistenceConfigurator
 {
-    public class PersistenceConfigurator
+    public static IServiceCollection AddPersistence(this IServiceCollection services, IConfiguration configuration)
     {
-        public static void ConfigureServices(IServiceCollection services, IConfiguration configuration)
-        {
-            // Example: Configure Entity Framework Core with SQL Server
-            services.AddDbContext<ApplicationDbContext>(options =>
-                    options.UseNpgsql(configuration.GetConnectionString("DefaultConnection"))
-);
-        }
+        // Example: Configure Entity Framework Core with SQL Server
+        services.AddDbContext<ApplicationDBContext>(options =>
+                options.UseNpgsql(configuration.GetConnectionString("DefaultConnection"))
+        );
+
+        return services;
     }
 }

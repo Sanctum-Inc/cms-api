@@ -1,4 +1,5 @@
 ﻿using Domain.CourtCaseDates;
+using Domain.CourtCases;
 using Domain.Lawyers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;

@@ -10,7 +10,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace Infrastructure.Persistence.Migrations
 {
-    [DbContext(typeof(ApplicationDbContext))]
+    [DbContext(typeof(ApplicationDBContext))]
     partial class ApplicationDbContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)
@@ -21,51 +21,6 @@ namespace Infrastructure.Persistence.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
-
-            modelBuilder.Entity("CourtCase", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("CaseNumber")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("DateCreated")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Defendant")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Location")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Outcome")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Plaintiff")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Type")
-                        .HasColumnType("text");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("CourtCases");
-                });
 
             modelBuilder.Entity("CourtCaseDateLawyer", b =>
                 {
@@ -119,6 +74,51 @@ namespace Infrastructure.Persistence.Migrations
                     b.HasIndex("CaseId");
 
                     b.ToTable("CourtCaseDates");
+                });
+
+            modelBuilder.Entity("Domain.CourtCases.CourtCase", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("CaseNumber")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("DateCreated")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Defendant")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Location")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Outcome")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Plaintiff")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Type")
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("CourtCases");
                 });
 
             modelBuilder.Entity("Domain.Documents.Document", b =>
@@ -240,18 +240,6 @@ namespace Infrastructure.Persistence.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("Password")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("PasswordSalt")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("RefreshToken")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.Property<string>("Surname")
                         .IsRequired()
                         .HasColumnType("text");
@@ -259,17 +247,6 @@ namespace Infrastructure.Persistence.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Users");
-                });
-
-            modelBuilder.Entity("CourtCase", b =>
-                {
-                    b.HasOne("Domain.Users.User", "User")
-                        .WithMany("CourtCases")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("CourtCaseDateLawyer", b =>
@@ -289,7 +266,7 @@ namespace Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("CourtCaseLawyer", b =>
                 {
-                    b.HasOne("CourtCase", null)
+                    b.HasOne("Domain.CourtCases.CourtCase", null)
                         .WithMany()
                         .HasForeignKey("CourtCasesId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -304,7 +281,7 @@ namespace Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("Domain.CourtCaseDates.CourtCaseDate", b =>
                 {
-                    b.HasOne("CourtCase", "Case")
+                    b.HasOne("Domain.CourtCases.CourtCase", "Case")
                         .WithMany("CourtCaseDates")
                         .HasForeignKey("CaseId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -313,9 +290,20 @@ namespace Infrastructure.Persistence.Migrations
                     b.Navigation("Case");
                 });
 
+            modelBuilder.Entity("Domain.CourtCases.CourtCase", b =>
+                {
+                    b.HasOne("Domain.Users.User", "User")
+                        .WithMany("CourtCases")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Domain.Documents.Document", b =>
                 {
-                    b.HasOne("CourtCase", "Case")
+                    b.HasOne("Domain.CourtCases.CourtCase", "Case")
                         .WithMany("Documents")
                         .HasForeignKey("CaseId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -334,7 +322,7 @@ namespace Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("Domain.InvoiceItems.InvoiceItem", b =>
                 {
-                    b.HasOne("CourtCase", "Case")
+                    b.HasOne("Domain.CourtCases.CourtCase", "Case")
                         .WithMany("InvoiceItems")
                         .HasForeignKey("CaseId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -362,7 +350,7 @@ namespace Infrastructure.Persistence.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("CourtCase", b =>
+            modelBuilder.Entity("Domain.CourtCases.CourtCase", b =>
                 {
                     b.Navigation("CourtCaseDates");
 

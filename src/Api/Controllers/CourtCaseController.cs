@@ -1,4 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Application.CourtCase.Commands.Add;
+using Application.CourtCase.Queries.Get;
+using Contracts.CourtCases.Requests;
+using Contracts.CourtCases.Responses;
+using MapsterMapper;
+using MediatR;
+using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
 
 namespace Api.Controllers;
@@ -8,17 +14,31 @@ namespace Api.Controllers;
 /// </summary>
 [ApiController]
 [Route("[controller]")]
-public class CourtCaseController : ControllerBase
+public class CourtCaseController : ApiControllerBase
 {
+    private readonly ISender _sender;
+    private readonly IMapper _mapper;
+
+    public CourtCaseController(ISender sender, IMapper mapper)
+    {
+        _sender = sender;
+        _mapper = mapper;
+    }
+
     /// <summary>
     /// Gets a status message for the CourtCaseController.
     /// </summary>
     /// <returns>Status message.</returns>
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public IActionResult Get()
+    public async Task<IActionResult> Get()
     {
-        return Ok("CourtCaseController is working!");
+        var command = new GetCommand();
+
+        var result = await _sender.Send(command);
+
+        return MatchAndMapResult<GetCourtCaseResult, GetCourtCasesResponse>(result, _mapper);
+
     }
 
     /// <summary>
@@ -42,9 +62,13 @@ public class CourtCaseController : ControllerBase
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public IActionResult Create([FromBody][Required] object courtCase)
+    public async Task<IActionResult> Create([FromBody][Required] AddCourtCaseRequest addRequest)
     {
-        return CreatedAtAction(nameof(GetById), new { id = 1 }, courtCase); // Assuming ID is 1 for demonstration
+        var command = _mapper.Map<AddCommand>(addRequest);
+
+        var result = await _sender.Send(command);
+
+        return MatchAndMapResult<Guid, Guid>(result, _mapper);
     }
 
     /// <summary>

@@ -1,4 +1,6 @@
-﻿using Domain.CourtCaseDates;
+﻿using Application.Common.Interfaces.Persistence;
+using Domain.CourtCaseDates;
+using Domain.CourtCases;
 using Domain.Documents;
 using Domain.InvoiceItems;
 using Domain.Lawyers;
@@ -8,15 +10,15 @@ using Microsoft.EntityFrameworkCore.Diagnostics;
 
 namespace Infrastructure.Persistence;
 
-public class ApplicationDbContext : DbContext
+public class ApplicationDBContext : DbContext, IApplicationDBContext
 {
-    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+    public ApplicationDBContext(DbContextOptions<ApplicationDBContext> options)
         : base(options)
     {
     }
 
     public DbSet<User> Users => Set<User>();
-    public DbSet<CourtCase> CourtCases => Set<CourtCase>();
+    public DbSet<Domain.CourtCases.CourtCase> CourtCases => Set<Domain.CourtCases.CourtCase>();
     public DbSet<Document> Documents => Set<Document>();
     public DbSet<InvoiceItem> InvoiceItems => Set<InvoiceItem>();
     public DbSet<Lawyer> Lawyers => Set<Lawyer>();

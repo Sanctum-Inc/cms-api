@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace Infrastructure.Persistence.Migrations;
+namespace Infrastructure.Persistence.Migrations; 
 
 /// <inheritdoc />
 public partial class Initial : Migration
@@ -19,10 +19,7 @@ public partial class Initial : Migration
                 Email = table.Column<string>(type: "text", nullable: false),
                 Name = table.Column<string>(type: "text", nullable: false),
                 Surname = table.Column<string>(type: "text", nullable: false),
-                MobileNumber = table.Column<string>(type: "text", nullable: false),
-                Password = table.Column<string>(type: "text", nullable: false),
-                PasswordSalt = table.Column<string>(type: "text", nullable: false),
-                RefreshToken = table.Column<string>(type: "text", nullable: false)
+                MobileNumber = table.Column<string>(type: "text", nullable: false)
             },
             constraints: table =>
             {

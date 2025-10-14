@@ -7,10 +7,25 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="CourtCase\" />
-    <Folder Include="Document\" />
-    <Folder Include="Invoice\" />
-    <Folder Include="Lawyer\" />
+    <Folder Include="Document\Commands\" />
+    <Folder Include="Document\Queries\" />
+    <Folder Include="Invoice\Commands\" />
+    <Folder Include="Invoice\Queries\" />
+    <Folder Include="Lawyer\Commands\" />
+    <Folder Include="Lawyer\Queries\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="ErrorOr" Version="2.0.1" />
+    <PackageReference Include="FluentValidation" Version="12.0.0" />
+    <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.0.0" />
+    <PackageReference Include="Mapster" Version="7.4.0" />
+    <PackageReference Include="MediatR" Version="13.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.9" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Domain\Domain.csproj" />
   </ItemGroup>
 
 </Project>
