@@ -2,10 +2,12 @@
 // If the Scalar.AspNetCore package is missing, install it via NuGet Package Manager or CLI:
 // dotnet add package Scalar.AspNetCore
 
-using cms_api.Configuration;
+using Api.Configuration;
 using Scalar.AspNetCore; // Ensure this namespace is correct and the package is installed.
 
 var builder = WebApplication.CreateBuilder(args);
+
+PersistenceConfigurator.ConfigureServices(builder.Services, builder.Configuration);
 
 // Add services to the container.
 
@@ -20,7 +22,7 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
-    ScalarConfiguration.AddScalar(app);
+    ScalarConfiguration.ConfigureServices(app);
 }
 
 app.UseHttpsRedirection();
