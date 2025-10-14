@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using Domain.CourtCases;
 using Domain.Lawyers;
 
 namespace Domain.CourtCaseDates;
@@ -20,5 +19,5 @@ public class CourtCaseDate
     public required CourtCase Case { get; set; }
 
     // Many-to-Many
-    public ICollection<Lawyer> Lawyers { get; set; } = [];
+    public List<Lawyer> Lawyers { get; set; } = [];
 }
