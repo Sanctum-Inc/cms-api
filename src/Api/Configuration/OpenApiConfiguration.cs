@@ -6,6 +6,10 @@ public static class OpenApiConfiguration
 {
     public static IServiceCollection AddOpenApiWithAuth(this IServiceCollection services)
     {
+        // Ensure API Explorer is added (required for OpenAPI generation)
+        services.AddEndpointsApiExplorer();
+
+        // Add OpenAPI generator
         services.AddOpenApi(options =>
         {
             options.AddDocumentTransformer((document, context, cancellationToken) =>
@@ -26,22 +30,22 @@ public static class OpenApiConfiguration
 
                 // Apply security globally
                 document.SecurityRequirements =
-                [
-                    new OpenApiSecurityRequirement
-                    {
+                    [
+                        new OpenApiSecurityRequirement
                         {
-                            new OpenApiSecurityScheme
                             {
-                                Reference = new OpenApiReference
+                                new OpenApiSecurityScheme
                                 {
-                                    Type = ReferenceType.SecurityScheme,
-                                    Id = "Bearer"
-                                }
-                            },
-                            Array.Empty<string>()
+                                    Reference = new OpenApiReference
+                                    {
+                                        Type = ReferenceType.SecurityScheme,
+                                        Id = "Bearer"
+                                    }
+                                },
+                                Array.Empty<string>()
+                            }
                         }
-                    }
-                ];
+                    ];
 
                 return Task.CompletedTask;
             });
