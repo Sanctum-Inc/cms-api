@@ -37,11 +37,8 @@ app.ExecutePendingMigrations();
 
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.MapOpenApi();
-    ScalarConfiguration.ConfigureServices(app);
-}
+app.MapOpenApi();
+ScalarConfiguration.ConfigureServices(app);
 
 app.UseHttpsRedirection();
 
