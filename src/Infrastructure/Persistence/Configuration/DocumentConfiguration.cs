@@ -14,8 +14,6 @@ public class DocumentConfiguration : IEntityTypeConfiguration<Document>
         builder.Property(d => d.FileName)
             .IsRequired();
 
-        builder.Property(d => d.DateCreated);
-
         builder.HasOne(d => d.User)
             .WithMany(u => u.Documents)
             .HasForeignKey(d => d.UserId)

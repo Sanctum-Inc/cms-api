@@ -15,9 +15,6 @@ public class InvoiceItemConfiguration : IEntityTypeConfiguration<InvoiceItem>
             .IsRequired()
             .HasPrecision(2);
 
-        builder.Property(i => i.Date)
-            .IsRequired();
-
         builder.Property(i => i.Name)
             .IsRequired();
 

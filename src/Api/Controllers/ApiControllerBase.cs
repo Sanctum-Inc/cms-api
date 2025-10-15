@@ -13,7 +13,7 @@ public abstract class ApiControllerBase : ControllerBase
 )
     {
         return result.Match(
-            data => Ok(mapper.Map<TDestination>(data)),
+            data => Ok(mapper.Map<TDestination>(data!)),
             errors => Problem(detail: string.Join(", ", errors.Select(e => e.Description)))
         );
     }

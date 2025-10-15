@@ -26,8 +26,6 @@ public class CourtCaseConfiguration : IEntityTypeConfiguration<CourtCase>
         builder.Property(c => c.Status)
             .IsRequired();
 
-        builder.Property(c => c.DateCreated);
-
         builder.Property(c => c.UserId)
             .IsRequired();
 

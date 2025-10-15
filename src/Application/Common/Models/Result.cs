@@ -27,5 +27,5 @@ public class Result<T>
     public static Result<T> Failure(List<string> errors) => new Result<T>(errors);
 
     public TResult Match<TResult>(Func<T, TResult> onSuccess, Func<List<string>, TResult> onFailure)
-        => IsSuccess ? onSuccess(_data) : onFailure(_errors);
+        => IsSuccess ? onSuccess(_data!) : onFailure(_errors);
 }
