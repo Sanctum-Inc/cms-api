@@ -1,10 +1,11 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Domain.Common;
 using Domain.CourtCases;
 using Domain.Users;
 
 namespace Domain.InvoiceItems;
 
-public class InvoiceItem
+public class InvoiceItem : AuditableEntity
 {
     [Key]
     public Guid Id { get; set; }
@@ -12,17 +13,15 @@ public class InvoiceItem
     public string? InvoiceNumber { get; set; }
 
     [Required]
-    public string Name { get; set; } = null!;
-
-    public DateTime Date { get; set; }
+    public required string Name { get; set; }
     public int Hours { get; set; }
     public float CostPerHour { get; set; }
 
     [Required]
     public Guid UserId { get; set; }
-    public User User { get; set; } = null!;
+    public required User User { get; set; }
 
     [Required]
     public Guid CaseId { get; set; }
-    public CourtCase Case { get; set; } = null!;
+    public required CourtCase Case { get; set; }
 }

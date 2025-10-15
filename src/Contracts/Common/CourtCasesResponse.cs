@@ -16,7 +16,7 @@ public class CourtCasesResponse
     public string? Outcome { get; set; }
     public DateTime DateCreated { get; set; }
     public Guid UserId { get; set; }
-    public Domain.Users.User User { get; set; } = null!;
+    public  required Domain.Users.User User { get; set; }
     public List<CourtCaseDate> CourtCaseDates { get; set; } = [];
     public List<Document> Documents { get; set; } = [];
     public List<InvoiceItem> InvoiceItems { get; set; } = [];

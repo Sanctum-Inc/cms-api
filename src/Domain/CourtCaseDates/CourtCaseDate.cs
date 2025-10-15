@@ -1,10 +1,11 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Domain.Common;
 using Domain.CourtCases;
 using Domain.Lawyers;
 
 namespace Domain.CourtCaseDates;
 
-public class CourtCaseDate
+public class CourtCaseDate : AuditableEntity
 {
     [Key]
     public Guid Id { get; set; }

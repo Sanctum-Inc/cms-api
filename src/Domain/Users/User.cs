@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Domain.Common;
 using Domain.CourtCases;
 using Domain.Documents;
 using Domain.InvoiceItems;
@@ -6,33 +7,29 @@ using Domain.Lawyers;
 
 namespace Domain.Users;
 
-public class User
+public class User : AuditableEntity
 {
     [Key]
     public Guid Id { get; set; }
 
     [Required]
     [EmailAddress]
-    public string Email { get; set; } = null!;
+    public required string Email { get; set; }
 
     [Required]
-    public string Name { get; set; } = null!;
+    public required string Name { get; set; }
 
     [Required]
-    public string Surname { get; set; } = null!;
+    public required string Surname { get; set; }
 
     [Required]
-    public string MobileNumber { get; set; } = null!;
+    public required string MobileNumber { get; set; }
 
     [Required]
-    public string PasswordHash { get; set; } = null!;
+    public required string PasswordHash { get; set; }
 
     [Required]
-    public string PasswordSalt { get; set; } = null!;
-
-    [Required]
-    public DateTime DateCreated { get; set; }
-
+    public required string PasswordSalt { get; set; }
 
     // Relations
     public List<CourtCase> CourtCases { get; set; } = [];

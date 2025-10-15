@@ -25,8 +25,8 @@ public static class OpenApiConfiguration
                 });
 
                 // Apply security globally
-                document.SecurityRequirements = new List<OpenApiSecurityRequirement>
-                {
+                document.SecurityRequirements =
+                [
                     new OpenApiSecurityRequirement
                     {
                         {
@@ -41,7 +41,7 @@ public static class OpenApiConfiguration
                             Array.Empty<string>()
                         }
                     }
-                };
+                ];
 
                 return Task.CompletedTask;
             });

@@ -1,28 +1,27 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Domain.Common;
 using Domain.CourtCases;
 using Domain.Users;
 
 namespace Domain.Documents;
 
-public class Document
+public class Document : AuditableEntity
 {
     [Key]
     public Guid Id { get; set; }
 
     [Required]
-    public string Path { get; set; } = null!;
+    public required string Path { get; set; }
 
     [Required]
-    public string FileName { get; set; } = null!;
-
-    public DateTime DateCreated { get; set; }
+    public required string FileName { get; set; }
 
     // Foreign Keys
     [Required]
     public Guid UserId { get; set; }
-    public User User { get; set; } = null!;
+    public required User User { get; set; }
 
     [Required]
     public Guid CaseId { get; set; }
-    public CourtCase Case { get; set; } = null!;
+    public required CourtCase Case { get; set; }
 }

@@ -3,10 +3,12 @@ using Application.Common.Interfaces.Repositories;
 using Application.Common.Interfaces.Services;
 using Application.Common.Interfaces.Session;
 using Application.Common.Models;
+using Application.CourtCase.Commands.Add;
 using Application.CourtCase.Commands.Update;
 using Application.CourtCase.Queries.Get;
 using Domain.CourtCases;
 using ErrorOr;
+using Infrastructure.Common;
 using MapsterMapper;
 using MediatR;
 
@@ -17,15 +19,46 @@ public class CourtCaseService : ICourtCaseService
     private readonly ICourtCaseRepository _courtCaseRepository;
     private readonly ISessionResolver _currentUserService;
     private readonly IMapper _mapper;
+    private readonly IUserRepository _userRepository;
 
     public CourtCaseService(
         ICourtCaseRepository courtCaseRepository,
         ISessionResolver sessionResolver,
-        IMapper mapper)
+        IMapper mapper,
+        IUserRepository userRepository)
     {
         _courtCaseRepository = courtCaseRepository;
         _currentUserService = sessionResolver;
         _mapper = mapper;
+        _userRepository = userRepository;
+    }
+
+    public async Task<ErrorOr<bool>> Add(AddCommand request, CancellationToken cancellationToken)
+    {
+        var userId = _currentUserService.UserId;
+        if (string.IsNullOrEmpty(userId))
+            return Error.Unauthorized(description: "User is not authenticated.");
+
+        var user = await _userRepository.GetByIdAsync(Guid.Parse(userId), cancellationToken);
+
+        var courtCase = new Domain.CourtCases.CourtCase
+        {
+            Id = Guid.NewGuid(),
+            CaseNumber = request.CaseNumber,
+            Location = request.Location,
+            Plaintiff = request.Plaintiff,
+            Defendant = request.Defendant,
+            Status = request.Status,
+            Type = request.Type,
+            Outcome = request.Outcome,
+            UserId = Guid.Parse(userId),
+            User = user!
+        };
+
+        await _courtCaseRepository.AddAsync(courtCase, cancellationToken);
+        await _courtCaseRepository.SaveChangesAsync(cancellationToken);
+
+        return true;
     }
 
     public async Task<ErrorOr<bool>> Delete(string id, CancellationToken cancellationToken)

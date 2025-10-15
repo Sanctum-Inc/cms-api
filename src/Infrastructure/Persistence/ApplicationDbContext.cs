@@ -1,4 +1,6 @@
-﻿using Application.Common.Interfaces.Persistence;
+﻿using System.Reflection;
+using Application.Common.Interfaces.Persistence;
+using Domain.Common;
 using Domain.CourtCaseDates;
 using Domain.CourtCases;
 using Domain.Documents;
@@ -26,7 +28,23 @@ public class ApplicationDBContext : DbContext, IApplicationDBContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        foreach (var entityType in modelBuilder.Model.GetEntityTypes())
+        {
+            if (typeof(AuditableEntity).IsAssignableFrom(entityType.ClrType))
+            {
+                var method = typeof(ApplicationDBContext)
+                    .GetMethod(nameof(SetGlobalQueryFilter), BindingFlags.NonPublic | BindingFlags.Static)!
+                    .MakeGenericMethod(entityType.ClrType);
+                method.Invoke(null, [modelBuilder]);
+            }
+        }
+
         base.OnModelCreating(modelBuilder);
+    }
+
+    private static void SetGlobalQueryFilter<TEntity>(ModelBuilder builder) where TEntity : AuditableEntity
+    {
+        builder.Entity<TEntity>().HasQueryFilter(e => !e.IsDeleted);
     }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -36,4 +54,5 @@ public class ApplicationDBContext : DbContext, IApplicationDBContext
             .ConfigureWarnings(warnings =>
                 warnings.Ignore(CoreEventId.AccidentalEntityType));
     }
+
 }

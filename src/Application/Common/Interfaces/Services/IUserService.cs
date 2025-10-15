@@ -8,6 +8,6 @@ namespace Application.Common.Interfaces.Services;
 public interface IUserService
 {
     Task<ErrorOr<UserResult>> GetUserById(string id, CancellationToken cancellationToken);
-    Task<AuthenticationResult?> Login(string username, string password, CancellationToken cancellationToken);
+    Task<ErrorOr<AuthenticationResult>> Login(string username, string password, CancellationToken cancellationToken);
     Task<ErrorOr<bool>> Register(RegisterCommand request, CancellationToken cancellationToken);
 }

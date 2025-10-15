@@ -10,7 +10,7 @@ public class UserResult
     public required string Name { get; set; }
     public required string Surname { get; set; }
     public required string MobileNumber { get; set; }
-    public required DateTime DateCreated { get; set; }
+    public required DateTime Created { get; set; }
 
     // Relations
     public List<Domain.CourtCases.CourtCase> CourtCases { get; set; } = [];

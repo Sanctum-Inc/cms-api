@@ -71,7 +71,7 @@ public class CourtCaseController : ApiControllerBase
 
         var result = await _sender.Send(command);
 
-        return MatchAndMapResult<Guid, Guid>(result, _mapper);
+        return MatchAndMapResult<bool, bool>(result, _mapper);
     }
 
     /// <summary>

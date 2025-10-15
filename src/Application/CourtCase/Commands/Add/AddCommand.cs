@@ -9,4 +9,4 @@ public record AddCommand(
         string Defendant,
         string Status,
         string? Type,
-        string? Outcome) : IRequest<ErrorOr<Guid>>;
+        string? Outcome) : IRequest<ErrorOr<bool>>;

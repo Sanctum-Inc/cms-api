@@ -35,15 +35,17 @@ public class UserService : IUserService
         return _mapper.Map<UserResult>(user);
     }
 
-    public async Task<AuthenticationResult?> Login(string username, string password, CancellationToken cancellationToken)
+    public async Task<ErrorOr<AuthenticationResult>> Login(string username, string password, CancellationToken cancellationToken)
     {
         // 1. Find user by email
         var user = await _userRepository.GetByEmail(username, cancellationToken);
-        if (user == null) return null;
+        if (user == null) 
+            return Error.Unauthorized("Authentication.Unauthorized", "Username or password is incorrect");
 
         // 2. Verify password
         var isMatch = PasswordHasher.VerifyPassword(password, user.PasswordHash, user.PasswordSalt);
-        if (!isMatch) return null;
+        if (!isMatch)
+            return Error.Unauthorized("Authentication.Unauthorized", "Username or password is incorrect");
 
         // 3. Set token expiration
         var expiration = DateTime.UtcNow.AddMinutes(30);
@@ -93,7 +95,6 @@ public class UserService : IUserService
             MobileNumber = request.MobileNumber,
             PasswordHash = hash,
             PasswordSalt = salt,
-            DateCreated = DateTime.UtcNow
         };
 
         // 4. Save to DB

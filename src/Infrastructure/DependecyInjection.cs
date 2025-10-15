@@ -8,6 +8,7 @@ using Infrastructure.Persistence.Repositories;
 using Infrastructure.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using test;
 
 namespace Infrastructure;
 public static partial class DependecyInjection

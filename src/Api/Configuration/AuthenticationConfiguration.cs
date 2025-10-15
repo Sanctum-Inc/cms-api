@@ -45,14 +45,14 @@ public static class AuthenticationConfiguration
                 {
                     var claims = context.Principal?.Claims.Select(c => $"{c.Type}: {c.Value}");
                     Console.WriteLine("Token validated successfully");
-                    Console.WriteLine($"Claims: {string.Join(", ", claims ?? Array.Empty<string>())}");
+                    Console.WriteLine($"Claims: {string.Join(", ", claims ?? [])}");
                     Console.WriteLine($"User Identity Name: {context.Principal?.Identity?.Name}");
                     Console.WriteLine($"Is Authenticated: {context.Principal?.Identity?.IsAuthenticated}");
                     return Task.CompletedTask;
                 },
                 OnMessageReceived = context =>
                 {
-                    Console.WriteLine($"Token received: {context.Token?.Substring(0, Math.Min(20, context.Token?.Length ?? 0))}...");
+                    Console.WriteLine($"Token received: {context.Token?[..Math.Min(20, context.Token?.Length ?? 0)]}...");
                     return Task.CompletedTask;
                 }
             };
