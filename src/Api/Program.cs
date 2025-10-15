@@ -32,7 +32,7 @@ builder.Services.AddJwtAuthentication(builder.Configuration);
 
 var app = builder.Build();
 
-app.ExecutePendingMigrations();
+// app.ExecutePendingMigrations();
 
 // Configure the HTTP request pipeline.
 
