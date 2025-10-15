@@ -24,6 +24,16 @@ public class User
     [Required]
     public string MobileNumber { get; set; } = null!;
 
+    [Required]
+    public string PasswordHash { get; set; } = null!;
+
+    [Required]
+    public string PasswordSalt { get; set; } = null!;
+
+    [Required]
+    public DateTime DateCreated { get; set; }
+
+
     // Relations
     public List<CourtCase> CourtCases { get; set; } = [];
     public List<Document> Documents { get; set; } = [];

@@ -4,6 +4,7 @@ using Contracts.CourtCases.Requests;
 using Contracts.CourtCases.Responses;
 using MapsterMapper;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
 
@@ -14,6 +15,7 @@ namespace Api.Controllers;
 /// </summary>
 [ApiController]
 [Route("[controller]")]
+[Authorize]
 public class CourtCaseController : ApiControllerBase
 {
     private readonly ISender _sender;

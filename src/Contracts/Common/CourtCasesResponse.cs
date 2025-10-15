@@ -2,7 +2,6 @@
 using Domain.Documents;
 using Domain.InvoiceItems;
 using Domain.Lawyers;
-using Domain.Users;
 
 namespace Contracts.Common;
 public class CourtCasesResponse
@@ -17,7 +16,7 @@ public class CourtCasesResponse
     public string? Outcome { get; set; }
     public DateTime DateCreated { get; set; }
     public Guid UserId { get; set; }
-    public User User { get; set; } = null!;
+    public Domain.Users.User User { get; set; } = null!;
     public List<CourtCaseDate> CourtCaseDates { get; set; } = [];
     public List<Document> Documents { get; set; } = [];
     public List<InvoiceItem> InvoiceItems { get; set; } = [];

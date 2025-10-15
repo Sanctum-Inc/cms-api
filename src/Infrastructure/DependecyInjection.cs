@@ -28,11 +28,14 @@ public static class DependecyInjection
         services.AddScoped<IApplicationDBContext, ApplicationDBContext>();
         services.AddScoped(typeof(IBaseRepository<>), typeof(BaseRepository<>));
         services.AddScoped<ICourtCaseRepository, CourtCaseRepository>();
+        services.AddScoped<IUserRepository, UserRepository>();
     }
 
     private static void AddServices(IServiceCollection services)
     {
         services.AddScoped<ISessionResolver, SessionResolver>();
         services.AddScoped<ICourtCaseService, CourtCaseService>();
+        services.AddScoped<IUserService, UserService>();
+        services.AddScoped<IJwtService, JwtService>();
     }
 }
