@@ -5,10 +5,13 @@
 using Api.Configuration;
 using FluentValidation;
 using Infrastructure;
+using Application;
 
 var builder = WebApplication.CreateBuilder(args);
 
-DependecyInjection.AddInfrastructure(builder.Services, builder.Configuration);
+builder.Services
+    .AddInfrastructure(builder.Configuration)
+    .AddApplication(builder.Configuration);
 
 builder.Services.AddPersistence(builder.Configuration);
 builder.Services.AddMediatR(builder.Configuration);
@@ -26,7 +29,7 @@ builder.Services.AddMapsterMappings();
 
 builder.Services.AddHttpContextAccessor();
 
-builder.Services.AddAuthentication(builder.Configuration);
+builder.Services.AddJwtAuthentication(builder.Configuration);
 
 var app = builder.Build();
 
@@ -42,9 +45,9 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.UseAuthorization();
-
 app.UseAuthentication();
+
+app.UseAuthorization();
 
 app.MapControllers();
 

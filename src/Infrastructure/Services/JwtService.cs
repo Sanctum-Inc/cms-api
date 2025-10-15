@@ -15,7 +15,12 @@ public class JwtService : IJwtService
         _config = config;
     }
 
-    public string GenerateToken(string username, string role)
+    public string GenerateToken(
+        string role,
+        string email,
+        string id,
+        string name,
+        string surname)
     {
         var jwtSettings = _config.GetSection("Jwt");
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["Key"]));
@@ -23,8 +28,11 @@ public class JwtService : IJwtService
 
         var claims = new[]
         {
-            new Claim(ClaimTypes.Name, username),
-            new Claim(ClaimTypes.Role, role)
+            new Claim(ClaimTypes.GivenName, name),
+            new Claim(ClaimTypes.Surname, surname),
+            new Claim(ClaimTypes.Role, role),
+            new Claim(ClaimTypes.Email, email),
+            new Claim("custom:user_id", id),
         };
 
         var token = new JwtSecurityToken(

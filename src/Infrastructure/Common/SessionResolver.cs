@@ -29,7 +29,7 @@ public class SessionResolver : ISessionResolver
         }
     }
 
-    public string? UserId => GetClaim(ClaimTypes.NameIdentifier) ?? GetClaim("sub");
+    public string? UserId => GetClaim(ClaimTypes.NameIdentifier) ?? GetClaim("custom:user_id");
 
     public string? UserEmail => GetClaim(ClaimTypes.Email) ?? GetClaim("email");
 

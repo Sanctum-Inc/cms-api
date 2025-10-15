@@ -1,4 +1,5 @@
 ﻿using Application.CourtCase.Commands.Add;
+using Application.CourtCase.Commands.Update;
 using Application.CourtCase.Queries.Get;
 using Contracts.CourtCases.Requests;
 using Contracts.CourtCases.Responses;
@@ -82,9 +83,13 @@ public class CourtCaseController : ApiControllerBase
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public IActionResult Update([FromRoute][Required] int id, [FromBody][Required] object courtCase)
+    public async Task<IActionResult> Update([FromRoute][Required] UpdateCourtCaseRequest updateRequest)
     {
-        return NoContent(); // Assuming update is successful
+        var command = _mapper.Map<UpdateCommand>(updateRequest);
+
+        var result = await _sender.Send(command);
+
+        return MatchAndMapResult<bool, bool>(result, _mapper);
     }
 
     /// <summary>
@@ -94,8 +99,12 @@ public class CourtCaseController : ApiControllerBase
     [HttpDelete("{id}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public IActionResult Delete([FromRoute][Required] int id)
+    public async Task<IActionResult> Delete([FromRoute][Required] DeleteCourtCaseRequest deleteRequest)
     {
-        return NoContent(); // Assuming delete is successful
+        var command = _mapper.Map<UpdateCommand>(deleteRequest);
+
+        var result = await _sender.Send(command);
+
+        return MatchAndMapResult<bool, bool>(result, _mapper);
     }
 }

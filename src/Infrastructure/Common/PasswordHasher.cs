@@ -5,20 +5,20 @@ using System.Text;
 namespace Infrastructure.Common;
 public static class PasswordHasher
 {
-    private const int SaltSize = 16; // 128 bit
-    private const int KeySize = 32;  // 256 bit
-    private const int Iterations = 10000;
+    private const int _saltSize = 16; // 128 bit
+    private const int _keySize = 32;  // 256 bit
+    private const int _iterations = 10000;
 
     public static (string hash, string salt) HashPassword(string password)
     {
         // 1. Generate a random salt
         using var rng = RandomNumberGenerator.Create();
-        var saltBytes = new byte[SaltSize];
+        var saltBytes = new byte[_saltSize];
         rng.GetBytes(saltBytes);
 
         // 2. Derive key from password and salt
-        using var pbkdf2 = new Rfc2898DeriveBytes(password, saltBytes, Iterations, HashAlgorithmName.SHA256);
-        var keyBytes = pbkdf2.GetBytes(KeySize);
+        using var pbkdf2 = new Rfc2898DeriveBytes(password, saltBytes, _iterations, HashAlgorithmName.SHA256);
+        var keyBytes = pbkdf2.GetBytes(_keySize);
 
         // 3. Convert to Base64 for storage
         var salt = Convert.ToBase64String(saltBytes);
@@ -33,8 +33,8 @@ public static class PasswordHasher
         var storedHashBytes = Convert.FromBase64String(storedHash);
 
         // Hash entered password with stored salt
-        using var pbkdf2 = new Rfc2898DeriveBytes(enteredPassword, saltBytes, Iterations, HashAlgorithmName.SHA256);
-        var enteredHashBytes = pbkdf2.GetBytes(KeySize);
+        using var pbkdf2 = new Rfc2898DeriveBytes(enteredPassword, saltBytes, _iterations, HashAlgorithmName.SHA256);
+        var enteredHashBytes = pbkdf2.GetBytes(_keySize);
 
         // Compare byte arrays securely
         return CryptographicOperations.FixedTimeEquals(storedHashBytes, enteredHashBytes);

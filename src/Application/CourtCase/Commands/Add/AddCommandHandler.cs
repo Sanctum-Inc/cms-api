@@ -43,6 +43,7 @@ public class AddCommandHandler : IRequestHandler<AddCommand, ErrorOr<Guid>>
         };
 
         await _courtCaseRepository.AddAsync(courtCase, cancellationToken);
+        await _courtCaseRepository.SaveChangesAsync(cancellationToken);
 
         return courtCase.Id;
     }

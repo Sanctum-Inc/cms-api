@@ -49,7 +49,12 @@ public class UserService : IUserService
         var expiration = DateTime.UtcNow.AddMinutes(30);
 
         // 4. Generate access token
-        var token = _jwtService.GenerateToken(user.Id.ToString(), "user");
+        var token = _jwtService.GenerateToken(
+            "user",
+            user.Email,
+            user.Id.ToString(),
+            user.Name,
+            user.Surname);
 
         // 5. Generate refresh token (simple example — use a secure random generator in production)
         // ToDo: Refresh token logic to be implemented
