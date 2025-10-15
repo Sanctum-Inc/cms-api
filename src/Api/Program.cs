@@ -18,11 +18,10 @@ builder.Services.AddMediatR(builder.Configuration);
 
 builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 
-
 // Add services to the container.
-
 builder.Services.AddControllers();
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+
+
 builder.Services.AddOpenApiWithAuth();
 
 builder.Services.AddMapsterMappings();
@@ -35,10 +34,9 @@ var app = builder.Build();
 
 app.ExecutePendingMigrations();
 
-
 // Configure the HTTP request pipeline.
-app.MapOpenApi();
-ScalarConfiguration.ConfigureServices(app);
+
+app.UseStaticFiles();
 
 app.UseHttpsRedirection();
 
@@ -48,5 +46,8 @@ app.UseAuthorization();
 
 app.MapControllers();
 
+app.MapOpenApi();
+
+ScalarConfiguration.ConfigureServices(app);
 
 app.Run();
