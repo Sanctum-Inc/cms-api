@@ -48,7 +48,7 @@ public class DocumentController : ApiControllerBase
     [ProducesResponseType(typeof(bool), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Upload(
-        [FromForm][Required] IFormFile file,
+        [FromForm] IFormFile file,
         [FromForm][Required] string name,
         [FromForm][Required] string caseId)
     {

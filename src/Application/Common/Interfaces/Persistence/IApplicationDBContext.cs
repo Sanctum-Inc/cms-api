@@ -12,7 +12,7 @@ public interface IApplicationDBContext
     // Expose DbSets for specific entities
     DbSet<User> Users { get; }
     DbSet<Domain.CourtCases.CourtCase> CourtCases { get; }
-    DbSet<Document> Documents { get; }
+    DbSet<Domain.Documents.Document> Documents { get; }
     DbSet<InvoiceItem> InvoiceItems { get; }
     DbSet<Lawyer> Lawyers { get; }
     DbSet<CourtCaseDate> CourtCaseDates { get; }

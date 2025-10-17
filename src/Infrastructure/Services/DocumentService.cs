@@ -101,6 +101,7 @@ public class DocumentService : IDocumentService
             return Error.NotFound("Document.NotFound", "The document with the specified Id was not found");
 
         await _documentRepository.DeleteAsync(document, cancellationToken);
+        await _documentRepository.SaveChangesAsync();
 
         return true;
     }
@@ -119,8 +120,8 @@ public class DocumentService : IDocumentService
             return Error.NotFound("Document.NotFound", "The document with the specified path was not found");
 
         var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
-        var contentType = "application/pdf"; // detect from metadata or use FileExtensionContentTypeProvider
-        var fileName = "example.pdf";
+        var contentType = document.ContentType; // detect from metadata or use FileExtensionContentTypeProvider
+        var fileName = document.Name;
 
         return new DownloadDocumentResult(stream, contentType, fileName);
     }
@@ -143,7 +144,8 @@ public class DocumentService : IDocumentService
             doc.Name,
             doc.FileName,
             doc.Size,
-            doc.Created
+            doc.Created,
+            doc.CaseId
         ));
 
         return results.ToErrorOr()!;
@@ -174,7 +176,8 @@ public class DocumentService : IDocumentService
             document.FileName,
             document.ContentType,
             document.Size,
-            document.Created
+            document.Created,
+            document.CaseId
         );
 
         return result;
@@ -190,6 +193,7 @@ public class DocumentService : IDocumentService
         document.Name = newName;
 
         await _documentRepository.UpdateAsync(document, cancellationToken);
+        await _documentRepository.SaveChangesAsync();
 
         return true;
     }

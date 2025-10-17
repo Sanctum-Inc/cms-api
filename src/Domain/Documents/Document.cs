@@ -15,8 +15,8 @@ public class Document : AuditableEntity
 
     // Foreign Keys
     public required Guid UserId { get; set; }
-    public required User User { get; set; }
+    public User? User { get; set; }
 
     public required Guid CaseId { get; set; }
-    public required CourtCase Case { get; set; }
+    public CourtCase? Case { get; set; }
 }

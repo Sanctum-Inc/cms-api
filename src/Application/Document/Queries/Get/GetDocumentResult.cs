@@ -10,5 +10,6 @@ public record GetDocumentResult(
     string Name,
     string FileName,
     long Size,
-    DateTime CreatedAt
+    DateTime CreatedAt,
+    Guid CaseId
 );

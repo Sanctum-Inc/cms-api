@@ -19,7 +19,7 @@ public class CourtCaseResult
     public Guid UserId { get; set; }
     public required User User { get; set; }
     public List<CourtCaseDate> CourtCaseDates { get; set; } = [];
-    public List<Document> Documents { get; set; } = [];
+    public List<Domain.Documents.Document> Documents { get; set; } = [];
     public List<InvoiceItem> InvoiceItems { get; set; } = [];
     public List<Lawyer> Lawyers { get; set; } = [];
 }
