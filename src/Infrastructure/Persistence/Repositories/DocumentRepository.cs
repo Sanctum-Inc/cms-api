@@ -1,0 +1,31 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Application.Common.Interfaces.Persistence;
+using Application.Common.Interfaces.Repositories;
+using Application.Common.Interfaces.Session;
+using Domain.Documents;
+using Microsoft.EntityFrameworkCore;
+
+namespace Infrastructure.Persistence.Repositories;
+public class DocumentRepository : BaseRepository<Domain.Documents.Document>, IDocumentRepository
+{
+    public DocumentRepository(IApplicationDBContext context, ISessionResolver sessionResolver) : base(context, sessionResolver) { }
+
+    public Task<Document?> GetByIdAndDocumentIdAsync(Guid id, Guid userId, CancellationToken cancellationToken)
+    {
+        return _dbSet
+            .AsNoTracking()
+            .FirstOrDefaultAsync(d => d.Id == id && d.UserId == userId, cancellationToken);
+    }
+
+    public Task<List<Document>> GetByUserIdAsync(Guid userId)
+    {
+        return _dbSet
+            .AsNoTracking()
+            .Where(d => d.UserId == userId)
+            .ToListAsync();
+    }
+}

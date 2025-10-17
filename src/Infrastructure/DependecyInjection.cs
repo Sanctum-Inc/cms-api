@@ -3,6 +3,7 @@ using Application.Common.Interfaces.Repositories;
 using Application.Common.Interfaces.Services;
 using Application.Common.Interfaces.Session;
 using Infrastructure.Common;
+using Infrastructure.Config;
 using Infrastructure.Persistence;
 using Infrastructure.Persistence.Repositories;
 using Infrastructure.Services;
@@ -21,7 +22,15 @@ public static partial class DependecyInjection
 
         AddPersistence(services);
 
+        AddDocumentStorage(services, configuration);
+
         return services;
+    }
+
+    private static void AddDocumentStorage(IServiceCollection services, IConfiguration configuration)
+    {
+        services.Configure<DocumentStorageOptions>(
+            configuration.GetSection(DocumentStorageOptions.SectionName));
     }
 
     private static void AddPersistence(IServiceCollection services)
@@ -29,6 +38,7 @@ public static partial class DependecyInjection
         services.AddScoped<IApplicationDBContext, ApplicationDBContext>();
         services.AddScoped(typeof(IBaseRepository<>), typeof(BaseRepository<>));
         services.AddScoped<ICourtCaseRepository, CourtCaseRepository>();
+        services.AddScoped<IDocumentRepository, DocumentRepository>();
         services.AddScoped<IUserRepository, UserRepository>();
     }
 
@@ -36,6 +46,7 @@ public static partial class DependecyInjection
     {
         services.AddScoped<ISessionResolver, SessionResolver>();
         services.AddScoped<ICourtCaseService, CourtCaseService>();
+        services.AddScoped<IDocumentService, DocumentService>();
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<IJwtService, JwtService>();
     }

@@ -1,75 +1,155 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
+using Application.Document.Commands.Add;
+using Application.Document.Commands.Delete;
+using Application.Document.Commands.Update;
+using Application.Document.Queries.Download;
+using Application.Document.Queries.Get;
+using Application.Document.Queries.GetById;
+using Contracts.Documents.Requests;
+using Contracts.Documents.Responses;
+using Mapster;
+using MapsterMapper;
+using MediatR;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers;
 
 /// <summary>
-/// Handles operations related to documents.
+/// Manages document upload, retrieval, update, and deletion.
 /// </summary>
 [ApiController]
-[Route("[controller]")]
-public class DocumentController : ControllerBase
+[Route("api/[controller]")]
+public class DocumentController : ApiControllerBase
 {
-    /// <summary>
-    /// Gets a status message for the DocumentController.
-    /// </summary>
-    /// <returns>Status message.</returns>
-    [HttpGet]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    public IActionResult Get()
+    private readonly ISender _sender;
+    private readonly IMapper _mapper;
+
+    public DocumentController(ISender sender, IMapper mapper)
     {
-        return Ok("DocumentController is working!");
+        _sender = sender;
+        _mapper = mapper;
     }
 
     /// <summary>
-    /// Gets a document by its ID.
+    /// Uploads a new document with a specific name.
     /// </summary>
-    /// <param name="id">The ID of the document.</param>
-    /// <returns>The document with the specified ID.</returns>
-    [HttpGet("{id}")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public IActionResult GetById([FromRoute][Required] int id)
-    {
-        return Ok($"DocumentController received ID: {id}");
-    }
-
-    /// <summary>
-    /// Creates a new document.
-    /// </summary>
-    /// <param name="document">The document object to create.</param>
-    /// <returns>The created document.</returns>
+    /// <param name="file">The file to upload.</param>
+    /// <param name="name">The name to assign to the uploaded document.</param>
+    /// <remarks>
+    /// Sample request:
+    ///
+    ///     POST /api/document
+    ///     FormData:
+    ///       file: myfile.pdf
+    ///       name: "Project Proposal"
+    /// </remarks>
+    /// <returns>Information about the created document.</returns>
     [HttpPost]
-    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(bool), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public IActionResult Create([FromBody][Required] object document)
+    public async Task<IActionResult> Upload(
+        [FromForm][Required] IFormFile file,
+        [FromForm][Required] string name,
+        [FromForm][Required] string caseId)
     {
-        return CreatedAtAction(nameof(GetById), new { id = 1 }, document); // Assuming ID is 1 for demonstration
+        var command = new AddCommand(file, name, caseId);
+
+        var result = await _sender.Send(command);
+
+        return MatchAndMapResult<bool, bool>(result, _mapper);
     }
 
     /// <summary>
-    /// Updates an existing document.
+    /// Updates the name of an existing document.
     /// </summary>
     /// <param name="id">The ID of the document to update.</param>
-    /// <param name="document">The updated document object.</param>
-    [HttpPut("{id}")]
+    /// <param name="request">The new name for the document.</param>
+    /// <returns>No content on success.</returns>
+    [HttpPut("{id}/name")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public IActionResult Update([FromRoute][Required] int id, [FromBody][Required] object document)
+    public async Task<IActionResult> UpdateName(
+        [FromBody][Required] UpdateDocumentRequest request)
     {
-        return NoContent(); // Assuming update is successful
+        var command = _mapper.Map<UpdateCommand>(request);
+
+        var result = await _sender.Send(command);
+
+        return MatchAndMapResult<bool, bool>(result, _mapper);
     }
 
     /// <summary>
-    /// Deletes a document by its ID.
+    /// Gets a file structure representation of all documents and their attributes.
     /// </summary>
-    /// <param name="id">The ID of the document to delete.</param>
+    /// <returns>List of documents with metadata.</returns>
+    [HttpGet("structure")]
+    [ProducesResponseType(typeof(IEnumerable<GetDocumentResponse>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetStructure()
+    {
+        var command = new GetCommand();
+
+        var result = await _sender.Send(command);
+
+        return MatchAndMapResult<IEnumerable<GetDocumentResult>, IEnumerable<GetDocumentResponse>>(result, _mapper);
+    }
+
+    /// <summary>
+    /// Gets metadata and attributes of a specific document.
+    /// </summary>
+    /// <param name="id">The document ID.</param>
+    /// <returns>Document metadata and attributes.</returns>
+    [HttpGet("{id}")]
+    [ProducesResponseType(typeof(GetDocumentByIdResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetById([FromRoute][Required] string id)
+    {
+        var command = new GetByIdCommand(new Guid(id));
+
+        var result = await _sender.Send(command);
+
+        return MatchAndMapResult<GetDocumentByIdResult, GetDocumentByIdResponse>(result, _mapper);
+    }
+
+    /// <summary>
+    /// Downloads the file content of a specific document.
+    /// </summary>
+    /// <param name="id">The document ID.</param>
+    /// <returns>The file stream of the document.</returns>
+    [HttpGet("{id}/download")]
+    [ProducesResponseType(typeof(FileStreamResult), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> Download([FromRoute][Required] string id)
+    {
+        var command = new DownloadCommand(new Guid(id));
+
+        var result = await _sender.Send(command);
+
+        if (result.IsError)
+        {
+            return Problem(detail: string.Join(", ", result.Errors.Select(e => e.Description)));
+        }
+
+        // For downloads, we bypass MatchAndMapResult to return FileStream directly
+        if (result.Value == null) return NotFound();
+
+        return File(result.Value.Stream, result.Value.ContentType, result.Value.FileName);
+    }
+
+    /// <summary>
+    /// Deletes a document by ID.
+    /// </summary>
+    /// <param name="id">The document ID.</param>
+    /// <returns>No content on success.</returns>
     [HttpDelete("{id}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public IActionResult Delete([FromRoute][Required] int id)
+    public async Task<IActionResult> Delete([FromRoute][Required] string id)
     {
-        return NoContent(); // Assuming delete is successful
+        var command = new DeleteCommand(new Guid(id));
+
+        var result = await _sender.Send(command);
+
+        return MatchAndMapResult<bool, bool>(result, _mapper);
     }
 }

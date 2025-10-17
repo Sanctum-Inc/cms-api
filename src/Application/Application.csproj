@@ -7,8 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Document\Commands\" />
-    <Folder Include="Document\Queries\" />
     <Folder Include="Invoice\Commands\" />
     <Folder Include="Invoice\Queries\" />
     <Folder Include="Lawyer\Commands\" />

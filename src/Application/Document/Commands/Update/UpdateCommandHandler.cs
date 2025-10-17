@@ -1,0 +1,25 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Application.Common.Interfaces.Services;
+using ErrorOr;
+using MediatR;
+
+namespace Application.Document.Commands.Update;
+public class UpdateCommandHandler : IRequestHandler<UpdateCommand, ErrorOr<bool>>
+{
+    private readonly IDocumentService _documentService;
+    public UpdateCommandHandler(IDocumentService documentService)
+    {
+        _documentService = documentService;
+    }
+
+    public async Task<ErrorOr<bool>> Handle(UpdateCommand request, CancellationToken cancellationToken)
+    {
+        var result = await _documentService.Update(request.Id, request.NewName, cancellationToken);
+
+        return result;
+    }
+}
