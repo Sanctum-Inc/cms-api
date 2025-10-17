@@ -21,5 +21,5 @@ public class CourtCaseResult
     public List<CourtCaseDate> CourtCaseDates { get; set; } = [];
     public List<Domain.Documents.Document> Documents { get; set; } = [];
     public List<InvoiceItem> InvoiceItems { get; set; } = [];
-    public List<Lawyer> Lawyers { get; set; } = [];
+    public List<Domain.Lawyers.Lawyer> Lawyers { get; set; } = [];
 }

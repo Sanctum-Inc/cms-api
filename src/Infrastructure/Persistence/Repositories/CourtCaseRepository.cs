@@ -11,21 +11,9 @@ public class CourtCaseRepository : BaseRepository<CourtCase>, ICourtCaseReposito
 {
     public CourtCaseRepository(IApplicationDBContext context, ISessionResolver sessionResolver) : base(context, sessionResolver) { }
 
-    public async Task<IEnumerable<CourtCase>> GetByUserIdAsync(Guid userId, CancellationToken cancellationToken)
+    public Task<CourtCase?> GetByCaseIdAsync(Guid id, Guid userId, CancellationToken cancellationToken)
     {
-        return await _context
-            .Set<CourtCase>()
-            .Where(cc => cc.UserId == userId)
-            .AsNoTracking()
-            .ToListAsync(cancellationToken);
-    }
-
-    public async Task<CourtCase?> GetByIdAndUserIdAsync(Guid caseId, Guid userId, CancellationToken cancellationToken)
-    {
-        return await _context
-            .Set<CourtCase>()
-            .Where(cc => cc.Id == caseId && cc.UserId == userId)
-            .AsNoTracking()
-            .FirstOrDefaultAsync(cancellationToken);
+        return _dbSet
+            .FirstOrDefaultAsync(cc => cc.Id == id && cc.UserId == userId, cancellationToken);
     }
 }

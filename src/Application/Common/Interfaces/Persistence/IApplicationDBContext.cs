@@ -14,7 +14,7 @@ public interface IApplicationDBContext
     DbSet<Domain.CourtCases.CourtCase> CourtCases { get; }
     DbSet<Domain.Documents.Document> Documents { get; }
     DbSet<InvoiceItem> InvoiceItems { get; }
-    DbSet<Lawyer> Lawyers { get; }
+    DbSet<Domain.Lawyers.Lawyer> Lawyers { get; }
     DbSet<CourtCaseDate> CourtCaseDates { get; }
 
     // ✅ This allows generic access for repositories

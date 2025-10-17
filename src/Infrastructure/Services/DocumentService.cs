@@ -44,14 +44,13 @@ public class DocumentService : IDocumentService
 
     public async Task<ErrorOr<bool>> Add(IFormFile file, string name, string caseId, CancellationToken cancellationToken = default)
     {
-
         var userId = _sessionResolver.UserId;
         if (string.IsNullOrEmpty(userId))
             return Error.Unauthorized(description: "User is not authenticated.");
 
         var user = await _userRepository.GetByIdAsync(Guid.Parse(userId), cancellationToken);
 
-        var courtCase = await _courtCaseRepository.GetByIdAndUserIdAsync(Guid.Parse(caseId), Guid.Parse(userId), cancellationToken);
+        var courtCase = await _courtCaseRepository.GetByCaseIdAsync(Guid.Parse(caseId), Guid.Parse(userId), cancellationToken);
         if (courtCase == null)
             return Error.NotFound(description: "Court case not found for the user.");
 
@@ -95,13 +94,13 @@ public class DocumentService : IDocumentService
 
     public async Task<ErrorOr<bool>> Delete(Guid id, CancellationToken cancellationToken = default)
     {
-        var document = await _documentRepository.GetByIdAsync(id, cancellationToken);
+        var document = await _documentRepository.GetByIdAndUserIdAsync(id, cancellationToken);
 
         if (document == null)
             return Error.NotFound("Document.NotFound", "The document with the specified Id was not found");
 
         await _documentRepository.DeleteAsync(document, cancellationToken);
-        await _documentRepository.SaveChangesAsync();
+        await _documentRepository.SaveChangesAsync(cancellationToken);
 
         return true;
     }
@@ -128,15 +127,9 @@ public class DocumentService : IDocumentService
 
     public async Task<ErrorOr<IEnumerable<GetDocumentResult?>>> Get(CancellationToken cancellationToken = default)
     {
-
-
-        var userId = _sessionResolver.UserId;
-        if (string.IsNullOrEmpty(userId))
-            return Error.Unauthorized(description: "User is not authenticated.");
-
         // Fetch documents from the database
         var documents = await _documentRepository
-            .GetByUserIdAsync(new Guid(userId));
+            .GetAll(cancellationToken);
 
         // Map to GetDocumentResult
         var results = documents.Select(doc => new GetDocumentResult(
@@ -153,13 +146,8 @@ public class DocumentService : IDocumentService
 
     public async Task<ErrorOr<GetDocumentByIdResult?>> GetById(Guid id, CancellationToken cancellationToken = default)
     {
-
-        var userId = _sessionResolver.UserId;
-        if (string.IsNullOrEmpty(userId))
-            return Error.Unauthorized(description: "User is not authenticated.");
-
         // 🗂️ 1. Get metadata from DB
-        var document = await _documentRepository.GetByIdAndDocumentIdAsync(id, new Guid(userId), cancellationToken);
+        var document = await _documentRepository.GetByIdAndUserIdAsync(id, cancellationToken);
 
         if (document is null)
         {
@@ -193,7 +181,7 @@ public class DocumentService : IDocumentService
         document.Name = newName;
 
         await _documentRepository.UpdateAsync(document, cancellationToken);
-        await _documentRepository.SaveChangesAsync();
+        await _documentRepository.SaveChangesAsync(cancellationToken);
 
         return true;
     }

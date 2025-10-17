@@ -9,8 +9,6 @@
   <ItemGroup>
     <Folder Include="Invoice\Commands\" />
     <Folder Include="Invoice\Queries\" />
-    <Folder Include="Lawyer\Commands\" />
-    <Folder Include="Lawyer\Queries\" />
   </ItemGroup>
 
   <ItemGroup>

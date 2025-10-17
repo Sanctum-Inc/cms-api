@@ -1,5 +1,17 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Application.Lawyer.Queries.Get;
+using Application.Lawyer.Commands.Add;
+using Application.Lawyer.Commands.Update;
+using Contracts.Lawyer.Requests;
+using Domain.Lawyers;
+using MapsterMapper;
+using MediatR;
+using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
+using System.Threading.Tasks;
+using Application.Common.Models;
+using Contracts.Lawyer.Responses;
+using Application.Lawyer.Queries.GetById;
+using Application.CourtCase.Commands.Delete;
 
 namespace Api.Controllers;
 
@@ -8,17 +20,33 @@ namespace Api.Controllers;
 /// </summary>
 [ApiController]
 [Route("[controller]")]
-public class LawyerController : ControllerBase
+public class LawyerController : ApiControllerBase
 {
+    private readonly ISender _sender;
+    private readonly IMapper _mapper;
+
+    public LawyerController(
+        ISender sender,
+        IMapper mapper)
+    {
+        _sender = sender;
+        _mapper = mapper;
+    }
+
     /// <summary>
     /// Gets a status message for the LawyerController.
     /// </summary>
     /// <returns>Status message.</returns>
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public IActionResult Get()
+    public async Task<IActionResult> Get()
     {
-        return Ok("LawyerController is working!");
+
+        var command = new GetCommand();
+
+        var result = await _sender.Send(command);
+
+        return MatchAndMapResult<List<GetLawyerResult>, List<GetLawyerResponse>>(result, _mapper);
     }
 
     /// <summary>
@@ -29,9 +57,14 @@ public class LawyerController : ControllerBase
     [HttpGet("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public IActionResult GetById([FromRoute][Required] int id)
+    public async Task<IActionResult> GetById([FromRoute][Required] string id)
     {
-        return Ok($"LawyerController received ID: {id}");
+
+        var command = new GetByIdCommand(new Guid(id));
+
+        var result = await _sender.Send(command);
+
+        return MatchAndMapResult<GetLawyerResult, GetLawyerResponse>(result, _mapper);
     }
 
     /// <summary>
@@ -42,9 +75,13 @@ public class LawyerController : ControllerBase
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public IActionResult Create([FromBody][Required] object lawyer)
+    public async Task<IActionResult> Create([FromBody] AddLawyerRequest lawyer)
     {
-        return CreatedAtAction(nameof(GetById), new { id = 1 }, lawyer); // Assuming ID is 1 for demonstration
+        var command = _mapper.Map<AddCommand>(lawyer);
+
+        var result = await _sender.Send(command);
+
+        return MatchAndMapResult<bool, bool>(result, _mapper);
     }
 
     /// <summary>
@@ -56,9 +93,14 @@ public class LawyerController : ControllerBase
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public IActionResult Update([FromRoute][Required] int id, [FromBody][Required] object lawyer)
+    public async Task<IActionResult> Update([FromRoute][Required] string id, [FromBody][Required] UpdateLawyerRequest lawyer)
     {
-        return NoContent(); // Assuming update is successful
+        var command = _mapper.Map<UpdateCommand>(lawyer);
+        command.Id = new Guid(id);
+
+        var result = await _sender.Send(command);
+
+        return MatchAndMapResult<bool, bool>(result, _mapper);
     }
 
     /// <summary>
@@ -68,8 +110,12 @@ public class LawyerController : ControllerBase
     [HttpDelete("{id}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public IActionResult Delete([FromRoute][Required] int id)
+    public async Task<IActionResult> Delete([FromRoute][Required] string id)
     {
-        return NoContent(); // Assuming delete is successful
+        var command = new DeleteCommand(new Guid(id));
+
+        var result = await _sender.Send(command);
+
+        return MatchAndMapResult<bool, bool>(result, _mapper);
     }
 }

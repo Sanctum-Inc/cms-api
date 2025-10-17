@@ -14,4 +14,4 @@ public record UserResponse(
     List<CourtCase> CourtCases,
     List<Document> Documents,
     List<InvoiceItem> InvoiceItems,
-    List<Lawyer> Lawyers);
+    List<Domain.Lawyers.Lawyer> Lawyers);

@@ -65,7 +65,7 @@ public class DocumentController : ApiControllerBase
     /// <param name="id">The ID of the document to update.</param>
     /// <param name="request">The new name for the document.</param>
     /// <returns>No content on success.</returns>
-    [HttpPut("{id}/name")]
+    [HttpPut("{id}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -83,7 +83,7 @@ public class DocumentController : ApiControllerBase
     /// Gets a file structure representation of all documents and their attributes.
     /// </summary>
     /// <returns>List of documents with metadata.</returns>
-    [HttpGet("structure")]
+    [HttpGet()]
     [ProducesResponseType(typeof(IEnumerable<GetDocumentResponse>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetStructure()
     {

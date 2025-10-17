@@ -40,6 +40,7 @@ public static partial class DependecyInjection
         services.AddScoped<ICourtCaseRepository, CourtCaseRepository>();
         services.AddScoped<IDocumentRepository, DocumentRepository>();
         services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<ILawyerRepository, LawyerRepository>();
     }
 
     private static void AddServices(IServiceCollection services)
@@ -49,5 +50,6 @@ public static partial class DependecyInjection
         services.AddScoped<IDocumentService, DocumentService>();
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<IJwtService, JwtService>();
+        services.AddScoped<ILawyerService, LawyerService>();
     }
 }

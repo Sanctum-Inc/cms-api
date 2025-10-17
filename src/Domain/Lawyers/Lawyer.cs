@@ -26,9 +26,10 @@ public class Lawyer : AuditableEntity
 
     [Required]
     public Guid UserId { get; set; }
-    public required User User { get; set; }
+    public User? User { get; set; }
 
     // Relations
     public List<CourtCase> CourtCases { get; set; } = [];
     public List<CourtCaseDate> CourtCaseDates { get; set; } = [];
+    public required Speciality Specialty { get; set; }
 }

@@ -61,14 +61,10 @@ public class CourtCaseService : ICourtCaseService
         return true;
     }
 
-    public async Task<ErrorOr<bool>> Delete(string id, CancellationToken cancellationToken)
+    public async Task<ErrorOr<bool>> Delete(Guid id, CancellationToken cancellationToken)
     {
-        var userId = _currentUserService.UserId;
-        if (string.IsNullOrEmpty(userId))
-            throw new UnauthorizedAccessException("User is not authenticated.");
-
         var courtCase = await _courtCaseRepository
-            .GetByIdAndUserIdAsync(new Guid(id), Guid.Parse(userId), cancellationToken);
+            .GetByIdAsync(id, cancellationToken);
 
         if (courtCase == null)
             return Error.NotFound(description: "Court case not found.");
@@ -81,36 +77,24 @@ public class CourtCaseService : ICourtCaseService
 
     public async Task<GetCourtCaseResult> Get(CancellationToken cancellationToken)
     {
-        var userId = _currentUserService.UserId;
-        if (string.IsNullOrEmpty(userId))
-            throw new UnauthorizedAccessException("User is not authenticated.");
-
         IEnumerable<CourtCase>? courtCases = await _courtCaseRepository
-            .GetByUserIdAsync(Guid.Parse(userId), cancellationToken);
+            .GetAll(cancellationToken);
 
         return _mapper.Map<GetCourtCaseResult>(courtCases);
     }
 
-    public async Task<CourtCaseResult> GetById(string id, CancellationToken cancellationToken)
+    public async Task<CourtCaseResult> GetById(Guid id, CancellationToken cancellationToken)
     {
-        var userId = _currentUserService.UserId;
-        if (string.IsNullOrEmpty(userId))
-            throw new UnauthorizedAccessException("User is not authenticated.");
-
         var courtCase = await _courtCaseRepository
-            .GetByIdAndUserIdAsync(Guid.Parse(id), Guid.Parse(userId), cancellationToken);
+            .GetByIdAndUserIdAsync(id, cancellationToken);
 
         return _mapper.Map<CourtCaseResult>(courtCase!);
     }
 
     public async Task<ErrorOr<bool>> Update(UpdateCommand request, CancellationToken cancellationToken)
     {
-        var userId = _currentUserService.UserId;
-        if (string.IsNullOrEmpty(userId))
-            throw new UnauthorizedAccessException("User is not authenticated.");
-
         var courtCase = await _courtCaseRepository
-            .GetByIdAndUserIdAsync(new Guid(request.Id), Guid.Parse(userId), cancellationToken);
+            .GetByIdAndUserIdAsync(new Guid(request.Id), cancellationToken);
 
         if (courtCase == null)
             return Error.NotFound(description: "Court case not found.");

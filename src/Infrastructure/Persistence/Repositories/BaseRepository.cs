@@ -86,4 +86,14 @@ public class BaseRepository<T> : IBaseRepository<T> where T : class
     {
         return await _context.SaveChangesAsync(cancellationToken);
     }
+
+    public virtual async Task<T?> GetByIdAndUserIdAsync(Guid id, CancellationToken cancellationToken = default)
+    {
+        return await _dbSet.FindAsync([id, new Guid(_sessionResolver.UserId!)], cancellationToken);
+    }
+
+    public async Task<IEnumerable<T>> GetAll(CancellationToken cancellationToken = default)
+    {
+        return await _dbSet.Where(x => EF.Property<Guid>(x, "UserId") == new Guid(_sessionResolver.UserId!)).ToListAsync(cancellationToken);
+    }
 }
