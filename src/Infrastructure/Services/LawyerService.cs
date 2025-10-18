@@ -69,6 +69,8 @@ internal class LawyerService : ILawyerService
     public async Task<ErrorOr<GetLawyerResult>> GetById(Guid id, CancellationToken cancellationToken)
     {
         var result = await _lawyerRepository.GetByIdAsync(id, cancellationToken);
+        if (result == null)
+            return Error.NotFound("Lawyer.NotFound", "Lawyer with given Id was not found.");
 
         return _mapper.Map<GetLawyerResult>(result!);
     }

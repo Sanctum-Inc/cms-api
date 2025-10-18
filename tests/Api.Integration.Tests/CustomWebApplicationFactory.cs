@@ -53,6 +53,7 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
         // clear users to avoid duplicate key error
         db.Users.RemoveRange(db.Users);
         db.Documents.RemoveRange(db.Documents);
+        db.Lawyers.RemoveRange(db.Lawyers);
         await db.SaveChangesAsync();
 
         // Example seed
@@ -92,7 +93,60 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
             CreatedBy = Guid.NewGuid()
         });
 
-       await db.SaveChangesAsync();
+        // Add these lawyers to your database seeding
+        db.Lawyers.Add(new Domain.Lawyers.Lawyer
+        {
+            Id = new Guid("1a2b3c4d-5e6f-7a8b-9c0d-1e2f3a4b5c6d"),
+            Email = "james.wilson@lawfirm.com",
+            Name = "James",
+            Surname = "Wilson",
+            MobileNumber = "+27821234567",
+            UserId = new Guid("6ec0df63-8960-46ec-9163-2de98e04d5e9"),
+            Specialty = Domain.Lawyers.Speciality.CriminalLaw,
+            CreatedBy = Guid.NewGuid(),
+            Created = DateTime.UtcNow
+        });
+
+        db.Lawyers.Add(new Domain.Lawyers.Lawyer
+        {
+            Id = new Guid("2b3c4d5e-6f7a-8b9c-0d1e-2f3a4b5c6d7e"),
+            Email = "sarah.johnson@lawfirm.com",
+            Name = "Sarah",
+            Surname = "Johnson",
+            MobileNumber = "+27829876543",
+            UserId = new Guid("6ec0df63-8960-46ec-9163-2de98e04d5e9"),
+            Specialty = Domain.Lawyers.Speciality.FamilyLaw,
+            CreatedBy = Guid.NewGuid(),
+            Created = DateTime.UtcNow
+        });
+
+        db.Lawyers.Add(new Domain.Lawyers.Lawyer
+        {
+            Id = new Guid("3c4d5e6f-7a8b-9c0d-1e2f-3a4b5c6d7e8f"),
+            Email = "michael.brown@lawfirm.com",
+            Name = "Michael",
+            Surname = "Brown",
+            MobileNumber = "+27835551234",
+            UserId = new Guid("6ec0df63-8960-46ec-9163-2de98e04d5e9"),
+            Specialty = Domain.Lawyers.Speciality.CorporateLaw,
+            CreatedBy = Guid.NewGuid(),
+            Created = DateTime.UtcNow
+        });
+
+        db.Lawyers.Add(new Domain.Lawyers.Lawyer
+        {
+            Id = new Guid("4d5e6f7a-8b9c-0d1e-2f3a-4b5c6d7e8f9a"),
+            Email = "emily.davis@lawfirm.com",
+            Name = "Emily",
+            Surname = "Davis",
+            MobileNumber = "+27847778888",
+            UserId = new Guid("6ec0df63-8960-46ec-9163-2de98e04d5e9"),
+            Specialty = Domain.Lawyers.Speciality.IntellectualPropertyLaw,
+            CreatedBy = Guid.NewGuid(),
+            Created = DateTime.UtcNow
+        });
+
+        await db.SaveChangesAsync();
     }
 
     public async Task ResetDatabase(ApplicationDBContext db)

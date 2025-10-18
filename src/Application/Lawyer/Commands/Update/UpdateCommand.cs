@@ -1,3 +1,4 @@
+using Domain.Lawyers;
 using ErrorOr;
 using MediatR;
 
@@ -10,5 +11,5 @@ public class UpdateCommand : IRequest<ErrorOr<bool>>
     public string Name { get; set; } = default!;
     public string Surname { get; set; } = default!;
     public string MobileNumber { get; set; } = default!;
-    public int Specialty { get; set; }
+    public Speciality Specialty { get; set; }
 }

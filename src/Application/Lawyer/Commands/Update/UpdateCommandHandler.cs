@@ -18,7 +18,7 @@ public class UpdateCommandHandler : IRequestHandler<UpdateCommand, ErrorOr<bool>
             request.Id,
             request.Name,
             request.Surname,
-            (Speciality)request.Specialty,
+            request.Specialty,
             request.MobileNumber,
             request.Email,
             cancellationToken);

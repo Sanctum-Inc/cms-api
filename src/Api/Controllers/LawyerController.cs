@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using Application.Common.Models;
-using Application.CourtCase.Commands.Delete;
 using Application.Lawyer.Commands.Add;
+using Application.Lawyer.Commands.Delete;
 using Application.Lawyer.Commands.Update;
 using Application.Lawyer.Queries.Get;
 using Application.Lawyer.Queries.GetById;

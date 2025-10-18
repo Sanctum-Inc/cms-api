@@ -4,5 +4,5 @@ public record AddLawyerRequest(
     string Name,
     string Surname,
     string MobileNumber,
-    string Specialty
+    int Specialty
 );
