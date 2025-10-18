@@ -1,7 +1,7 @@
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=Sanctum-Inc_cms-api&metric=coverage)](https://sonarcloud.io/dashboard?id=Sanctum-Inc_cms-api)
 
-[![CI](https://github.com/Sanctum-Inc/cms-api/actions/workflows/master_cms.yml/badge.svg)](https://github.com/Sanctum-Inc/cms-api/actions/workflows/master_cms.js.yml)
-[![CI](https://github.com/Sanctum-Inc/cms-api/actions/workflows/codeql.yml/badge.svg)](https://github.com/Sanctum-Inc/cms-api/actions/workflows/codeql.js.yml)
+[![CI](https://github.com/Sanctum-Inc/cms-api/actions/workflows/master_cms.yml/badge.svg)](https://github.com/Sanctum-Inc/cms-api/actions/workflows/master_cms.yml)
+[![CI](https://github.com/Sanctum-Inc/cms-api/actions/workflows/codeql.yml/badge.svg)](https://github.com/Sanctum-Inc/cms-api/actions/workflows/codeql.yml)
 
 ![Repo Size](https://img.shields.io/github/repo-size/Sanctum-Inc/cms-api)
 
