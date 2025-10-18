@@ -98,7 +98,7 @@ public class LawyerController : ApiControllerBase
 
         var result = await _sender.Send(command);
 
-        return MatchAndMapNoContentResult<bool, bool>(result, _mapper);
+        return MatchAndMapNoContentResult<bool, bool>(result, _mapper);                                        
     }
 
     /// <summary>

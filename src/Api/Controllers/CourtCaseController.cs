@@ -1,8 +1,11 @@
 using System.ComponentModel.DataAnnotations;
+using Application.Common.Models;
 using Application.CourtCase.Commands.Add;
 using Application.CourtCase.Commands.Delete;
 using Application.CourtCase.Commands.Update;
 using Application.CourtCase.Queries.Get;
+using Application.CourtCase.Queries.GetById;
+using Contracts.Common;
 using Contracts.CourtCases.Requests;
 using Contracts.CourtCases.Responses;
 using MapsterMapper;
@@ -52,9 +55,13 @@ public class CourtCaseController : ApiControllerBase
     [HttpGet("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public IActionResult GetById([FromRoute][Required] string id)
+    public async Task<IActionResult> GetById([FromRoute][Required] string id)
     {
-        return Ok($"CourtCaseController received ID: {id}");
+        var command = new GetByIdCommand(new Guid(id));
+
+        var result = await _sender.Send(command);
+
+        return MatchAndMapOkResult<CourtCaseResult, CourtCasesResponse>(result, _mapper);
     }
 
     /// <summary>
