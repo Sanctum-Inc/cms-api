@@ -1,4 +1,4 @@
-﻿namespace Contracts.CourtCases.Requests;
+namespace Contracts.CourtCases.Requests;
 public record AddCourtCaseRequest(
         string CaseNumber,
         string Location,

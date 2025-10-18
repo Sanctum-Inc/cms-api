@@ -1,16 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Mail;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Linq;
 using Application.Common.Interfaces.Repositories;
 using Application.Common.Interfaces.Services;
 using Application.Common.Interfaces.Session;
 using Application.Common.Models;
 using Application.Lawyer.Commands.Add;
-using Application.Lawyer.Queries.GetById;
 using Domain.Lawyers;
 using ErrorOr;
 using MapsterMapper;

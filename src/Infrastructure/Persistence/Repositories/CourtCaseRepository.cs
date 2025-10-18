@@ -1,8 +1,7 @@
-﻿using Application.Common.Interfaces.Persistence;
+using Application.Common.Interfaces.Persistence;
 using Application.Common.Interfaces.Repositories;
 using Application.Common.Interfaces.Session;
 using Domain.CourtCases;
-using Infrastructure.Persistence.Repositories;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Persistence.Repositories;

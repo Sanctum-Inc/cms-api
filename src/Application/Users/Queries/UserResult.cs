@@ -1,6 +1,4 @@
-﻿using Domain.Documents;
 using Domain.InvoiceItems;
-using Domain.Lawyers;
 
 namespace Application.Users.Queries;
 public class UserResult

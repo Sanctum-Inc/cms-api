@@ -1,4 +1,4 @@
-﻿using Application.Common.Interfaces.Repositories;
+using Application.Common.Interfaces.Repositories;
 using Application.Common.Interfaces.Services;
 using Application.Common.Interfaces.Session;
 using Application.Document.Queries.Download;
@@ -6,9 +6,7 @@ using Application.Document.Queries.Get;
 using Application.Document.Queries.GetById;
 using ErrorOr;
 using Infrastructure.Config;
-using Infrastructure.Persistence.Repositories;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.Options;
 
 namespace Infrastructure.Services;
@@ -54,7 +52,7 @@ public class DocumentService : IDocumentService
         if (courtCase == null)
             return Error.NotFound(description: "Court case not found for the user.");
 
-        if (file == null || file.Length == 0) 
+        if (file == null || file.Length == 0)
             return false;
 
         var fileExtension = Path.GetExtension(file.FileName);
@@ -73,8 +71,6 @@ public class DocumentService : IDocumentService
                 FileName = safeFileName,
                 ContentType = file.ContentType,
                 Size = file.Length,
-                CreatedBy = _sessionResolver.UserId,
-                Created = DateTime.UtcNow,
                 UserId = user!.Id,
                 User = user,
                 CaseId = courtCase.Id,
@@ -138,7 +134,9 @@ public class DocumentService : IDocumentService
             doc.FileName,
             doc.Size,
             doc.Created,
-            doc.CaseId
+            doc.CaseId,
+            doc.ContentType,
+            doc.CreatedBy!.Value
         ));
 
         return results.ToErrorOr()!;

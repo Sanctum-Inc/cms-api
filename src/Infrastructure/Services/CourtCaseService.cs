@@ -1,4 +1,3 @@
-﻿using Application.Common.Interfaces.Persistence;
 using Application.Common.Interfaces.Repositories;
 using Application.Common.Interfaces.Services;
 using Application.Common.Interfaces.Session;
@@ -8,9 +7,7 @@ using Application.CourtCase.Commands.Update;
 using Application.CourtCase.Queries.Get;
 using Domain.CourtCases;
 using ErrorOr;
-using Infrastructure.Common;
 using MapsterMapper;
-using MediatR;
 
 namespace Infrastructure.Services;
 
@@ -52,7 +49,6 @@ public class CourtCaseService : ICourtCaseService
             Type = request.Type,
             Outcome = request.Outcome,
             UserId = Guid.Parse(userId),
-            User = user!
         };
 
         await _courtCaseRepository.AddAsync(courtCase, cancellationToken);
@@ -97,7 +93,7 @@ public class CourtCaseService : ICourtCaseService
             .GetByIdAndUserIdAsync(new Guid(request.Id), cancellationToken);
 
         if (courtCase == null)
-            return Error.NotFound(description: "Court case not found.");
+            return Error.Unexpected(description: "Court case not found.");
 
         courtCase.Defendant = request.Defendant;
         courtCase.Plaintiff = request.Plaintiff;

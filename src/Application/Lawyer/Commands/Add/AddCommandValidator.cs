@@ -1,6 +1,5 @@
-﻿using FluentValidation;
-using Domain.Lawyers;
 using Application.Lawyer.Commands.Add;
+using FluentValidation;
 
 namespace Application.Lawyers.Commands;
 

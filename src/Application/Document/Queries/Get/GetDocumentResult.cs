@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Net.Mime;
 
 namespace Application.Document.Queries.Get;
 public record GetDocumentResult(
@@ -11,5 +7,7 @@ public record GetDocumentResult(
     string FileName,
     long Size,
     DateTime CreatedAt,
-    Guid CaseId
+    Guid CaseId,
+    string ContentType,
+    Guid CreatedBy
 );

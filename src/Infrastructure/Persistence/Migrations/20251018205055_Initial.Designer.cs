@@ -12,15 +12,15 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDBContext))]
-    [Migration("20251017184626_AddLawyerAttributes")]
-    partial class AddLawyerAttributes
+    [Migration("20251018205055_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.9")
+                .HasAnnotation("ProductVersion", "9.0.10")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -67,8 +67,8 @@ namespace Infrastructure.Persistence.Migrations
                     b.Property<DateTime>("Created")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("text");
+                    b.Property<Guid?>("CreatedBy")
+                        .HasColumnType("uuid");
 
                     b.Property<string>("Date")
                         .IsRequired()
@@ -80,8 +80,8 @@ namespace Infrastructure.Persistence.Migrations
                     b.Property<DateTime?>("LastModified")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("text");
+                    b.Property<Guid?>("LastModifiedBy")
+                        .HasColumnType("uuid");
 
                     b.Property<string>("Title")
                         .IsRequired()
@@ -107,8 +107,8 @@ namespace Infrastructure.Persistence.Migrations
                     b.Property<DateTime>("Created")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("text");
+                    b.Property<Guid?>("CreatedBy")
+                        .HasColumnType("uuid");
 
                     b.Property<string>("Defendant")
                         .IsRequired()
@@ -120,8 +120,8 @@ namespace Infrastructure.Persistence.Migrations
                     b.Property<DateTime?>("LastModified")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("text");
+                    b.Property<Guid?>("LastModifiedBy")
+                        .HasColumnType("uuid");
 
                     b.Property<string>("Location")
                         .IsRequired()
@@ -167,8 +167,8 @@ namespace Infrastructure.Persistence.Migrations
                     b.Property<DateTime>("Created")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("text");
+                    b.Property<Guid?>("CreatedBy")
+                        .HasColumnType("uuid");
 
                     b.Property<string>("FileName")
                         .IsRequired()
@@ -180,8 +180,8 @@ namespace Infrastructure.Persistence.Migrations
                     b.Property<DateTime?>("LastModified")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("text");
+                    b.Property<Guid?>("LastModifiedBy")
+                        .HasColumnType("uuid");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -217,8 +217,8 @@ namespace Infrastructure.Persistence.Migrations
                     b.Property<DateTime>("Created")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("text");
+                    b.Property<Guid?>("CreatedBy")
+                        .HasColumnType("uuid");
 
                     b.Property<int>("Hours")
                         .HasColumnType("integer");
@@ -232,8 +232,8 @@ namespace Infrastructure.Persistence.Migrations
                     b.Property<DateTime?>("LastModified")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("text");
+                    b.Property<Guid?>("LastModifiedBy")
+                        .HasColumnType("uuid");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -260,8 +260,8 @@ namespace Infrastructure.Persistence.Migrations
                     b.Property<DateTime>("Created")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("text");
+                    b.Property<Guid?>("CreatedBy")
+                        .HasColumnType("uuid");
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -273,8 +273,8 @@ namespace Infrastructure.Persistence.Migrations
                     b.Property<DateTime?>("LastModified")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("text");
+                    b.Property<Guid?>("LastModifiedBy")
+                        .HasColumnType("uuid");
 
                     b.Property<string>("MobileNumber")
                         .IsRequired()
@@ -310,8 +310,8 @@ namespace Infrastructure.Persistence.Migrations
                     b.Property<DateTime>("Created")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("text");
+                    b.Property<Guid?>("CreatedBy")
+                        .HasColumnType("uuid");
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -323,8 +323,8 @@ namespace Infrastructure.Persistence.Migrations
                     b.Property<DateTime?>("LastModified")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("text");
+                    b.Property<Guid?>("LastModifiedBy")
+                        .HasColumnType("uuid");
 
                     b.Property<string>("MobileNumber")
                         .IsRequired()

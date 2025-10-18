@@ -1,8 +1,9 @@
-﻿namespace Contracts.Documents.Responses;
+namespace Contracts.Documents.Responses;
 public record GetDocumentByIdResponse(
     Guid Id,
     string Name,
     string FileName,
     string ContentType,
     long Size,
-    DateTime CreatedAt);
+    DateTime CreatedAt,
+    Guid CaseId);

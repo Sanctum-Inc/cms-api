@@ -1,4 +1,4 @@
-﻿using Application.Common.Interfaces.Services;
+using Application.Common.Interfaces.Services;
 using Domain.Lawyers;
 using ErrorOr;
 using MediatR;
@@ -22,7 +22,7 @@ public class UpdateCommandHandler : IRequestHandler<UpdateCommand, ErrorOr<bool>
             request.MobileNumber,
             request.Email,
             cancellationToken);
-        
+
         return result;
     }
 }

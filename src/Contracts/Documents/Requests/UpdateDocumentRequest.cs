@@ -1,4 +1,3 @@
-﻿namespace Contracts.Documents.Requests;
+namespace Contracts.Documents.Requests;
 public record UpdateDocumentRequest(
-    string Id,
     string FileName);

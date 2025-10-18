@@ -1,4 +1,4 @@
-﻿using Application.Common.Interfaces.Repositories;
+using Application.Common.Interfaces.Repositories;
 using Application.Common.Interfaces.Services;
 using Application.Users.Commands.Login;
 using Application.Users.Commands.Register;
@@ -39,7 +39,7 @@ public class UserService : IUserService
     {
         // 1. Find user by email
         var user = await _userRepository.GetByEmail(username, cancellationToken);
-        if (user == null) 
+        if (user == null)
             return Error.Unauthorized("Authentication.Unauthorized", "Username or password is incorrect");
 
         // 2. Verify password

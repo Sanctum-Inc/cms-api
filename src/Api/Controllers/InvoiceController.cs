@@ -1,5 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers;
 
@@ -7,7 +7,7 @@ namespace Api.Controllers;
 /// Handles operations related to invoices.
 /// </summary>
 [ApiController]
-[Route("[controller]")]
+[Route("api/[controller]")]
 public class InvoiceController : ControllerBase
 {
     /// <summary>

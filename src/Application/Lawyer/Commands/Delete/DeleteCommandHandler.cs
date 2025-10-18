@@ -1,4 +1,4 @@
-﻿using Application.Common.Interfaces.Services;
+using Application.Common.Interfaces.Services;
 using ErrorOr;
 using MediatR;
 
@@ -15,7 +15,7 @@ public class DeleteCommandHandler : IRequestHandler<DeleteCommand, ErrorOr<bool>
     public async Task<ErrorOr<bool>> Handle(DeleteCommand request, CancellationToken cancellationToken)
     {
         var result = await _lawyerService.Delete(request.Id, cancellationToken);
-        
+
         return result;
     }
 }

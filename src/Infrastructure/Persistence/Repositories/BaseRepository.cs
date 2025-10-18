@@ -1,11 +1,9 @@
-﻿using Application.Common.Interfaces.Persistence;
+using System.Linq.Expressions;
+using Application.Common.Interfaces.Persistence;
 using Application.Common.Interfaces.Repositories;
 using Application.Common.Interfaces.Session;
 using Domain.Common;
-using Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Linq.Expressions;
 
 namespace Infrastructure.Persistence.Repositories;
 
@@ -37,10 +35,21 @@ public class BaseRepository<T> : IBaseRepository<T> where T : class
         if (entity is AuditableEntity auditable)
         {
             auditable.Created = DateTime.UtcNow;
-            auditable.CreatedBy = _sessionResolver.UserId; // 👈 Optional if you track users
             auditable.LastModified = DateTime.UtcNow;
-            auditable.LastModifiedBy = _sessionResolver.UserId;
             auditable.IsDeleted = false;
+
+            if (!string.IsNullOrEmpty(_sessionResolver.UserId))
+            {
+                var userId = new Guid(_sessionResolver.UserId);
+                auditable.CreatedBy = userId;
+                auditable.LastModifiedBy = userId;
+            }
+            else
+            {
+                // Optionally set system or anonymous ID
+                auditable.CreatedBy = Guid.Empty;
+                auditable.LastModifiedBy = Guid.Empty;
+            }
         }
 
         await _dbSet.AddAsync(entity, cancellationToken);
@@ -51,7 +60,7 @@ public class BaseRepository<T> : IBaseRepository<T> where T : class
         if (entity is AuditableEntity auditable)
         {
             auditable.LastModified = DateTime.UtcNow;
-            auditable.LastModifiedBy = _sessionResolver.UserId;
+            auditable.LastModifiedBy = new Guid(_sessionResolver.UserId!);
         }
 
         _dbSet.Update(entity);
@@ -64,7 +73,7 @@ public class BaseRepository<T> : IBaseRepository<T> where T : class
         {
             auditable.IsDeleted = true;
             auditable.LastModified = DateTime.UtcNow;
-            auditable.LastModifiedBy = _sessionResolver.UserId;
+            auditable.LastModifiedBy = new Guid(_sessionResolver.UserId!);
 
             // 👇 If you want *soft delete*, update instead of removing
             _dbSet.Update(entity);
@@ -89,7 +98,11 @@ public class BaseRepository<T> : IBaseRepository<T> where T : class
 
     public virtual async Task<T?> GetByIdAndUserIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        return await _dbSet.FindAsync([id, new Guid(_sessionResolver.UserId!)], cancellationToken);
+        return await _dbSet
+            .FirstOrDefaultAsync(x =>
+                    EF.Property<Guid>(x, "UserId") == new Guid(_sessionResolver.UserId!) &&
+                    EF.Property<Guid>(x, "Id") == id,
+                cancellationToken);
     }
 
     public async Task<IEnumerable<T>> GetAll(CancellationToken cancellationToken = default)

@@ -1,4 +1,4 @@
-﻿using Application.Users.Commands.Login;
+using Application.Users.Commands.Login;
 using Application.Users.Commands.Register;
 using Application.Users.Queries;
 using Contracts.User.Requests;
@@ -11,7 +11,7 @@ namespace Api.Controllers;
 
 
 [ApiController]
-[Route("[controller]")]
+[Route("api/[controller]")]
 public class UserController : ApiControllerBase
 {
     private readonly ISender _sender;
@@ -33,7 +33,7 @@ public class UserController : ApiControllerBase
 
         var result = await _sender.Send(command);
 
-        return MatchAndMapResult<AuthenticationResult, LoginResponse>(result, _mapper);
+        return MatchAndMapOkResult<AuthenticationResult, LoginResponse>(result, _mapper);
     }
 
     [HttpPost("register")]
@@ -46,7 +46,7 @@ public class UserController : ApiControllerBase
 
         var result = await _sender.Send(command);
 
-        return MatchAndMapResult<bool, bool>(result, _mapper);
+        return MatchAndMapNoContentResult<bool, bool>(result, _mapper);
     }
 
     [HttpGet("{id}")]
@@ -56,6 +56,6 @@ public class UserController : ApiControllerBase
 
         var result = await _sender.Send(query);
 
-        return MatchAndMapResult<UserResult, UserResponse>(result, _mapper);
+        return MatchAndMapOkResult<UserResult, UserResponse>(result, _mapper);
     }
 }

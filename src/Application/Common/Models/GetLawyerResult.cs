@@ -1,5 +1,3 @@
-﻿using Application.Lawyer.Queries.GetById;
-
 namespace Application.Common.Models;
 public class GetLawyerResult
 {

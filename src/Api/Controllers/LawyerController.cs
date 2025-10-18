@@ -1,17 +1,15 @@
-﻿using Application.Lawyer.Queries.Get;
+using System.ComponentModel.DataAnnotations;
+using Application.Common.Models;
+using Application.CourtCase.Commands.Delete;
 using Application.Lawyer.Commands.Add;
 using Application.Lawyer.Commands.Update;
+using Application.Lawyer.Queries.Get;
+using Application.Lawyer.Queries.GetById;
 using Contracts.Lawyer.Requests;
-using Domain.Lawyers;
+using Contracts.Lawyer.Responses;
 using MapsterMapper;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using System.ComponentModel.DataAnnotations;
-using System.Threading.Tasks;
-using Application.Common.Models;
-using Contracts.Lawyer.Responses;
-using Application.Lawyer.Queries.GetById;
-using Application.CourtCase.Commands.Delete;
 
 namespace Api.Controllers;
 
@@ -19,7 +17,7 @@ namespace Api.Controllers;
 /// Handles operations related to lawyers.
 /// </summary>
 [ApiController]
-[Route("[controller]")]
+[Route("api/[controller]")]
 public class LawyerController : ApiControllerBase
 {
     private readonly ISender _sender;
@@ -46,7 +44,7 @@ public class LawyerController : ApiControllerBase
 
         var result = await _sender.Send(command);
 
-        return MatchAndMapResult<List<GetLawyerResult>, List<GetLawyerResponse>>(result, _mapper);
+        return MatchAndMapOkResult<List<GetLawyerResult>, List<GetLawyerResponse>>(result, _mapper);
     }
 
     /// <summary>
@@ -64,7 +62,7 @@ public class LawyerController : ApiControllerBase
 
         var result = await _sender.Send(command);
 
-        return MatchAndMapResult<GetLawyerResult, GetLawyerResponse>(result, _mapper);
+        return MatchAndMapOkResult<GetLawyerResult, GetLawyerResponse>(result, _mapper);
     }
 
     /// <summary>
@@ -81,7 +79,7 @@ public class LawyerController : ApiControllerBase
 
         var result = await _sender.Send(command);
 
-        return MatchAndMapResult<bool, bool>(result, _mapper);
+        return MatchAndMapNoContentResult<bool, bool>(result, _mapper);
     }
 
     /// <summary>
@@ -100,7 +98,7 @@ public class LawyerController : ApiControllerBase
 
         var result = await _sender.Send(command);
 
-        return MatchAndMapResult<bool, bool>(result, _mapper);
+        return MatchAndMapNoContentResult<bool, bool>(result, _mapper);
     }
 
     /// <summary>
@@ -116,6 +114,6 @@ public class LawyerController : ApiControllerBase
 
         var result = await _sender.Send(command);
 
-        return MatchAndMapResult<bool, bool>(result, _mapper);
+        return MatchAndMapNoContentResult<bool, bool>(result, _mapper);
     }
 }

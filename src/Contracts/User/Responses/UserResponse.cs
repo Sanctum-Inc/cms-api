@@ -1,7 +1,6 @@
-﻿using Domain.CourtCases;
+using Domain.CourtCases;
 using Domain.Documents;
 using Domain.InvoiceItems;
-using Domain.Lawyers;
 
 namespace Contracts.User.Responses;
 public record UserResponse(

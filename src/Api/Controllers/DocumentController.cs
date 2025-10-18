@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using Application.Document.Commands.Add;
 using Application.Document.Commands.Delete;
 using Application.Document.Commands.Update;
@@ -7,7 +7,6 @@ using Application.Document.Queries.Get;
 using Application.Document.Queries.GetById;
 using Contracts.Documents.Requests;
 using Contracts.Documents.Responses;
-using Mapster;
 using MapsterMapper;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -56,7 +55,7 @@ public class DocumentController : ApiControllerBase
 
         var result = await _sender.Send(command);
 
-        return MatchAndMapResult<bool, bool>(result, _mapper);
+        return MatchAndMapCreatedResult<bool, bool>(result, _mapper);
     }
 
     /// <summary>
@@ -70,13 +69,14 @@ public class DocumentController : ApiControllerBase
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> UpdateName(
+        [FromRoute] string id,
         [FromBody][Required] UpdateDocumentRequest request)
     {
-        var command = _mapper.Map<UpdateCommand>(request);
+        var command = new UpdateCommand(new Guid(id), request.FileName);
 
         var result = await _sender.Send(command);
 
-        return MatchAndMapResult<bool, bool>(result, _mapper);
+        return MatchAndMapNoContentResult<bool, bool>(result, _mapper);
     }
 
     /// <summary>
@@ -91,7 +91,7 @@ public class DocumentController : ApiControllerBase
 
         var result = await _sender.Send(command);
 
-        return MatchAndMapResult<IEnumerable<GetDocumentResult>, IEnumerable<GetDocumentResponse>>(result, _mapper);
+        return MatchAndMapOkResult<IEnumerable<GetDocumentResult>, IEnumerable<GetDocumentResponse>>(result, _mapper);
     }
 
     /// <summary>
@@ -108,7 +108,7 @@ public class DocumentController : ApiControllerBase
 
         var result = await _sender.Send(command);
 
-        return MatchAndMapResult<GetDocumentByIdResult, GetDocumentByIdResponse>(result, _mapper);
+        return MatchAndMapOkResult<GetDocumentByIdResult, GetDocumentByIdResponse>(result, _mapper);
     }
 
     /// <summary>
@@ -150,6 +150,6 @@ public class DocumentController : ApiControllerBase
 
         var result = await _sender.Send(command);
 
-        return MatchAndMapResult<bool, bool>(result, _mapper);
+        return MatchAndMapNoContentResult<bool, bool>(result, _mapper);
     }
 }

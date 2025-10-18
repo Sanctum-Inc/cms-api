@@ -1,6 +1,4 @@
-﻿using System;
 using System.Security.Cryptography;
-using System.Text;
 
 namespace Infrastructure.Common;
 public static class PasswordHasher

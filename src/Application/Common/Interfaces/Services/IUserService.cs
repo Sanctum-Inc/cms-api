@@ -1,7 +1,6 @@
-﻿using Application.Users.Commands.Login;
+using Application.Users.Commands.Login;
 using Application.Users.Commands.Register;
 using Application.Users.Queries;
-using Domain.Users;
 using ErrorOr;
 
 namespace Application.Common.Interfaces.Services;

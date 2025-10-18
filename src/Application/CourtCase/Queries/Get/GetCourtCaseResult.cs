@@ -1,5 +1,4 @@
-﻿using Application.Common.Models;
-using ErrorOr;
+using Application.Common.Models;
 
 namespace Application.CourtCase.Queries.Get;
 public class GetCourtCaseResult

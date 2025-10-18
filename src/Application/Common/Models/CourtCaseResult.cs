@@ -1,7 +1,5 @@
-﻿using Domain.CourtCaseDates;
-using Domain.Documents;
+using Domain.CourtCaseDates;
 using Domain.InvoiceItems;
-using Domain.Lawyers;
 using Domain.Users;
 
 namespace Application.Common.Models;

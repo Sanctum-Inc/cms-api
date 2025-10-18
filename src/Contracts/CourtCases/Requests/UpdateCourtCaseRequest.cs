@@ -3,7 +3,6 @@ using MediatR;
 
 namespace Contracts.CourtCases.Requests;
 public record UpdateCourtCaseRequest(
-        string Id,
         string CaseNumber,
         string Location,
         string Plaintiff,

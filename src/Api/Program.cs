@@ -3,9 +3,9 @@
 // dotnet add package Scalar.AspNetCore
 
 using Api.Configuration;
+using Application;
 using FluentValidation;
 using Infrastructure;
-using Application;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,7 +13,7 @@ builder.Services
     .AddInfrastructure(builder.Configuration)
     .AddApplication(builder.Configuration);
 
-builder.Services.AddPersistence(builder.Configuration);
+builder.Services.AddPersistence(builder.Configuration, builder.Environment);
 builder.Services.AddMediatR(builder.Configuration);
 
 builder.Services.AddValidatorsFromAssemblyContaining<Program>();
@@ -28,11 +28,11 @@ builder.Services.AddMapsterMappings();
 
 builder.Services.AddHttpContextAccessor();
 
-builder.Services.AddJwtAuthentication(builder.Configuration);
+builder.Services.AddJwtAuthentication(builder.Configuration, builder.Environment);
 
 var app = builder.Build();
 
- app.ExecutePendingMigrations();
+app.ExecutePendingMigrations(builder.Environment);
 
 // Configure the HTTP request pipeline.
 
@@ -51,3 +51,5 @@ app.MapOpenApi();
 ScalarConfiguration.ConfigureServices(app);
 
 app.Run();
+
+public partial class Program { } // 👈 Required for WebApplicationFactory

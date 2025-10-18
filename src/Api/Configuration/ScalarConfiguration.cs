@@ -1,4 +1,4 @@
-﻿using Scalar.AspNetCore;
+using Scalar.AspNetCore;
 
 namespace Api.Configuration;
 
@@ -9,8 +9,7 @@ public static class ScalarConfiguration
         endpoints.MapScalarApiReference(options =>
         {
             options.WithTitle("Case Management System API")
-                   .WithDarkModeToggle()
-                   .WithSidebar();
+                .EnableDarkMode();
         });
     }
 }

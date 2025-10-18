@@ -1,9 +1,7 @@
-﻿using Application.Common.Models;
+using Application.Common.Models;
 using Application.Lawyer.Commands.Add;
-using Application.Lawyer.Queries.GetById;
 using Domain.Lawyers;
 using ErrorOr;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace Application.Common.Interfaces.Services;
 public interface ILawyerService

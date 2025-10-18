@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using Domain.Common;
 using Domain.CourtCaseDates;
 using Domain.Documents;
@@ -25,7 +25,7 @@ public class CourtCase : AuditableEntity
     public string? Outcome { get; set; }
     [Required]
     public Guid UserId { get; set; }
-    public required User User { get; set; }
+    public User? User { get; set; }
     public List<CourtCaseDate> CourtCaseDates { get; set; } = [];
     public List<Document> Documents { get; set; } = [];
     public List<InvoiceItem> InvoiceItems { get; set; } = [];

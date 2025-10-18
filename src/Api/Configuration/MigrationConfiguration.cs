@@ -1,19 +1,21 @@
-﻿using System;
-using Infrastructure.Persistence;
+﻿using Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 
 namespace Api.Configuration;
 
 public static class MigrationConfiguration
 {
-    public static WebApplication ExecutePendingMigrations(this WebApplication app)
+    public static WebApplication ExecutePendingMigrations(this WebApplication app, IWebHostEnvironment environment)
     {
-        using (var scope = app.Services.CreateScope())
+        if (!environment.IsEnvironment("Test"))
         {
-            var db = scope.ServiceProvider.GetRequiredService<ApplicationDBContext>();
-            db.Database.Migrate();
-        }
+            using (var scope = app.Services.CreateScope())
+            {
+                var db = scope.ServiceProvider.GetRequiredService<ApplicationDBContext>();
+                db.Database.Migrate();
+            }
 
+        }
         return app;
     }
 }
