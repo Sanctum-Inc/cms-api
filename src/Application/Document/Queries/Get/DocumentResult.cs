@@ -1,5 +1,7 @@
-namespace Contracts.Documents.Responses;
-public record GetDocumentResponse(
+using System.Net.Mime;
+
+namespace Application.Document.Queries.Get;
+public record DocumentResult(
     Guid Id,
     string Name,
     string FileName,
@@ -7,4 +9,5 @@ public record GetDocumentResponse(
     DateTime CreatedAt,
     Guid CaseId,
     string ContentType,
-    Guid CreatedBy);
+    Guid CreatedBy
+);

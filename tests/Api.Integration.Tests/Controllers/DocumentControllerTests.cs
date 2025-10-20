@@ -20,7 +20,7 @@ public class DocumentControllerTests : IntegrationTestBase
         var response = await _client.GetAsync("/api/document");
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        var documents = await response.Content.ReadFromJsonAsync<GetDocumentResponse[]>();
+        var documents = await response.Content.ReadFromJsonAsync<DocumentResponse[]>();
 
         // Assert
         documents.Should().NotBeNull();
@@ -37,7 +37,7 @@ public class DocumentControllerTests : IntegrationTestBase
         var response = await _client.GetAsync($"/api/document/{seededDocumentId}");
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        var document = await response.Content.ReadFromJsonAsync<GetDocumentResponse>();
+        var document = await response.Content.ReadFromJsonAsync<DocumentResponse>();
         document.Should().NotBeNull();
         document!.Id.Should().Be(Guid.Parse(seededDocumentId));
     }

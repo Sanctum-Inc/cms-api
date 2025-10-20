@@ -8,6 +8,7 @@ using Application.CourtCase.Queries.Get;
 using Domain.CourtCases;
 using ErrorOr;
 using MapsterMapper;
+using MediatR;
 
 namespace Infrastructure.Services;
 
@@ -30,8 +31,11 @@ public class CourtCaseService : ICourtCaseService
         _userRepository = userRepository;
     }
 
-    public async Task<ErrorOr<bool>> Add(AddCommand request, CancellationToken cancellationToken)
+    public async Task<ErrorOr<bool>> Add(IRequest<ErrorOr<bool>> request, CancellationToken cancellationToken)
     {
+        if (request is not AddCommand addCommand)
+            return Error.Failure(description: "Invalid request type.");
+
         var userId = _currentUserService.UserId;
         if (string.IsNullOrEmpty(userId))
             return Error.Unauthorized(description: "User is not authenticated.");
@@ -41,13 +45,13 @@ public class CourtCaseService : ICourtCaseService
         var courtCase = new Domain.CourtCases.CourtCase
         {
             Id = Guid.NewGuid(),
-            CaseNumber = request.CaseNumber,
-            Location = request.Location,
-            Plaintiff = request.Plaintiff,
-            Defendant = request.Defendant,
-            Status = request.Status,
-            Type = request.Type,
-            Outcome = request.Outcome,
+            CaseNumber = addCommand.CaseNumber,
+            Location = addCommand.Location,
+            Plaintiff = addCommand.Plaintiff,
+            Defendant = addCommand.Defendant,
+            Status = addCommand.Status,
+            Type = addCommand.Type,
+            Outcome = addCommand.Outcome,
             UserId = Guid.Parse(userId),
         };
 
@@ -71,15 +75,15 @@ public class CourtCaseService : ICourtCaseService
         return true;
     }
 
-    public async Task<GetCourtCaseResult> Get(CancellationToken cancellationToken)
+    public async Task<ErrorOr<IEnumerable<CourtCaseResult>>> Get(CancellationToken cancellationToken)
     {
         IEnumerable<CourtCase>? courtCases = await _courtCaseRepository
             .GetAll(cancellationToken);
 
-        return _mapper.Map<GetCourtCaseResult>(courtCases);
+        return _mapper.Map<IEnumerable<CourtCaseResult>>(courtCases).ToErrorOr();
     }
 
-    public async Task<CourtCaseResult> GetById(Guid id, CancellationToken cancellationToken)
+    public async Task<ErrorOr<CourtCaseResult?>> GetById(Guid id, CancellationToken cancellationToken)
     {
         var courtCase = await _courtCaseRepository
             .GetByIdAndUserIdAsync(id, cancellationToken);
@@ -87,25 +91,33 @@ public class CourtCaseService : ICourtCaseService
         return _mapper.Map<CourtCaseResult>(courtCase!);
     }
 
-    public async Task<ErrorOr<bool>> Update(UpdateCommand request, CancellationToken cancellationToken)
+    public async Task<ErrorOr<bool>> Update<TRequest>(IRequest request, CancellationToken cancellationToken) where TRequest : IRequest<ErrorOr<bool>>
     {
+        if (request is not UpdateCommand updateCommand)
+            return Error.Failure(description: "Invalid request type.");
+
         var courtCase = await _courtCaseRepository
-            .GetByIdAndUserIdAsync(new Guid(request.Id), cancellationToken);
+            .GetByIdAndUserIdAsync(new Guid(updateCommand.Id), cancellationToken);
 
         if (courtCase == null)
             return Error.Unexpected(description: "Court case not found.");
 
-        courtCase.Defendant = request.Defendant;
-        courtCase.Plaintiff = request.Plaintiff;
-        courtCase.CaseNumber = request.CaseNumber;
-        courtCase.Location = request.Location;
-        courtCase.Status = request.Status;
-        courtCase.Type = request.Type;
-        courtCase.Outcome = request.Outcome;
+        courtCase.Defendant = updateCommand.Defendant;
+        courtCase.Plaintiff = updateCommand.Plaintiff;
+        courtCase.CaseNumber = updateCommand.CaseNumber;
+        courtCase.Location = updateCommand.Location;
+        courtCase.Status = updateCommand.Status;
+        courtCase.Type = updateCommand.Type;
+        courtCase.Outcome = updateCommand.Outcome;
 
         await _courtCaseRepository.UpdateAsync(courtCase, cancellationToken);
         await _courtCaseRepository.SaveChangesAsync(cancellationToken);
 
         return true;
+    }
+
+    public Task<ErrorOr<bool>> Update(IRequest<ErrorOr<bool>> request, CancellationToken cancellationToken)
+    {
+        throw new NotImplementedException();
     }
 }

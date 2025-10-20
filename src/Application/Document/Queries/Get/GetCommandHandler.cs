@@ -1,9 +1,9 @@
-﻿using Application.Common.Interfaces.Services;
+using Application.Common.Interfaces.Services;
 using ErrorOr;
 using MediatR;
 
 namespace Application.Document.Queries.Get;
-public class GetCommandHandler : IRequestHandler<GetCommand, ErrorOr<IEnumerable<GetDocumentResult?>>>
+public class GetCommandHandler : IRequestHandler<GetCommand, ErrorOr<IEnumerable<DocumentResult>>>
 {
     private readonly IDocumentService _documentService;
     public GetCommandHandler(IDocumentService documentService)
@@ -11,7 +11,7 @@ public class GetCommandHandler : IRequestHandler<GetCommand, ErrorOr<IEnumerable
         _documentService = documentService;
     }
 
-    public async Task<ErrorOr<IEnumerable<GetDocumentResult?>>> Handle(GetCommand request, CancellationToken cancellationToken)
+    public async Task<ErrorOr<IEnumerable<DocumentResult>>> Handle(GetCommand request, CancellationToken cancellationToken)
     {
         var result = await _documentService.Get(cancellationToken);
 

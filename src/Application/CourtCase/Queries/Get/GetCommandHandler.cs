@@ -1,9 +1,10 @@
 using Application.Common.Interfaces.Services;
+using Application.Common.Models;
 using ErrorOr;
 using MediatR;
 
 namespace Application.CourtCase.Queries.Get;
-public class GetCommandHandler : IRequestHandler<GetCommand, ErrorOr<GetCourtCaseResult>>
+public class GetCommandHandler : IRequestHandler<GetCommand, ErrorOr<IEnumerable<CourtCaseResult>>>
 {
     private readonly ICourtCaseService _courtCaseService;
 
@@ -12,7 +13,7 @@ public class GetCommandHandler : IRequestHandler<GetCommand, ErrorOr<GetCourtCas
         _courtCaseService = courtCaseService;
     }
 
-    public async Task<ErrorOr<GetCourtCaseResult>> Handle(GetCommand request, CancellationToken cancellationToken)
+    public async Task<ErrorOr<IEnumerable<CourtCaseResult>>> Handle(GetCommand request, CancellationToken cancellationToken)
     {
         var result = await _courtCaseService.Get(cancellationToken);
 

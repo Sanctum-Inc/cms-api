@@ -1,4 +1,16 @@
 using System.ComponentModel.DataAnnotations;
+using Application.Common.Models;
+using Application.Invoice.Commands.Add;
+using Application.Invoice.Commands.Delete;
+using Application.Invoice.Commands.Update;
+using Application.Invoice.Queries.Get;
+using Application.Invoice.Queries.GetById;
+using Contracts.Common;
+using Contracts.Invoice.Requests;
+using Contracts.Invoice.Responses;
+using Domain.Invoices;
+using MapsterMapper;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers;
@@ -8,17 +20,31 @@ namespace Api.Controllers;
 /// </summary>
 [ApiController]
 [Route("api/[controller]")]
-public class InvoiceController : ControllerBase
+public class InvoiceController : ApiControllerBase
 {
+    private readonly IMapper _mapper;
+    private readonly ISender _sender;
+
+    public InvoiceController(IMapper mapper, ISender sender) : base(mapper, sender)
+    {
+        _mapper = mapper;
+        _sender = sender;
+    }
+
     /// <summary>
     /// Gets a status message for the InvoiceController.
     /// </summary>
     /// <returns>Status message.</returns>
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public IActionResult Get()
+    public async Task<IActionResult> GetAsync()
     {
-        return Ok("InvoiceController is working!");
+
+        var command = new GetCommand();
+
+        var result = await _sender.Send(command);
+
+        return MatchAndMapOkResult<IEnumerable<InvoiceResult>, IEnumerable<InvoiceResponse>>(result, _mapper);
     }
 
     /// <summary>
@@ -29,9 +55,14 @@ public class InvoiceController : ControllerBase
     [HttpGet("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public IActionResult GetById([FromRoute][Required] int id)
+    public async Task<IActionResult> GetByIdAsync([FromRoute][Required] string id)
     {
-        return Ok($"InvoiceController received ID: {id}");
+
+        var command = new GetByIdCommand(new Guid(id));
+
+        var result = await _sender.Send(command);
+
+        return MatchAndMapOkResult<InvoiceResult, InvoiceResponse>(result, _mapper);
     }
 
     /// <summary>
@@ -42,9 +73,13 @@ public class InvoiceController : ControllerBase
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public IActionResult Create([FromBody][Required] object invoice)
+    public async Task<IActionResult> CreateAsync([FromBody][Required] AddInvoiceRequest invoice)
     {
-        return CreatedAtAction(nameof(GetById), new { id = 1 }, invoice); // Assuming ID is 1 for demonstration
+        var command = _mapper.Map<AddCommand>(invoice);
+
+        var result = await _sender.Send(command);
+
+        return MatchAndMapCreatedResult<bool>(result, _mapper);
     }
 
     /// <summary>
@@ -56,9 +91,14 @@ public class InvoiceController : ControllerBase
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public IActionResult Update([FromRoute][Required] int id, [FromBody][Required] object invoice)
+    public async Task<IActionResult> UpdateAsync([FromRoute][Required] string id, [FromBody][Required] object invoice)
     {
-        return NoContent(); // Assuming update is successful
+        var command = _mapper.Map<UpdateCommand>(invoice);
+        command = command with { Id = new Guid(id) };
+
+        var result = await _sender.Send(command);
+
+        return MatchAndMapNoContentResult<bool>(result, _mapper);
     }
 
     /// <summary>
@@ -68,8 +108,12 @@ public class InvoiceController : ControllerBase
     [HttpDelete("{id}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public IActionResult Delete([FromRoute][Required] int id)
+    public async Task<IActionResult> DeleteAsync([FromRoute][Required] string id)
     {
-        return NoContent(); // Assuming delete is successful
+        var command = new DeleteCommand(new Guid(id));
+
+        var result = await _sender.Send(command);
+
+        return MatchAndMapNoContentResult<bool>(result, _mapper);
     }
 }

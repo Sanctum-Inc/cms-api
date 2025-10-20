@@ -13,7 +13,7 @@ public class AddCommandHandler : IRequestHandler<AddCommand, ErrorOr<bool>>
 
     public async Task<ErrorOr<bool>> Handle(AddCommand request, CancellationToken cancellationToken)
     {
-        var result = await _documentService.Add(request.File, request.Name, request.CaseId, cancellationToken);
+        var result = await _documentService.Add(request, cancellationToken);
 
         return result;
     }

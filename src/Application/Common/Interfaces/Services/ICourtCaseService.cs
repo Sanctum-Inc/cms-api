@@ -1,15 +1,15 @@
-﻿using Application.Common.Models;
+using Application.Common.Models;
 using Application.CourtCase.Commands.Add;
 using Application.CourtCase.Commands.Update;
 using Application.CourtCase.Queries.Get;
 using ErrorOr;
+using MediatR;
 
 namespace Application.Common.Interfaces.Services;
-public interface ICourtCaseService
+
+/// <summary>
+/// Provides a set of operations for managing and retrieving court case data.
+/// </summary>
+public interface ICourtCaseService : IBaseService<CourtCaseResult>
 {
-    Task<ErrorOr<bool>> Delete(Guid id, CancellationToken cancellationToken);
-    Task<GetCourtCaseResult> Get(CancellationToken cancellationToken);
-    Task<CourtCaseResult> GetById(Guid id, CancellationToken cancellationToken);
-    Task<ErrorOr<bool>> Update(UpdateCommand request, CancellationToken cancellationToken);
-    Task<ErrorOr<bool>> Add(AddCommand request, CancellationToken cancellationToken);
 }

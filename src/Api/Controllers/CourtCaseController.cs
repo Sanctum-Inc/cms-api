@@ -26,7 +26,7 @@ public class CourtCaseController : ApiControllerBase
     private readonly ISender _sender;
     private readonly IMapper _mapper;
 
-    public CourtCaseController(ISender sender, IMapper mapper)
+    public CourtCaseController(ISender sender, IMapper mapper) : base(mapper, sender)
     {
         _sender = sender;
         _mapper = mapper;
@@ -44,7 +44,7 @@ public class CourtCaseController : ApiControllerBase
 
         var result = await _sender.Send(command);
 
-        return MatchAndMapOkResult<GetCourtCaseResult, GetCourtCasesResponse>(result, _mapper);
+        return MatchAndMapOkResult<IEnumerable<CourtCaseResult>, IEnumerable<CourtCasesResponse>>(result, _mapper);
     }
 
     /// <summary>
@@ -78,7 +78,7 @@ public class CourtCaseController : ApiControllerBase
 
         var result = await _sender.Send(command);
 
-        return MatchAndMapCreatedResult<bool, bool>(result, _mapper);
+        return MatchAndMapCreatedResult<bool>(result, _mapper);
     }
 
     /// <summary>
@@ -100,7 +100,7 @@ public class CourtCaseController : ApiControllerBase
 
         var result = await _sender.Send(command);
 
-        return MatchAndMapNoContentResult<bool, bool>(result, _mapper);
+        return MatchAndMapNoContentResult<bool>(result, _mapper);
     }
 
     /// <summary>
@@ -116,6 +116,6 @@ public class CourtCaseController : ApiControllerBase
 
         var result = await _sender.Send(command);
 
-        return MatchAndMapNoContentResult<bool, bool>(result, _mapper);
+        return MatchAndMapNoContentResult<bool>(result, _mapper);
     }
 }

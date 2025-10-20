@@ -1,4 +1,5 @@
-﻿using ErrorOr;
+using Application.Common.Models;
+using ErrorOr;
 using MediatR;
 
 namespace Application.Document.Queries.Download;

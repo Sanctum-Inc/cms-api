@@ -10,6 +10,7 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using FluentAssertions;
+using Application.Common.Models;
 
 namespace Api.Integration.Tests.Controllers;
 
@@ -32,11 +33,23 @@ public class CourtCaseControllerTests
     public async Task Get_ReturnsOkResult_WithCourtCases()
     {
         // Arrange
-        var expectedResult = ErrorOrFactory.From(new GetCourtCaseResult());
+        IEnumerable<CourtCaseResult> expectedResult = [
+            new CourtCaseResult()
+            {
+                Id = Guid.NewGuid(),
+                CaseNumber = "CASE-2024-001",
+                Location = "Johannesburg High Court",
+                Plaintiff = "John Doe",
+                Defendant = "Jane Smith",
+                Status = "Pending",
+                Type = "Civil",
+                Outcome = null,
+            }
+        ];
 
         _mockSender
             .Setup(s => s.Send(It.IsAny<GetCommand>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(expectedResult);
+            .ReturnsAsync(expectedResult.ToErrorOr());
 
         // Act
         var result = await _controller.Get();

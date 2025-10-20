@@ -15,12 +15,7 @@ public class UpdateCommandHandler : IRequestHandler<UpdateCommand, ErrorOr<bool>
     public async Task<ErrorOr<bool>> Handle(UpdateCommand request, CancellationToken cancellationToken)
     {
         var result = await _lawyerService.Update(
-            request.Id,
-            request.Name,
-            request.Surname,
-            request.Specialty,
-            request.MobileNumber,
-            request.Email,
+            request,
             cancellationToken);
 
         return result;

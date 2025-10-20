@@ -1,5 +1,5 @@
-﻿using ErrorOr;
+using ErrorOr;
 using MediatR;
 
 namespace Application.Document.Queries.Get;
-public record GetCommand() : IRequest<ErrorOr<IEnumerable<GetDocumentResult?>>>;
+public record GetCommand() : IRequest<ErrorOr<IEnumerable<DocumentResult>>>;

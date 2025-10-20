@@ -17,7 +17,7 @@ public class UserController : ApiControllerBase
     private readonly ISender _sender;
     private readonly IMapper _mapper;
 
-    public UserController(ISender sender, IMapper mapper)
+    public UserController(ISender sender, IMapper mapper) : base(mapper, sender)
     {
         _sender = sender;
         _mapper = mapper;
@@ -46,7 +46,7 @@ public class UserController : ApiControllerBase
 
         var result = await _sender.Send(command);
 
-        return MatchAndMapNoContentResult<bool, bool>(result, _mapper);
+        return MatchAndMapNoContentResult<bool>(result, _mapper);
     }
 
     [HttpGet("{id}")]

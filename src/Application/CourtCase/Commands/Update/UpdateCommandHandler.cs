@@ -1,4 +1,4 @@
-﻿using Application.Common.Interfaces.Services;
+using Application.Common.Interfaces.Services;
 using ErrorOr;
 using MediatR;
 
@@ -12,9 +12,9 @@ public class UpdateCommandHandler : IRequestHandler<UpdateCommand, ErrorOr<bool>
         _courtCaseService = courtCaseService;
     }
 
-    public Task<ErrorOr<bool>> Handle(UpdateCommand request, CancellationToken cancellationToken)
+    public async Task<ErrorOr<bool>> Handle(UpdateCommand request, CancellationToken cancellationToken)
     {
-        var result = _courtCaseService.Update(request, cancellationToken);
+        var result = await _courtCaseService.Update(request, cancellationToken);
 
         return result;
     }

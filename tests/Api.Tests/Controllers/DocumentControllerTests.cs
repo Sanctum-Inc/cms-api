@@ -1,5 +1,6 @@
 using System.Net;
 using Api.Controllers;
+using Application.Common.Models;
 using Application.Document.Commands.Add;
 using Application.Document.Commands.Delete;
 using Application.Document.Commands.Update;
@@ -82,9 +83,9 @@ public class DocumentControllerTests
     public async Task GetStructure_ShouldReturnOk_WithDocuments()
     {
         // Arrange
-        var documents = new List<GetDocumentResult>
+        var documents = new List<DocumentResult>
         {
-            new GetDocumentResult(
+            new DocumentResult(
                 Guid.NewGuid(),
                 "Doc1",
                 "file.pdf",
@@ -95,7 +96,7 @@ public class DocumentControllerTests
                 Guid.NewGuid())
         };
 
-        IEnumerable<GetDocumentResponse> documentsResponse = [ new GetDocumentResponse(
+        IEnumerable<DocumentResponse> documentsResponse = [ new DocumentResponse(
                 Guid.NewGuid(),
                 "Doc1",
                 "file.pdf",
@@ -111,7 +112,7 @@ public class DocumentControllerTests
             .ReturnsAsync(documents);
 
         _mapperMock
-            .Setup(m => m.Map<IEnumerable<GetDocumentResponse>>(It.IsAny<IEnumerable<GetDocumentResult>>()))
+            .Setup(m => m.Map<IEnumerable<DocumentResponse>>(It.IsAny<IEnumerable<DocumentResult>>()))
             .Returns(documentsResponse);
 
         // Act
@@ -121,7 +122,7 @@ public class DocumentControllerTests
         var okResult = result as OkObjectResult;
         okResult.Should().NotBeNull();
         okResult!.StatusCode.Should().Be((int)HttpStatusCode.OK);
-        (okResult.Value as IEnumerable<GetDocumentResponse>).Should().NotBeNull();
+        (okResult.Value as IEnumerable<DocumentResponse>).Should().NotBeNull();
     }
 
     [Fact]
@@ -129,7 +130,7 @@ public class DocumentControllerTests
     {
         // Arrange
         var id = Guid.NewGuid();
-        var documentResult = new GetDocumentByIdResult(id, "Doc1", "file.pdf", "application/pdf", 1000, DateTime.UtcNow, Guid.NewGuid());
+        var documentResult = new DocumentResult(id, "Doc1", "file.pdf", 1000, DateTime.UtcNow, Guid.NewGuid(), "application/pdf", Guid.NewGuid());
 
         _mediatorMock
             .Setup(m => m.Send(It.IsAny<GetByIdCommand>(), It.IsAny<CancellationToken>()))

@@ -22,7 +22,7 @@ public abstract class IntegrationTestBase : IAsyncLifetime
         // Reset DB before each test
         using var scope = _factory.Services.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<ApplicationDBContext>();
-        _factory.ResetDatabase(db);
+        await _factory.ResetDatabase(db);
 
         await Task.CompletedTask;
     }

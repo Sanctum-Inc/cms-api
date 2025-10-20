@@ -1,4 +1,4 @@
-﻿using Application.Common.Interfaces.Services;
+using Application.Common.Interfaces.Services;
 using ErrorOr;
 using MediatR;
 
@@ -14,7 +14,7 @@ public class AddCommandHandler : IRequestHandler<AddCommand, ErrorOr<bool>>
 
     public async Task<ErrorOr<bool>> Handle(AddCommand request, CancellationToken cancellationToken)
     {
-        var result = await _courtCaseService.Add(request, cancellationToken);
+        ErrorOr<bool> result = await _courtCaseService.Add(request, cancellationToken);
 
         return result;
     }

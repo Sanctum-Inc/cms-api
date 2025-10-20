@@ -48,7 +48,7 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
 
     }
 
-    private async Task SeedTestData(ApplicationDBContext db)
+    private static async Task SeedTestData(ApplicationDBContext db)
     {
         // clear users to avoid duplicate key error
         db.Users.RemoveRange(db.Users);

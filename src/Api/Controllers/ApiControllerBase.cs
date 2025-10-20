@@ -1,5 +1,6 @@
 using ErrorOr;
 using MapsterMapper;
+using MediatR;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,6 +9,15 @@ namespace Api.Controllers;
 [ApiController]
 public abstract class ApiControllerBase : ControllerBase
 {
+    private readonly IMapper _mapper;
+    private readonly ISender _sender;
+
+    public ApiControllerBase(IMapper mapper, ISender sender)
+    {
+        _mapper = mapper;
+        _sender = sender;
+    }
+
     protected IActionResult MatchAndMapOkResult<TSource, TDestination>(
         ErrorOr<TSource> result,
         IMapper mapper
@@ -19,7 +29,7 @@ public abstract class ApiControllerBase : ControllerBase
         );
     }
 
-    protected IActionResult MatchAndMapNoContentResult<TSource, TDestination>(
+    protected IActionResult MatchAndMapNoContentResult<TSource>(
         ErrorOr<TSource> result,
         IMapper mapper
     )
@@ -29,7 +39,7 @@ public abstract class ApiControllerBase : ControllerBase
             errors => Problem(errors)
             );
     }
-    protected IActionResult MatchAndMapCreatedResult<TSource, TDestination>(
+    protected IActionResult MatchAndMapCreatedResult<TSource>(
         ErrorOr<TSource> result,
         IMapper mapper
     )

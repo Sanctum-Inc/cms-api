@@ -23,7 +23,7 @@ public class DocumentController : ApiControllerBase
     private readonly ISender _sender;
     private readonly IMapper _mapper;
 
-    public DocumentController(ISender sender, IMapper mapper)
+    public DocumentController(ISender sender, IMapper mapper) : base(mapper, sender)
     {
         _sender = sender;
         _mapper = mapper;
@@ -55,7 +55,7 @@ public class DocumentController : ApiControllerBase
 
         var result = await _sender.Send(command);
 
-        return MatchAndMapCreatedResult<bool, bool>(result, _mapper);
+        return MatchAndMapCreatedResult<bool>(result, _mapper);
     }
 
     /// <summary>
@@ -76,7 +76,7 @@ public class DocumentController : ApiControllerBase
 
         var result = await _sender.Send(command);
 
-        return MatchAndMapNoContentResult<bool, bool>(result, _mapper);
+        return MatchAndMapNoContentResult<bool>(result, _mapper);
     }
 
     /// <summary>
@@ -84,14 +84,14 @@ public class DocumentController : ApiControllerBase
     /// </summary>
     /// <returns>List of documents with metadata.</returns>
     [HttpGet()]
-    [ProducesResponseType(typeof(IEnumerable<GetDocumentResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(IEnumerable<DocumentResponse>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetStructure()
     {
         var command = new GetCommand();
 
         var result = await _sender.Send(command);
 
-        return MatchAndMapOkResult<IEnumerable<GetDocumentResult>, IEnumerable<GetDocumentResponse>>(result, _mapper);
+        return MatchAndMapOkResult<IEnumerable<DocumentResult>, IEnumerable<DocumentResponse>>(result, _mapper);
     }
 
     /// <summary>
@@ -108,7 +108,7 @@ public class DocumentController : ApiControllerBase
 
         var result = await _sender.Send(command);
 
-        return MatchAndMapOkResult<GetDocumentByIdResult, GetDocumentByIdResponse>(result, _mapper);
+        return MatchAndMapOkResult<DocumentResult, DocumentResponse>(result, _mapper);
     }
 
     /// <summary>
@@ -150,6 +150,6 @@ public class DocumentController : ApiControllerBase
 
         var result = await _sender.Send(command);
 
-        return MatchAndMapNoContentResult<bool, bool>(result, _mapper);
+        return MatchAndMapNoContentResult<bool>(result, _mapper);
     }
 }

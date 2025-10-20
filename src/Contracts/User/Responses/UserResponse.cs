@@ -12,5 +12,5 @@ public record UserResponse(
     DateTime DateCreated,
     List<CourtCase> CourtCases,
     List<Document> Documents,
-    List<InvoiceItem> InvoiceItems,
+    List<Domain.Invoices.Invoice> Invoices,
     List<Domain.Lawyers.Lawyer> Lawyers);

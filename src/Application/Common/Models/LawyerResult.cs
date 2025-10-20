@@ -1,5 +1,5 @@
 namespace Application.Common.Models;
-public class GetLawyerResult
+public class LawyerResult
 {
     public Guid Id { get; set; }
     public required string Email { get; set; }

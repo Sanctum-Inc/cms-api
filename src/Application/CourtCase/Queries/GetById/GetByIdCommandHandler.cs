@@ -1,10 +1,10 @@
-﻿using Application.Common.Interfaces.Services;
+using Application.Common.Interfaces.Services;
 using Application.Common.Models;
 using ErrorOr;
 using MediatR;
 
 namespace Application.CourtCase.Queries.GetById;
-public class GetByIdCommandHandler : IRequestHandler<GetByIdCommand, ErrorOr<CourtCaseResult>>
+public class GetByIdCommandHandler : IRequestHandler<GetByIdCommand, ErrorOr<CourtCaseResult?>>
 {
     private readonly ICourtCaseService _courtCaseService;
     public GetByIdCommandHandler(ICourtCaseService courtCaseService)
@@ -12,7 +12,7 @@ public class GetByIdCommandHandler : IRequestHandler<GetByIdCommand, ErrorOr<Cou
         _courtCaseService = courtCaseService;
     }
 
-    public async Task<ErrorOr<CourtCaseResult>> Handle(GetByIdCommand request, CancellationToken cancellationToken)
+    public async Task<ErrorOr<CourtCaseResult?>> Handle(GetByIdCommand request, CancellationToken cancellationToken)
     {
         var result = await _courtCaseService.GetById(request.Id, cancellationToken);
 

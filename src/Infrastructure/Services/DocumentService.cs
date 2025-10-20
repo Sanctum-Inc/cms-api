@@ -1,11 +1,16 @@
+using System.Xml.Linq;
 using Application.Common.Interfaces.Repositories;
 using Application.Common.Interfaces.Services;
 using Application.Common.Interfaces.Session;
-using Application.Document.Queries.Download;
+using Application.Common.Models;
+using Application.Document.Commands.Add;
+using Application.Document.Commands.Update;
 using Application.Document.Queries.Get;
 using Application.Document.Queries.GetById;
+using Domain.Documents;
 using ErrorOr;
 using Infrastructure.Config;
+using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 
@@ -40,37 +45,40 @@ public class DocumentService : IDocumentService
         _courtCaseRepository = courtCaseRepository;
     }
 
-    public async Task<ErrorOr<bool>> Add(IFormFile file, string name, string caseId, CancellationToken cancellationToken = default)
+    public async Task<ErrorOr<bool>> Add(IRequest<ErrorOr<bool>> request, CancellationToken cancellationToken)
     {
+        if (request is not AddCommand addCommand)
+            return Error.Failure(description: "Invalid request type.");
+
         var userId = _sessionResolver.UserId;
         if (string.IsNullOrEmpty(userId))
             return Error.Unauthorized(description: "User is not authenticated.");
 
         var user = await _userRepository.GetByIdAsync(Guid.Parse(userId), cancellationToken);
 
-        var courtCase = await _courtCaseRepository.GetByCaseIdAsync(Guid.Parse(caseId), Guid.Parse(userId), cancellationToken);
+        var courtCase = await _courtCaseRepository.GetByCaseIdAsync(Guid.Parse(addCommand.CaseId), Guid.Parse(userId), cancellationToken);
         if (courtCase == null)
             return Error.NotFound(description: "Court case not found for the user.");
 
-        if (file == null || file.Length == 0)
+        if (addCommand.File == null || addCommand.File.Length == 0)
             return false;
 
-        var fileExtension = Path.GetExtension(file.FileName);
+        var fileExtension = Path.GetExtension(addCommand.File.FileName);
         var safeFileName = $"{Guid.NewGuid()}{fileExtension}";
         var targetPath = Path.Combine(_rootPath, safeFileName);
 
         try
         {
             await using var stream = new FileStream(targetPath, FileMode.Create);
-            await file.CopyToAsync(stream, cancellationToken);
+            await addCommand.File.CopyToAsync(stream, cancellationToken);
 
             await _documentRepository.AddAsync(new Domain.Documents.Document()
             {
                 Id = Guid.NewGuid(),
-                Name = name,
+                Name = addCommand.Name,
                 FileName = safeFileName,
-                ContentType = file.ContentType,
-                Size = file.Length,
+                ContentType = addCommand.File.ContentType,
+                Size = addCommand.File.Length,
                 UserId = user!.Id,
                 User = user,
                 CaseId = courtCase.Id,
@@ -88,7 +96,7 @@ public class DocumentService : IDocumentService
         }
     }
 
-    public async Task<ErrorOr<bool>> Delete(Guid id, CancellationToken cancellationToken = default)
+    public async Task<ErrorOr<bool>> Delete(Guid id, CancellationToken cancellationToken)
     {
         var document = await _documentRepository.GetByIdAndUserIdAsync(id, cancellationToken);
 
@@ -101,7 +109,7 @@ public class DocumentService : IDocumentService
         return true;
     }
 
-    public async Task<ErrorOr<DownloadDocumentResult?>> Download(Guid id, CancellationToken cancellationToken = default)
+    public async Task<ErrorOr<DownloadDocumentResult?>> Download(Guid id, CancellationToken cancellationToken)
     {
         // TODO: Get metadata from DB (e.g. stored file path, name, content type)
         var document = await _documentRepository.GetByIdAsync(id, cancellationToken);
@@ -121,14 +129,14 @@ public class DocumentService : IDocumentService
         return new DownloadDocumentResult(stream, contentType, fileName);
     }
 
-    public async Task<ErrorOr<IEnumerable<GetDocumentResult?>>> Get(CancellationToken cancellationToken = default)
+    public async Task<ErrorOr<IEnumerable<DocumentResult>>> Get(CancellationToken cancellationToken)
     {
         // Fetch documents from the database
         var documents = await _documentRepository
             .GetAll(cancellationToken);
 
         // Map to GetDocumentResult
-        var results = documents.Select(doc => new GetDocumentResult(
+        var results = documents.Select(doc => new DocumentResult(
             doc.Id,
             doc.Name,
             doc.FileName,
@@ -142,7 +150,7 @@ public class DocumentService : IDocumentService
         return results.ToErrorOr()!;
     }
 
-    public async Task<ErrorOr<GetDocumentByIdResult?>> GetById(Guid id, CancellationToken cancellationToken = default)
+    public async Task<ErrorOr<DocumentResult?>> GetById(Guid id, CancellationToken cancellationToken)
     {
         // 🗂️ 1. Get metadata from DB
         var document = await _documentRepository.GetByIdAndUserIdAsync(id, cancellationToken);
@@ -156,27 +164,31 @@ public class DocumentService : IDocumentService
         }
 
         // 🧾 2. Map to result
-        var result = new GetDocumentByIdResult(
+        var result = new DocumentResult(
             document.Id,
             document.Name,
             document.FileName,
-            document.ContentType,
             document.Size,
             document.Created,
-            document.CaseId
+            document.CaseId,
+            document.ContentType,
+            document.CreatedBy!.Value
         );
 
         return result;
     }
 
-    public async Task<ErrorOr<bool>> Update(Guid id, string newName, CancellationToken cancellationToken = default)
+    public async Task<ErrorOr<bool>> Update(IRequest<ErrorOr<bool>> request, CancellationToken cancellationToken)
     {
-        var document = await _documentRepository.GetByIdAsync(id, cancellationToken);
+        if (request is not UpdateCommand updateCommand)
+            return Error.Failure(description: "Invalid request type.");
+
+        var document = await _documentRepository.GetByIdAsync(updateCommand.Id, cancellationToken);
 
         if (document == null)
             return Error.NotFound("Document.NotFound", "The document with the specified Id was not found");
 
-        document.Name = newName;
+        document.Name = updateCommand.NewName;
 
         await _documentRepository.UpdateAsync(document, cancellationToken);
         await _documentRepository.SaveChangesAsync(cancellationToken);

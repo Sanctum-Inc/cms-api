@@ -13,7 +13,7 @@ public class UpdateCommandHandler : IRequestHandler<UpdateCommand, ErrorOr<bool>
 
     public async Task<ErrorOr<bool>> Handle(UpdateCommand request, CancellationToken cancellationToken)
     {
-        var result = await _documentService.Update(request.Id, request.NewName, cancellationToken);
+        var result = await _documentService.Update(request, cancellationToken);
 
         return result;
     }
