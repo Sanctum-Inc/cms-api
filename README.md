@@ -1,3 +1,16 @@
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=Sanctum-Inc_cms-api&metric=coverage)](https://sonarcloud.io/dashboard?id=Sanctum-Inc_cms-api)
+
+[![CI](https://github.com/Sanctum-Inc/cms-api/actions/workflows/master_cms.yml/badge.svg)](https://github.com/Sanctum-Inc/cms-api/actions/workflows/master_cms.yml)
+
+![Repo Size](https://img.shields.io/github/repo-size/Sanctum-Inc/cms-api)
+
+![Issues Open](https://img.shields.io/github/issues/Sanctum-Inc/cms-api)
+![Pull Requests](https://img.shields.io/github/issues-pr/Sanctum-Inc/cms-api)
+![Weekly Commits](https://img.shields.io/github/commit-activity/w/Sanctum-Inc/cms-api)
+
+![Contributors](https://img.shields.io/github/contributors/Sanctum-Inc/cms-api)
+
+
 # CMS API - Case Management System
 
 A comprehensive case management system API built with .NET, following Clean Architecture principles with CQRS pattern using MediatR.
