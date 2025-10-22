@@ -42,6 +42,7 @@ public static partial class DependecyInjection
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<ILawyerRepository, LawyerRepository>();
         services.AddScoped<IInvoiceRepository, InvoiceRepository>();
+        services.AddScoped<IFirmRepository, FirmRepository>();
         services.AddScoped<IInvoiceItemRepository, InvoiceItemRepository>();
     }
 

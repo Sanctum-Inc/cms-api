@@ -18,100 +18,25 @@ namespace Api.Controllers;
 /// </summary>
 [ApiController]
 [Route("api/[controller]")]
-public class InvoiceController : ApiControllerBase
+public class InvoiceController
+    : CrudControllerBase<
+        InvoiceResult,        // TResult
+        InvoiceResponse,      // TResponse
+        GetCommand,           // TGetCommand
+        GetByIdCommand,       // TGetByIdCommand
+        AddInvoiceRequest,    // TAddRequest
+        AddCommand,           // TAddCommand
+        UpdateCommand,        // TUpdateRequest
+        UpdateCommand,        // TUpdateCommand
+        DeleteCommand         // TDeleteCommand
+    >
 {
-    private readonly IMapper _mapper;
-    private readonly ISender _sender;
-
     public InvoiceController(IMapper mapper, ISender sender)
+        : base(mapper, sender)
     {
-        _mapper = mapper;
-        _sender = sender;
     }
 
-    /// <summary>
-    /// Gets a status message for the InvoiceController.
-    /// </summary>
-    /// <returns>Status message.</returns>
-    [HttpGet]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetAsync()
-    {
-
-        var command = new GetCommand();
-
-        var result = await _sender.Send(command);
-
-        return MatchAndMapOkResult<IEnumerable<InvoiceResult>, IEnumerable<InvoiceResponse>>(result, _mapper);
-    }
-
-    /// <summary>
-    /// Gets an invoice by its ID.
-    /// </summary>
-    /// <param name="id">The ID of the invoice.</param>
-    /// <returns>The invoice with the specified ID.</returns>
-    [HttpGet("{id}")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> GetByIdAsync([FromRoute][Required] string id)
-    {
-
-        var command = new GetByIdCommand(new Guid(id));
-
-        var result = await _sender.Send(command);
-
-        return MatchAndMapOkResult<InvoiceResult, InvoiceResponse>(result, _mapper);
-    }
-
-    /// <summary>
-    /// Creates a new invoice.
-    /// </summary>
-    /// <param name="invoice">The invoice object to create.</param>
-    /// <returns>The created invoice.</returns>
-    [HttpPost]
-    [ProducesResponseType(StatusCodes.Status201Created)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> CreateAsync([FromBody][Required] AddInvoiceRequest invoice)
-    {
-        var command = _mapper.Map<AddCommand>(invoice);
-
-        var result = await _sender.Send(command);
-
-        return MatchAndMapCreatedResult<bool>(result, _mapper);
-    }
-
-    /// <summary>
-    /// Updates an existing invoice.
-    /// </summary>
-    /// <param name="id">The ID of the invoice to update.</param>
-    /// <param name="invoice">The updated invoice object.</param>
-    [HttpPut("{id}")]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> UpdateAsync([FromRoute][Required] string id, [FromBody][Required] object invoice)
-    {
-        var command = _mapper.Map<UpdateCommand>(invoice);
-        command = command with { Id = new Guid(id) };
-
-        var result = await _sender.Send(command);
-
-        return MatchAndMapNoContentResult<bool>(result, _mapper);
-    }
-
-    /// <summary>
-    /// Deletes an invoice by its ID.
-    /// </summary>
-    /// <param name="id">The ID of the invoice to delete.</param>
-    [HttpDelete("{id}")]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> DeleteAsync([FromRoute][Required] string id)
-    {
-        var command = new DeleteCommand(new Guid(id));
-
-        var result = await _sender.Send(command);
-
-        return MatchAndMapNoContentResult<bool>(result, _mapper);
-    }
+    // Optionally override any method if you need custom behavior.
+    // For example, you could override Create or Update if special handling is required.
+    // Otherwise, base implementations handle the CRUD operations.
 }
