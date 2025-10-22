@@ -2,10 +2,10 @@ namespace Contracts.InvoiceItem.Responses;
 public record InvoiceItemResponse(
        Guid Id,
        DateTime Date,
-       string Description,
+       string Name,
        int Hours,
-       float CostPerHour,
+       decimal? CostPerHour,
        bool IsDayFee,
-       decimal DayFeeAmount,
+       decimal? DayFeeAmount,
        decimal Total
    );

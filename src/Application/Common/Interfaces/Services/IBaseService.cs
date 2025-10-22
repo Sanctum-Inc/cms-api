@@ -63,5 +63,5 @@ public interface IBaseService<T>
     /// An <see cref="ErrorOr{T}"/> result containing the entity if found,
     /// or an error if the entity does not exist or the operation failed.
     /// </returns>
-    Task<ErrorOr<T?>> GetById(Guid id, CancellationToken cancellationToken);
+    Task<ErrorOr<T>> GetById(Guid id, CancellationToken cancellationToken);
 }

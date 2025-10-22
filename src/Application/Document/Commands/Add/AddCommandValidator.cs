@@ -1,5 +1,7 @@
-﻿using Application.Document.Commands.Add;
+using Application.Document.Commands.Add;
 using FluentValidation;
+
+namespace Application.Document.Commands.Add;
 
 public class AddCommandValidator : AbstractValidator<AddCommand>
 {
@@ -15,6 +17,6 @@ public class AddCommandValidator : AbstractValidator<AddCommand>
 
         RuleFor(x => x.CaseId)
             .NotEmpty().WithMessage("A case Id must be provided.")
-            .MaximumLength(255).WithMessage("The case Id cannot exceed 255 characters.");
+            .NotNull().WithMessage("A case Id must be provided.");
     }
 }

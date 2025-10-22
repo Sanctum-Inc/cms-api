@@ -1,3 +1,4 @@
+using Application.CourtCase.Queries.Get;
 using ErrorOr;
 using MapsterMapper;
 using MediatR;
@@ -7,15 +8,10 @@ using Microsoft.AspNetCore.Mvc;
 namespace Api.Controllers;
 
 [ApiController]
-public abstract class ApiControllerBase : ControllerBase
+public abstract class ApiControllerBase: ControllerBase
 {
-    private readonly IMapper _mapper;
-    private readonly ISender _sender;
-
-    public ApiControllerBase(IMapper mapper, ISender sender)
+    protected ApiControllerBase()
     {
-        _mapper = mapper;
-        _sender = sender;
     }
 
     protected IActionResult MatchAndMapOkResult<TSource, TDestination>(

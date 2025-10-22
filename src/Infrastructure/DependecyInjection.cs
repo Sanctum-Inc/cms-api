@@ -1,4 +1,4 @@
-﻿using Application.Common.Interfaces.Persistence;
+using Application.Common.Interfaces.Persistence;
 using Application.Common.Interfaces.Repositories;
 using Application.Common.Interfaces.Services;
 using Application.Common.Interfaces.Session;
@@ -41,6 +41,8 @@ public static partial class DependecyInjection
         services.AddScoped<IDocumentRepository, DocumentRepository>();
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<ILawyerRepository, LawyerRepository>();
+        services.AddScoped<IInvoiceRepository, InvoiceRepository>();
+        services.AddScoped<IInvoiceItemRepository, InvoiceItemRepository>();
     }
 
     private static void AddServices(IServiceCollection services)
@@ -51,5 +53,7 @@ public static partial class DependecyInjection
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<IJwtService, JwtService>();
         services.AddScoped<ILawyerService, LawyerService>();
+        services.AddScoped<IInvoiceService, InvoiceService>();
+        services.AddScoped<IInvoiceItemService, InvoiceItemService>();
     }
 }

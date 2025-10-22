@@ -7,4 +7,5 @@ public record DocumentResponse(
     DateTime CreatedAt,
     Guid CaseId,
     string ContentType,
-    Guid CreatedBy);
+    Guid CreatedBy
+);

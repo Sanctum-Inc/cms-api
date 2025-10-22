@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 using Domain.Common;
 using Domain.CourtCaseDates;
 using Domain.Documents;
-using Domain.InvoiceItems;
+using Domain.Invoices;
 using Domain.Lawyers;
 using Domain.Users;
 
@@ -28,6 +28,6 @@ public class CourtCase : AuditableEntity
     public User? User { get; set; }
     public List<CourtCaseDate> CourtCaseDates { get; set; } = [];
     public List<Document> Documents { get; set; } = [];
-    public List<InvoiceItem> InvoiceItems { get; set; } = [];
+    public List<Invoice> Invoices { get; set; } = [];
     public List<Lawyer> Lawyers { get; set; } = [];
 }

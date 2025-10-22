@@ -1,8 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using Domain.Common;
 using Domain.CourtCases;
 using Domain.Documents;
 using Domain.InvoiceItems;
+using Domain.Invoices;
 using Domain.Lawyers;
 
 namespace Domain.Users;
@@ -34,6 +35,6 @@ public class User : AuditableEntity
     // Relations
     public List<CourtCase> CourtCases { get; set; } = [];
     public List<Document> Documents { get; set; } = [];
-    public List<InvoiceItem> InvoiceItems { get; set; } = [];
+    public List<Invoice> Invoices { get; set; } = [];
     public List<Lawyer> Lawyers { get; set; } = [];
 }

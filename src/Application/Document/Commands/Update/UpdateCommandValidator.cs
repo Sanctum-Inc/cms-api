@@ -1,4 +1,4 @@
-﻿using Application.Document.Commands.Update;
+using Application.Document.Commands.Update;
 using FluentValidation;
 
 public class UpdateCommandValidator : AbstractValidator<UpdateCommand>
@@ -9,7 +9,7 @@ public class UpdateCommandValidator : AbstractValidator<UpdateCommand>
             .NotEmpty()
             .WithMessage("Document ID must be provided.");
 
-        RuleFor(x => x.NewName)
+        RuleFor(x => x.FileName)
             .NotEmpty()
             .WithMessage("New name must not be empty.")
             .MaximumLength(250)

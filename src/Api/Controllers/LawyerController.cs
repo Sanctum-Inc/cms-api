@@ -25,7 +25,7 @@ public class LawyerController : ApiControllerBase
 
     public LawyerController(
         ISender sender,
-        IMapper mapper) : base(mapper, sender)
+        IMapper mapper)
     {
         _sender = sender;
         _mapper = mapper;

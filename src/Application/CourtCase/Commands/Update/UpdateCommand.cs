@@ -1,9 +1,9 @@
-﻿using ErrorOr;
+using ErrorOr;
 using MediatR;
 
 namespace Application.CourtCase.Commands.Update;
 public record UpdateCommand(
-        string Id,
+        Guid Id,
         string CaseNumber,
         string Location,
         string Plaintiff,

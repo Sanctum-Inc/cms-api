@@ -1,4 +1,4 @@
-﻿using Domain.CourtCases;
+using Domain.CourtCases;
 using Domain.Lawyers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -55,7 +55,7 @@ public class CourtCaseConfiguration : IEntityTypeConfiguration<CourtCase>
             .OnDelete(DeleteBehavior.Cascade);
 
         // One-to-Many: CourtCase -> InvoiceItems
-        builder.HasMany(c => c.InvoiceItems)
+        builder.HasMany(c => c.Invoices)
             .WithOne(i => i.Case)
             .HasForeignKey(i => i.CaseId)
             .OnDelete(DeleteBehavior.Cascade);

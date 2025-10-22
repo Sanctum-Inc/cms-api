@@ -5,10 +5,8 @@ using Application.Invoice.Commands.Delete;
 using Application.Invoice.Commands.Update;
 using Application.Invoice.Queries.Get;
 using Application.Invoice.Queries.GetById;
-using Contracts.Common;
 using Contracts.Invoice.Requests;
 using Contracts.Invoice.Responses;
-using Domain.Invoices;
 using MapsterMapper;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -25,7 +23,7 @@ public class InvoiceController : ApiControllerBase
     private readonly IMapper _mapper;
     private readonly ISender _sender;
 
-    public InvoiceController(IMapper mapper, ISender sender) : base(mapper, sender)
+    public InvoiceController(IMapper mapper, ISender sender)
     {
         _mapper = mapper;
         _sender = sender;

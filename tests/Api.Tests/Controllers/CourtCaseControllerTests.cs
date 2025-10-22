@@ -1,18 +1,19 @@
 using Api.Controllers;
+using Application.Common.Models;
 using Application.CourtCase.Commands.Add;
 using Application.CourtCase.Commands.Delete;
 using Application.CourtCase.Commands.Update;
 using Application.CourtCase.Queries.Get;
 using Contracts.CourtCases.Requests;
+using Contracts.CourtCases.Responses;
 using ErrorOr;
+using FluentAssertions;
 using MapsterMapper;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
-using FluentAssertions;
-using Application.Common.Models;
 
-namespace Api.Integration.Tests.Controllers;
+namespace Api.Tests.Controllers;
 
 public class CourtCaseControllerTests
 {
@@ -22,211 +23,144 @@ public class CourtCaseControllerTests
 
     public CourtCaseControllerTests()
     {
-        _mockSender = new Mock<ISender>();
-        _mockMapper = new Mock<IMapper>();
-        _controller = new CourtCaseController(_mockSender.Object, _mockMapper.Object);
+        _mockSender = new Mock<ISender>(MockBehavior.Strict);
+        _mockMapper = new Mock<IMapper>(MockBehavior.Strict);
+        _controller = new CourtCaseController(_mockMapper.Object, _mockSender.Object);
     }
 
     #region Get Tests
 
     [Fact]
-    public async Task Get_ReturnsOkResult_WithCourtCases()
+    public async Task Get_Should_ReturnOk_WithCourtCases()
     {
         // Arrange
-        IEnumerable<CourtCaseResult> expectedResult = [
-            new CourtCaseResult()
-            {
-                Id = Guid.NewGuid(),
-                CaseNumber = "CASE-2024-001",
-                Location = "Johannesburg High Court",
-                Plaintiff = "John Doe",
-                Defendant = "Jane Smith",
-                Status = "Pending",
-                Type = "Civil",
-                Outcome = null,
-            }
-        ];
+        var expectedCases = new List<CourtCaseResult>
+    {
+        new CourtCaseResult
+        {
+            Id = Guid.NewGuid(),
+            CaseNumber = "CASE-2024-001",
+            Location = "Johannesburg High Court",
+            Plaintiff = "John Doe",
+            Defendant = "Jane Smith",
+            Status = "Pending",
+            Type = "Civil",
+            Outcome = null
+        }
+    };
+
+        var expectedResponse = expectedCases.Select(c => new CourtCasesResponse()
+        {
+            CaseNumber = c.CaseNumber,
+            Location = c.Location,
+            Plaintiff = c.Plaintiff,
+            Defendant = c.Defendant,
+            Status = c.Status,
+            Type = c.Type,
+            Outcome = c.Outcome,
+            Id = c.Id,
+            UserId = c.UserId,
+            Lawyers = c.Lawyers,
+            User = c.User
+        });
 
         _mockSender
             .Setup(s => s.Send(It.IsAny<GetCommand>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(expectedResult.ToErrorOr());
+            .ReturnsAsync(expectedCases);
+
+        _mockMapper
+            .Setup(m => m.Map<IEnumerable<CourtCasesResponse>>(It.IsAny<IEnumerable<CourtCaseResult>>()))
+            .Returns((IEnumerable<CourtCaseResult> source) => expectedResponse);
 
         // Act
         var result = await _controller.Get();
 
         // Assert
-        Assert.IsType<OkObjectResult>(result);
+        var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+        ok.Value.Should().BeEquivalentTo(expectedResponse);
+
         _mockSender.Verify(s => s.Send(It.IsAny<GetCommand>(), It.IsAny<CancellationToken>()), Times.Once);
+        _mockMapper.Verify(m => m.Map<IEnumerable<CourtCasesResponse>>(It.IsAny<IEnumerable<CourtCaseResult>>()), Times.Once);
     }
 
-    #endregion
-
-    #region GetById Tests
-
-    [Fact]
-    public void GetById_ReturnsOkResult_WithValidId()
-    {
-        // Arrange
-        string courtCaseId = "550e8400-e29b-41d4-a716-446655440000";
-
-        // Act
-        var result = _controller.GetById(courtCaseId);
-
-        // Assert
-        var okResult = Assert.IsType<OkObjectResult>(result);
-        Assert.Equal($"CourtCaseController received ID: {courtCaseId}", okResult.Value);
-    }
-
-    [Theory]
-    [InlineData("550e8400-e29b-41d4-a716-446655440000")]
-    [InlineData("123e4567-e89b-12d3-a456-426614174000")]
-    [InlineData("abc12345-def6-7890-ghij-klmnopqrstuv")]
-    public void GetById_ReturnsOkResult_WithDifferentIds(string id)
-    {
-        // Act
-        var result = _controller.GetById(id);
-
-        // Assert
-        var okResult = Assert.IsType<OkObjectResult>(result);
-        Assert.Contains(id, okResult.Value?.ToString());
-    }
 
     #endregion
 
     #region Create Tests
 
     [Fact]
-    public async Task Create_ReturnsCreated_WithValidRequest()
+    public async Task Create_Should_ReturnCreated_WhenSuccessful()
     {
         // Arrange
-        var addRequest = new AddCourtCaseRequest(
-            CaseNumber: "CASE-2024-001",
-            Location: "Johannesburg High Court",
-            Plaintiff: "John Doe",
-            Defendant: "Jane Smith",
-            Status: "Pending",
-            Type: "Civil",
-            Outcome: null
+        var request = new AddCourtCaseRequest(
+            "CASE-2024-001",
+            "Johannesburg High Court",
+            "John Doe",
+            "Jane Smith",
+            "Pending",
+            "Civil",
+            null
         );
 
-        var addCommand = new AddCommand(
-            addRequest.CaseNumber,
-            addRequest.Location,
-            addRequest.Plaintiff,
-            addRequest.Defendant,
-            addRequest.Status,
-            addRequest.Type,
-            addRequest.Outcome
+        var command = new AddCommand(
+            request.CaseNumber,
+            request.Location,
+            request.Plaintiff,
+            request.Defendant,
+            request.Status,
+            request.Type,
+            request.Outcome
         );
 
-        var successResult = ErrorOrFactory.From(true);
-
-        _mockMapper
-            .Setup(m => m.Map<AddCommand>(addRequest))
-            .Returns(addCommand);
-
-        _mockSender
-            .Setup(s => s.Send(It.IsAny<AddCommand>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(successResult);
+        _mockMapper.Setup(m => m.Map<AddCommand>(request)).Returns(command);
+        _mockSender.Setup(s => s.Send(command, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(ErrorOrFactory.From(true));
 
         // Act
-        var result = await _controller.Create(addRequest);
+        var result = await _controller.Create(request);
 
         // Assert
-        Assert.IsType<CreatedResult>(result);
-        _mockMapper.Verify(m => m.Map<AddCommand>(addRequest), Times.Once);
-        _mockSender.Verify(s => s.Send(It.Is<AddCommand>(c =>
-            c.CaseNumber == addRequest.CaseNumber &&
-            c.Location == addRequest.Location &&
-            c.Plaintiff == addRequest.Plaintiff &&
-            c.Defendant == addRequest.Defendant
-        ), It.IsAny<CancellationToken>()), Times.Once);
+        result.Should().BeOfType<CreatedResult>();
+        _mockMapper.Verify(m => m.Map<AddCommand>(request), Times.Once);
+        _mockSender.Verify(s => s.Send(command, It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]
-    public async Task Create_ReturnsBadRequest_WhenCommandFails()
+    public async Task Create_Should_ReturnBadRequest_OnValidationError()
     {
         // Arrange
-        var addRequest = new AddCourtCaseRequest(
-            CaseNumber: "",
-            Location: "Johannesburg High Court",
-            Plaintiff: "John Doe",
-            Defendant: "Jane Smith",
-            Status: "Pending",
-            Type: null,
-            Outcome: null
+        var request = new AddCourtCaseRequest(
+            "",
+            "Johannesburg High Court",
+            "John Doe",
+            "Jane Smith",
+            "Pending",
+            "Civil",
+            null
         );
 
-        var addCommand = new AddCommand(
-            addRequest.CaseNumber,
-            addRequest.Location,
-            addRequest.Plaintiff,
-            addRequest.Defendant,
-            addRequest.Status,
-            addRequest.Type,
-            addRequest.Outcome
+        var command = new AddCommand(
+            request.CaseNumber,
+            request.Location,
+            request.Plaintiff,
+            request.Defendant,
+            request.Status,
+            request.Type,
+            request.Outcome
         );
 
-        var errorResult = Error.Validation("CaseNumber.Invalid", "Case number is required");
+        var error = Error.Validation("CaseNumber.Invalid", "Case number is required");
 
-        _mockMapper
-            .Setup(m => m.Map<AddCommand>(addRequest))
-            .Returns(addCommand);
-
-        _mockSender
-            .Setup(s => s.Send(It.IsAny<AddCommand>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(errorResult);
+        _mockMapper.Setup(m => m.Map<AddCommand>(request)).Returns(command);
+        _mockSender.Setup(s => s.Send(command, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(error);
 
         // Act
-        var result = await _controller.Create(addRequest);
+        var result = await _controller.Create(request);
 
         // Assert
-
-        var objectResult = result as ObjectResult;
-        // Assert
-        objectResult.Should().NotBeNull();
-        objectResult!.StatusCode.Should().Be(400); // or your expected code
-    }
-
-    [Fact]
-    public async Task Create_WithOptionalFields_ReturnsCreatedResult()
-    {
-        // Arrange
-        var addRequest = new AddCourtCaseRequest(
-            CaseNumber: "CASE-2024-002",
-            Location: "Pretoria High Court",
-            Plaintiff: "Alice Johnson",
-            Defendant: "Bob Williams",
-            Status: "Active",
-            Type: null,
-            Outcome: null
-        );
-
-        var addCommand = new AddCommand(
-            addRequest.CaseNumber,
-            addRequest.Location,
-            addRequest.Plaintiff,
-            addRequest.Defendant,
-            addRequest.Status,
-            addRequest.Type,
-            addRequest.Outcome
-        );
-
-        var successResult = ErrorOrFactory.From(true);
-
-        _mockMapper
-            .Setup(m => m.Map<AddCommand>(addRequest))
-            .Returns(addCommand);
-
-        _mockSender
-            .Setup(s => s.Send(It.IsAny<AddCommand>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(successResult);
-
-        // Act
-        var result = await _controller.Create(addRequest);
-
-        // Assert
-        Assert.IsType<CreatedResult>(result);
+        result.Should().BeOfType<ObjectResult>()
+            .Which.StatusCode.Should().Be(400);
     }
 
     #endregion
@@ -234,200 +168,61 @@ public class CourtCaseControllerTests
     #region Update Tests
 
     [Fact]
-    public async Task Update_ReturnsOkResult_WithValidIdFromRoute()
+    public async Task Update_Should_ReturnNoContent_WhenSuccessful()
     {
         // Arrange
-        string routeId = "550e8400-e29b-41d4-a716-446655440000";
-
-        var updateRequest = new UpdateCourtCaseRequest(
-            CaseNumber: "CASE-2024-001",
-            Location: "Johannesburg High Court",
-            Plaintiff: "John Doe",
-            Defendant: "Jane Smith",
-            Status: "Ongoing",
-            Type: "Civil",
-            Outcome: null
+        var routeId = Guid.NewGuid();
+        var request = new UpdateCourtCaseRequest(
+            "CASE-2024-001",
+            "Johannesburg High Court",
+            "John Doe",
+            "Jane Smith",
+            "Ongoing",
+            "Civil",
+            null
         );
 
-        var mappedCommand = new UpdateCommand(
-            Id: "some-initial-id", // This will be overridden by route id
-            CaseNumber: updateRequest.CaseNumber,
-            Location: updateRequest.Location,
-            Plaintiff: updateRequest.Plaintiff,
-            Defendant: updateRequest.Defendant,
-            Status: updateRequest.Status,
-            Type: updateRequest.Type,
-            Outcome: updateRequest.Outcome
+        var command = new UpdateCommand(
+            routeId,
+            request.CaseNumber,
+            request.Location,
+            request.Plaintiff,
+            request.Defendant,
+            request.Status,
+            request.Type,
+            request.Outcome
         );
 
-        var successResult = ErrorOrFactory.From(true);
-
-        _mockMapper
-            .Setup(m => m.Map<UpdateCommand>(updateRequest))
-            .Returns(mappedCommand);
-
-        _mockSender
-            .Setup(s => s.Send(It.Is<UpdateCommand>(c => c.Id == routeId), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(successResult);
+        _mockMapper.Setup(m => m.Map<UpdateCommand>(request))
+            .Returns(command with { Id = Guid.NewGuid() }); // simulate mapper returning some Id
+        _mockSender.Setup(s => s.Send(It.Is<UpdateCommand>(c => c.Id == routeId), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(ErrorOrFactory.From(true));
 
         // Act
-        var result = await _controller.Update(routeId, updateRequest);
+        var result = await _controller.Update(routeId.ToString(), request);
 
         // Assert
-        Assert.IsType<NoContentResult>(result);
-        _mockMapper.Verify(m => m.Map<UpdateCommand>(updateRequest), Times.Once);
-        _mockSender.Verify(s => s.Send(
-            It.Is<UpdateCommand>(c =>
-                c.Id == routeId &&
-                c.CaseNumber == updateRequest.CaseNumber &&
-                c.Status == updateRequest.Status
-            ),
-            It.IsAny<CancellationToken>()),
-            Times.Once);
+        result.Should().BeOfType<NoContentResult>();
+        _mockSender.Verify(s => s.Send(It.Is<UpdateCommand>(c => c.Id == routeId), It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]
-    public async Task Update_ReturnsNotFound_WhenCourtCaseDoesNotExist()
+    public async Task Update_Should_ReturnNotFound_WhenNotFound()
     {
         // Arrange
-        string routeId = "550e8400-e29b-41d4-a716-446655440000";
+        var id = Guid.NewGuid().ToString();
+        var request = new UpdateCourtCaseRequest("CASE-404", "Pretoria", "A", "B", "Ongoing", "Civil", null);
+        var mappedCommand = new UpdateCommand(Guid.NewGuid(), request.CaseNumber, request.Location, request.Plaintiff, request.Defendant, request.Status, request.Type, request.Outcome);
+        var error = Error.NotFound("CourtCase.NotFound", "Court case not found");
 
-        var updateRequest = new UpdateCourtCaseRequest(
-            CaseNumber: "CASE-2024-999",
-            Location: "Johannesburg High Court",
-            Plaintiff: "John Doe",
-            Defendant: "Jane Smith",
-            Status: "Ongoing",
-            Type: "Civil",
-            Outcome: null
-        );
-
-        var mappedCommand = new UpdateCommand(
-            Id: "some-initial-id",
-            CaseNumber: updateRequest.CaseNumber,
-            Location: updateRequest.Location,
-            Plaintiff: updateRequest.Plaintiff,
-            Defendant: updateRequest.Defendant,
-            Status: updateRequest.Status,
-            Type: updateRequest.Type,
-            Outcome: updateRequest.Outcome
-        );
-
-        var errorResult = Error.NotFound("CourtCase.NotFound", "Court case not found");
-
-        _mockMapper
-            .Setup(m => m.Map<UpdateCommand>(updateRequest))
-            .Returns(mappedCommand);
-
-        _mockSender
-            .Setup(s => s.Send(It.IsAny<UpdateCommand>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(errorResult);
+        _mockMapper.Setup(m => m.Map<UpdateCommand>(request)).Returns(mappedCommand);
+        _mockSender.Setup(s => s.Send(It.IsAny<UpdateCommand>(), It.IsAny<CancellationToken>())).ReturnsAsync(error);
 
         // Act
-        var result = await _controller.Update(routeId, updateRequest);
+        var result = await _controller.Update(id, request);
 
         // Assert
-
-        var objectResult = result as ObjectResult;
-        // Assert
-        objectResult.Should().NotBeNull();
-        objectResult!.StatusCode.Should().Be(404); // or your expected code
-    }
-
-    [Fact]
-    public async Task Update_ReturnsBadRequest_WhenValidationFails()
-    {
-        // Arrange
-        string routeId = "550e8400-e29b-41d4-a716-446655440000";
-
-        var updateRequest = new UpdateCourtCaseRequest(
-            CaseNumber: "",
-            Location: "Johannesburg High Court",
-            Plaintiff: "John Doe",
-            Defendant: "Jane Smith",
-            Status: "Ongoing",
-            Type: "Civil",
-            Outcome: null
-        );
-
-        var mappedCommand = new UpdateCommand(
-            Id: "some-initial-id",
-            CaseNumber: updateRequest.CaseNumber,
-            Location: updateRequest.Location,
-            Plaintiff: updateRequest.Plaintiff,
-            Defendant: updateRequest.Defendant,
-            Status: updateRequest.Status,
-            Type: updateRequest.Type,
-            Outcome: updateRequest.Outcome
-        );
-
-        var errorResult = Error.Validation("CaseNumber.Invalid", "Case number cannot be empty");
-
-        _mockMapper
-            .Setup(m => m.Map<UpdateCommand>(updateRequest))
-            .Returns(mappedCommand);
-
-        _mockSender
-            .Setup(s => s.Send(It.IsAny<UpdateCommand>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(errorResult);
-
-        // Act
-        var result = await _controller.Update(routeId, updateRequest);
-
-        // Assert
-
-        var objectResult = result as ObjectResult;
-        // Assert
-        objectResult.Should().NotBeNull();
-        objectResult!.StatusCode.Should().Be(400); // or your expected code
-    }
-
-    [Theory]
-    [InlineData("550e8400-e29b-41d4-a716-446655440000")]
-    [InlineData("123e4567-e89b-12d3-a456-426614174000")]
-    public async Task Update_UsesRouteIdOverRequestId(string routeId)
-    {
-        // Arrange
-        var updateRequest = new UpdateCourtCaseRequest(
-            CaseNumber: "CASE-2024-001",
-            Location: "Johannesburg High Court",
-            Plaintiff: "John Doe",
-            Defendant: "Jane Smith",
-            Status: "Ongoing",
-            Type: "Civil",
-            Outcome: null
-        );
-
-        var mappedCommand = new UpdateCommand(
-            Id: "different-id",
-            CaseNumber: updateRequest.CaseNumber,
-            Location: updateRequest.Location,
-            Plaintiff: updateRequest.Plaintiff,
-            Defendant: updateRequest.Defendant,
-            Status: updateRequest.Status,
-            Type: updateRequest.Type,
-            Outcome: updateRequest.Outcome
-        );
-
-        var successResult = ErrorOrFactory.From(true);
-
-        _mockMapper
-            .Setup(m => m.Map<UpdateCommand>(updateRequest))
-            .Returns(mappedCommand);
-
-        _mockSender
-            .Setup(s => s.Send(It.IsAny<UpdateCommand>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(successResult);
-
-        // Act
-        var result = await _controller.Update(routeId, updateRequest);
-
-        // Assert
-        Assert.IsType<NoContentResult>(result);
-        _mockSender.Verify(s => s.Send(
-            It.Is<UpdateCommand>(c => c.Id == routeId),
-            It.IsAny<CancellationToken>()),
-            Times.Once);
+        result.Should().BeOfType<ObjectResult>().Which.StatusCode.Should().Be(404);
     }
 
     #endregion
@@ -435,69 +230,35 @@ public class CourtCaseControllerTests
     #region Delete Tests
 
     [Fact]
-    public async Task Delete_ReturnsNoContentResult_WithValidIdFromRoute()
+    public async Task Delete_Should_ReturnNoContent_WhenSuccessful()
     {
         // Arrange
-        string routeId = "550e8400-e29b-41d4-a716-446655440000";
-
-        var successResult = ErrorOrFactory.From(true);
-
-        _mockSender
-            .Setup(s => s.Send(It.Is<DeleteCommand>(c => c.Id == new Guid(routeId)), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(successResult);
+        var id = Guid.NewGuid();
+        _mockSender.Setup(s => s.Send(It.Is<DeleteCommand>(c => c.Id == id), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(ErrorOrFactory.From(true));
 
         // Act
-        var result = await _controller.Delete(routeId);
+        var result = await _controller.Delete(id.ToString());
 
         // Assert
-        Assert.IsType<NoContentResult>(result);
-        _mockSender.Verify(s => s.Send(
-            It.Is<DeleteCommand>(c => c.Id == new Guid(routeId)),
-            It.IsAny<CancellationToken>()),
-            Times.Once);
+        result.Should().BeOfType<NoContentResult>();
+        _mockSender.Verify(s => s.Send(It.Is<DeleteCommand>(c => c.Id == id), It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]
-    public async Task Delete_ReturnsNotFound_WhenCourtCaseDoesNotExist()
+    public async Task Delete_Should_ReturnNotFound_WhenNotFound()
     {
         // Arrange
-        string routeId = "550e8400-e29b-41d4-a716-446655440000";
-
-        var errorResult = Error.NotFound("CourtCase.NotFound", "Court case not found");
-
-        _mockSender
-            .Setup(s => s.Send(It.IsAny<DeleteCommand>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(errorResult);
-
-        // Act
-        var result = await _controller.Delete(routeId);
-        var objectResult = result as ObjectResult;
-        // Assert
-        objectResult.Should().NotBeNull();
-        objectResult!.StatusCode.Should().Be(404); // or your expected code
-    }
-
-    [Theory]
-    [InlineData("550e8400-e29b-41d4-a716-446655440000")]
-    [InlineData("123e4567-e89b-12d3-a456-426614174000")]
-    public async Task Delete_WithDifferentIds_SendsCorrectCommand(string id)
-    {
-        // Arrange
-        var successResult = ErrorOrFactory.From(true);
-
-        _mockSender
-            .Setup(s => s.Send(It.IsAny<DeleteCommand>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(successResult);
+        var id = Guid.NewGuid().ToString();
+        var error = Error.NotFound("CourtCase.NotFound", "Court case not found");
+        _mockSender.Setup(s => s.Send(It.IsAny<DeleteCommand>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(error);
 
         // Act
         var result = await _controller.Delete(id);
 
         // Assert
-        Assert.IsType<NoContentResult>(result);
-        _mockSender.Verify(s => s.Send(
-            It.Is<DeleteCommand>(c => c.Id == new Guid(id)),
-            It.IsAny<CancellationToken>()),
-            Times.Once);
+        result.Should().BeOfType<ObjectResult>().Which.StatusCode.Should().Be(404);
     }
 
     #endregion

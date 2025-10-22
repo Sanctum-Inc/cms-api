@@ -4,10 +4,12 @@ using Domain.Common;
 using Domain.CourtCaseDates;
 using Domain.Documents;
 using Domain.InvoiceItems;
+using Domain.Invoices;
 using Domain.Lawyers;
 using Domain.Users;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
+using System.Linq;
 
 namespace Infrastructure.Persistence;
 
@@ -21,21 +23,21 @@ public class ApplicationDBContext : DbContext, IApplicationDBContext
     public DbSet<User> Users => Set<User>();
     public DbSet<Domain.CourtCases.CourtCase> CourtCases => Set<Domain.CourtCases.CourtCase>();
     public DbSet<Document> Documents => Set<Document>();
+    public DbSet<Invoice> Invoices => Set<Invoice>();
     public DbSet<InvoiceItem> InvoiceItems => Set<InvoiceItem>();
     public DbSet<Lawyer> Lawyers => Set<Lawyer>();
     public DbSet<CourtCaseDate> CourtCaseDates => Set<CourtCaseDate>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        foreach (var entityType in modelBuilder.Model.GetEntityTypes())
+        foreach (var method in from entityType in modelBuilder.Model.GetEntityTypes()
+                               where typeof(AuditableEntity).IsAssignableFrom(entityType.ClrType)
+                               let method = typeof(ApplicationDBContext)
+                            .GetMethod(nameof(SetGlobalQueryFilter), BindingFlags.NonPublic | BindingFlags.Static)!
+                            .MakeGenericMethod(entityType.ClrType)
+                               select method)
         {
-            if (typeof(AuditableEntity).IsAssignableFrom(entityType.ClrType))
-            {
-                var method = typeof(ApplicationDBContext)
-                    .GetMethod(nameof(SetGlobalQueryFilter), BindingFlags.NonPublic | BindingFlags.Static)!
-                    .MakeGenericMethod(entityType.ClrType);
-                method.Invoke(null, [modelBuilder]);
-            }
+            method.Invoke(null, [modelBuilder]);
         }
 
         base.OnModelCreating(modelBuilder);

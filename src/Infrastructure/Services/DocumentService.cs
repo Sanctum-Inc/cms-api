@@ -7,19 +7,22 @@ using Application.Document.Commands.Add;
 using Application.Document.Commands.Update;
 using Application.Document.Queries.Get;
 using Application.Document.Queries.GetById;
+using Domain.CourtCases;
 using Domain.Documents;
+using Domain.Users;
 using ErrorOr;
 using Infrastructure.Config;
+using Infrastructure.Services.Base;
+using MapsterMapper;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 
 namespace Infrastructure.Services;
-public class DocumentService : IDocumentService
+public class DocumentService : BaseService<Document, DocumentResult, AddCommand, UpdateCommand>, IDocumentService
 {
     private readonly ISessionResolver _sessionResolver;
     private readonly IDocumentRepository _documentRepository;
-    private readonly IUserRepository _userRepository;
     private readonly ICourtCaseRepository _courtCaseRepository;
     private readonly string _rootPath;
 
@@ -27,8 +30,8 @@ public class DocumentService : IDocumentService
         ISessionResolver sessionResolver,
         IDocumentRepository documentRepository,
         IOptions<DocumentStorageOptions> options,
-        IUserRepository userRepository,
-        ICourtCaseRepository courtCaseRepository)
+        IMapper mapper,
+        ICourtCaseRepository courtCaseRepository) : base(documentRepository, mapper, sessionResolver)
     {
         _sessionResolver = sessionResolver;
         _documentRepository = documentRepository;
@@ -41,11 +44,10 @@ public class DocumentService : IDocumentService
             Directory.CreateDirectory(_rootPath);
         }
 
-        _userRepository = userRepository;
         _courtCaseRepository = courtCaseRepository;
     }
 
-    public async Task<ErrorOr<bool>> Add(IRequest<ErrorOr<bool>> request, CancellationToken cancellationToken)
+    public async Task<ErrorOr<bool>> AddFile(IRequest<ErrorOr<bool>> request, CancellationToken cancellationToken)
     {
         if (request is not AddCommand addCommand)
             return Error.Failure(description: "Invalid request type.");
@@ -54,9 +56,7 @@ public class DocumentService : IDocumentService
         if (string.IsNullOrEmpty(userId))
             return Error.Unauthorized(description: "User is not authenticated.");
 
-        var user = await _userRepository.GetByIdAsync(Guid.Parse(userId), cancellationToken);
-
-        var courtCase = await _courtCaseRepository.GetByCaseIdAsync(Guid.Parse(addCommand.CaseId), Guid.Parse(userId), cancellationToken);
+        var courtCase = await _courtCaseRepository.GetByCaseIdAsync(addCommand.CaseId, Guid.Parse(userId), cancellationToken);
         if (courtCase == null)
             return Error.NotFound(description: "Court case not found for the user.");
 
@@ -72,20 +72,7 @@ public class DocumentService : IDocumentService
             await using var stream = new FileStream(targetPath, FileMode.Create);
             await addCommand.File.CopyToAsync(stream, cancellationToken);
 
-            await _documentRepository.AddAsync(new Domain.Documents.Document()
-            {
-                Id = Guid.NewGuid(),
-                Name = addCommand.Name,
-                FileName = safeFileName,
-                ContentType = addCommand.File.ContentType,
-                Size = addCommand.File.Length,
-                UserId = user!.Id,
-                User = user,
-                CaseId = courtCase.Id,
-                Case = courtCase
-
-            }, cancellationToken);
-            await _documentRepository.SaveChangesAsync(cancellationToken);
+            await Add(addCommand, cancellationToken);
 
             return true;
         }
@@ -96,23 +83,9 @@ public class DocumentService : IDocumentService
         }
     }
 
-    public async Task<ErrorOr<bool>> Delete(Guid id, CancellationToken cancellationToken)
+    public async Task<ErrorOr<DownloadDocumentResult?>> Download(Guid id, CancellationToken cancellationToken = default)
     {
         var document = await _documentRepository.GetByIdAndUserIdAsync(id, cancellationToken);
-
-        if (document == null)
-            return Error.NotFound("Document.NotFound", "The document with the specified Id was not found");
-
-        await _documentRepository.DeleteAsync(document, cancellationToken);
-        await _documentRepository.SaveChangesAsync(cancellationToken);
-
-        return true;
-    }
-
-    public async Task<ErrorOr<DownloadDocumentResult?>> Download(Guid id, CancellationToken cancellationToken)
-    {
-        // TODO: Get metadata from DB (e.g. stored file path, name, content type)
-        var document = await _documentRepository.GetByIdAsync(id, cancellationToken);
 
         if (document == null)
             return Error.NotFound("Document.NotFound", "The document with the specified Id was not found");
@@ -129,70 +102,30 @@ public class DocumentService : IDocumentService
         return new DownloadDocumentResult(stream, contentType, fileName);
     }
 
-    public async Task<ErrorOr<IEnumerable<DocumentResult>>> Get(CancellationToken cancellationToken)
+    protected override Guid GetIdFromUpdateCommand(UpdateCommand command)
     {
-        // Fetch documents from the database
-        var documents = await _documentRepository
-            .GetAll(cancellationToken);
-
-        // Map to GetDocumentResult
-        var results = documents.Select(doc => new DocumentResult(
-            doc.Id,
-            doc.Name,
-            doc.FileName,
-            doc.Size,
-            doc.Created,
-            doc.CaseId,
-            doc.ContentType,
-            doc.CreatedBy!.Value
-        ));
-
-        return results.ToErrorOr()!;
+        return command.Id;
     }
 
-    public async Task<ErrorOr<DocumentResult?>> GetById(Guid id, CancellationToken cancellationToken)
+    protected override ErrorOr<Document> MapFromAddCommand(AddCommand command, string? userId = null)
     {
-        // 🗂️ 1. Get metadata from DB
-        var document = await _documentRepository.GetByIdAndUserIdAsync(id, cancellationToken);
+        if (string.IsNullOrEmpty(userId))
+            return Error.Unauthorized(description: "User is not authenticated.");
 
-        if (document is null)
+        return new Domain.Documents.Document()
         {
-            return Error.NotFound(
-                code: "Document.NotFound",
-                description: $"Document with ID '{id}' was not found."
-            );
-        }
-
-        // 🧾 2. Map to result
-        var result = new DocumentResult(
-            document.Id,
-            document.Name,
-            document.FileName,
-            document.Size,
-            document.Created,
-            document.CaseId,
-            document.ContentType,
-            document.CreatedBy!.Value
-        );
-
-        return result;
+            Id = Guid.NewGuid(),
+            Name = command.Name,
+            FileName = command.File.FileName,
+            ContentType = command.File.ContentType,
+            Size = command.File.Length,
+            UserId = new Guid(userId),
+            CaseId = command.CaseId,
+        };
     }
 
-    public async Task<ErrorOr<bool>> Update(IRequest<ErrorOr<bool>> request, CancellationToken cancellationToken)
+    protected override void MapFromUpdateCommand(Document entity, UpdateCommand command)
     {
-        if (request is not UpdateCommand updateCommand)
-            return Error.Failure(description: "Invalid request type.");
-
-        var document = await _documentRepository.GetByIdAsync(updateCommand.Id, cancellationToken);
-
-        if (document == null)
-            return Error.NotFound("Document.NotFound", "The document with the specified Id was not found");
-
-        document.Name = updateCommand.NewName;
-
-        await _documentRepository.UpdateAsync(document, cancellationToken);
-        await _documentRepository.SaveChangesAsync(cancellationToken);
-
-        return true;
+        entity.Name = command.FileName;
     }
 }

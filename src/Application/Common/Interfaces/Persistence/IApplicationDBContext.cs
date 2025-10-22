@@ -11,7 +11,7 @@ public interface IApplicationDBContext
     DbSet<User> Users { get; }
     DbSet<Domain.CourtCases.CourtCase> CourtCases { get; }
     DbSet<Domain.Documents.Document> Documents { get; }
-    DbSet<InvoiceItem> InvoiceItems { get; }
+    DbSet<Domain.InvoiceItems.InvoiceItem> InvoiceItems { get; }
     DbSet<Domain.Lawyers.Lawyer> Lawyers { get; }
     DbSet<CourtCaseDate> CourtCaseDates { get; }
 

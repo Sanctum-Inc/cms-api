@@ -6,4 +6,4 @@ namespace Application.Document.Commands.Add;
 public record AddCommand(
     IFormFile File,
     string Name,
-    string CaseId) : IRequest<ErrorOr<bool>>;
+    Guid CaseId) : IRequest<ErrorOr<bool>>;

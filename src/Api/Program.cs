@@ -50,6 +50,6 @@ app.MapOpenApi();
 
 ScalarConfiguration.ConfigureServices(app);
 
-app.Run();
+await app.RunAsync();
 
 public partial class Program { } // 👈 Required for WebApplicationFactory

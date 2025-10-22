@@ -57,7 +57,7 @@ public class DocumentControllerTests : IntegrationTestBase
         content.Add(new StringContent("9ae37995-fb0f-4f86-8f9f-30068950df4c"), "caseId");
 
         // Act
-        var response = await _client.PostAsync("/api/document", content);
+        var response = await _client.PostAsync("/api/document/upload", content);
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.Created);

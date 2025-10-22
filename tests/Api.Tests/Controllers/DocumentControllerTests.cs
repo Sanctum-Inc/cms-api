@@ -29,7 +29,7 @@ public class DocumentControllerTests
     {
         _mediatorMock = new Mock<ISender>();
         _mapperMock = new Mock<IMapper>();
-        _controller = new DocumentController(_mediatorMock.Object, _mapperMock.Object);
+        _controller = new DocumentController(_mapperMock.Object, _mediatorMock.Object);
     }
 
     [Fact]
@@ -71,7 +71,7 @@ public class DocumentControllerTests
             .ReturnsAsync(ErrorOrFactory.From(true));
 
         // Act
-        var result = await _controller.UpdateName(id, request);
+        var result = await _controller.Update(id, request);
 
         // Assert
         var noContentResult = result as NoContentResult;
@@ -116,7 +116,7 @@ public class DocumentControllerTests
             .Returns(documentsResponse);
 
         // Act
-        var result = await _controller.GetStructure();
+        var result = await _controller.Get();
 
         // Assert
         var okResult = result as OkObjectResult;
@@ -130,25 +130,50 @@ public class DocumentControllerTests
     {
         // Arrange
         var id = Guid.NewGuid();
-        var documentResult = new DocumentResult(id, "Doc1", "file.pdf", 1000, DateTime.UtcNow, Guid.NewGuid(), "application/pdf", Guid.NewGuid());
+        var documentResult = new DocumentResult(
+            id,
+            "Doc1",
+            "file.pdf",
+            1000,
+            DateTime.UtcNow,
+            Guid.NewGuid(),
+            "application/pdf",
+            Guid.NewGuid()
+        );
 
         _mediatorMock
             .Setup(m => m.Send(It.IsAny<GetByIdCommand>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(documentResult);
+            .ReturnsAsync(documentResult.ToErrorOr()); // ✅ returning ErrorOr<DocumentResult>
 
         _mapperMock
-            .Setup(m => m.Map<GetDocumentByIdResponse>(It.IsAny<GetDocumentByIdResult>()))
-            .Returns(new GetDocumentByIdResponse(documentResult.Id, documentResult.Name, documentResult.FileName, documentResult.ContentType, documentResult.Size, documentResult.CreatedAt, documentResult.CaseId));
+            .Setup(m => m.Map<DocumentResponse>(It.IsAny<DocumentResult>())) // ✅ correct types
+            .Returns(new DocumentResponse(
+                documentResult.Id,
+                documentResult.Name,
+                documentResult.FileName,
+                documentResult.Size,
+                documentResult.CreatedAt,
+                documentResult.CaseId,
+                documentResult.ContentType,
+                documentResult.CreatedBy
+            ));
+
+        var controller = new DocumentController(_mapperMock.Object, _mediatorMock.Object);
 
         // Act
-        var result = await _controller.GetById(id.ToString());
+        var result = await controller.GetById(id.ToString());
 
         // Assert
         var okResult = result as OkObjectResult;
         okResult.Should().NotBeNull();
         okResult!.StatusCode.Should().Be((int)HttpStatusCode.OK);
-        okResult.Value.Should().BeOfType<GetDocumentByIdResponse>();
+        okResult.Value.Should().BeOfType<DocumentResponse>();
+
+        var response = okResult.Value as DocumentResponse;
+        response!.Id.Should().Be(documentResult.Id);
+        response.Name.Should().Be(documentResult.Name);
     }
+
 
     [Fact]
     public async Task Download_ShouldReturnFile_WhenFound()

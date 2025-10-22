@@ -1,99 +1,206 @@
 // Tests/CustomWebApplicationFactory.cs
 using Api.Integration.Tests.Mocks;
 using Application.Common.Interfaces.Session;
+using Domain.CourtCases;
+using Domain.Documents;
+using Domain.InvoiceItems;
+using Domain.Invoices;
 using Infrastructure.Config;
 using Infrastructure.Persistence;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Api.Integration.Tests;
+
 public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStartup> where TStartup : class
 {
+    // 🔹 Generate unique database name per factory instance
+    private readonly string _databaseName = $"TestDb_{Guid.NewGuid()}";
+
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         builder.UseEnvironment("Test");
 
         builder.ConfigureServices(services =>
         {
-            // 🔸 Remove real authentication handlers if needed
+            // Remove existing DbContext registration
             var descriptor = services.SingleOrDefault(
-                d => d.ServiceType == typeof(IAuthenticationSchemeProvider));
+                d => d.ServiceType == typeof(DbContextOptions<ApplicationDBContext>));
             if (descriptor != null)
                 services.Remove(descriptor);
 
-            // ✅ Add our test authentication
-            services.AddAuthentication(TestAuthHandler.SchemeName)
-                .AddScheme<AuthenticationSchemeOptions, TestAuthHandler>(
-                    TestAuthHandler.SchemeName, options => { });
+            // 🔹 Add DbContext with unique in-memory database name per test
+            services.AddDbContext<ApplicationDBContext>(options =>
+            {
+                options.UseInMemoryDatabase(_databaseName);
+            });
 
+            // Remove real authentication handlers if needed
+            var authDescriptor = services.SingleOrDefault(
+                d => d.ServiceType == typeof(IAuthenticationSchemeProvider));
+            if (authDescriptor != null)
+                services.Remove(authDescriptor);
+
+            // Add test authentication with default scheme
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = TestAuthHandler.SchemeName;
+                options.DefaultChallengeScheme = TestAuthHandler.SchemeName;
+                options.DefaultScheme = TestAuthHandler.SchemeName;
+            })
+            .AddScheme<AuthenticationSchemeOptions, TestAuthHandler>(
+                TestAuthHandler.SchemeName, options => { });
+
+            // Add authorization
             services.AddAuthorizationBuilder()
                 .AddPolicy("AllowAll", policy =>
                     policy.RequireAssertion(_ => true));
+
+            // Replace ISessionResolver with mock
+            var sessionDescriptor = services.SingleOrDefault(
+                d => d.ServiceType == typeof(ISessionResolver));
+            if (sessionDescriptor != null)
+                services.Remove(sessionDescriptor);
+
+            services.AddScoped<ISessionResolver, SessionResolverMock>();
 
             services.Configure<DocumentStorageOptions>(options =>
             {
                 options.RootPath = Path.Combine(Directory.GetCurrentDirectory(), "Mocks");
             });
-
-
-            // Build the service provider and seed data
-            var sp = services.BuildServiceProvider();
-
-            using var scope = sp.CreateScope();
-            var db = scope.ServiceProvider.GetRequiredService<ApplicationDBContext>();
-            db.Database.EnsureCreated();
         });
+    }
 
+    // 🔹 Seed database once during initialization
+    public async Task SeedDatabaseAsync()
+    {
+        using var scope = Services.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<ApplicationDBContext>();
+
+        // Ensure database is created
+        await db.Database.EnsureCreatedAsync();
+
+        // Seed data
+        await SeedTestData(db);
     }
 
     private static async Task SeedTestData(ApplicationDBContext db)
     {
-        // clear users to avoid duplicate key error
+        // Clear existing data (in case of re-seeding)
+        db.InvoiceItems.RemoveRange(db.InvoiceItems);
+        db.Invoices.RemoveRange(db.Invoices);
+        db.CourtCases.RemoveRange(db.CourtCases);
+        db.Lawyers.RemoveRange(db.Lawyers);
         db.Users.RemoveRange(db.Users);
         db.Documents.RemoveRange(db.Documents);
-        db.Lawyers.RemoveRange(db.Lawyers);
         await db.SaveChangesAsync();
 
-        // Example seed
-        db.Users.Add(new Domain.Users.User
+        var userId = new Guid("6ec0df63-8960-46ec-9163-2de98e04d5e9");
+        var caseId = new Guid("9ae37995-fb0f-4f86-8f9f-30068950df4c");
+
+        // Seed user
+        var user = new Domain.Users.User
         {
-            Id = new Guid("6ec0df63-8960-46ec-9163-2de98e04d5e9"),
+            Id = userId,
             Name = "testUser",
             Email = "testuser@example.com",
             Surname = "testSurname",
             MobileNumber = "+27812198232",
             PasswordHash = "BFqr1L1tvZ2mmThXw9i13LtCaHa/caTOr/uBMuQ6d/k=",
             PasswordSalt = "qxAHZlcWRdQdB4+Nb+RpTg==",
-        });
+        };
+        db.Users.Add(user);
 
-        db.CourtCases.Add(new Domain.CourtCases.CourtCase
+        // Seed court case
+        var courtCase = new Domain.CourtCases.CourtCase
         {
-            Id = new Guid("9ae37995-fb0f-4f86-8f9f-30068950df4c"),
-            CaseNumber= "CASE-INT-002",
-            Location= "Johannesburg",
-            Plaintiff= "John",
-            Defendant= "Jane",
-            Status= "Active",
-            Type= "Criminal",
-            Outcome= null,
-            UserId = new Guid("6ec0df63-8960-46ec-9163-2de98e04d5e9"),
-        });
+            Id = caseId,
+            CaseNumber = "CASE-INT-002",
+            Location = "Johannesburg",
+            Plaintiff = "John",
+            Defendant = "Jane",
+            Status = "Active",
+            Type = "Criminal",
+            Outcome = null,
+            UserId = userId
+        };
+        db.CourtCases.Add(courtCase);
 
-        db.Documents.Add(new Domain.Documents.Document
+        // Seed invoice
+        var invoice = new Invoice
+        {
+            Id = new Guid("c91d2a2c-1a3e-4a1a-aaa0-1f6b091f7f33"),
+            InvoiceNumber = "INV-2025-001",
+            InvoiceDate = DateTime.UtcNow,
+            ClientName = "John Doe",
+            Reference = "REF-001",
+            CaseName = "John vs Jane",
+            UserId = userId,
+            CaseId = caseId,
+            AccountName = "Test Account",
+            Bank = "ABSA",
+            BranchCode = "12345",
+            AccountNumber = "987654321",
+            CreatedBy = userId,
+            Created = DateTime.UtcNow
+        };
+        db.Invoices.Add(invoice);
+
+        // 🔹 Seed invoice item with correct ID from test
+        var invoiceItem = new InvoiceItem
+        {
+            Id = new Guid("11111111-1111-1111-1111-111111111111"),
+            InvoiceId = invoice.Id,
+            Name = "Consultation Fee",
+            Hours = 2,
+            CostPerHour = 1500m,
+            IsDayFee = false,
+            UserId = userId,
+            CreatedBy = userId,
+            Created = DateTime.UtcNow,
+            DayFeeAmount = null
+        };
+        db.InvoiceItems.Add(invoiceItem);
+
+        // 🔹 Add second invoice item for delete test
+        var invoiceItem2 = new InvoiceItem
+        {
+            Id = new Guid("44444444-4444-4444-4444-444444444444"),
+            InvoiceId = invoice.Id,
+            Name = "Court Appearance",
+            Hours = 5,
+            CostPerHour = 2000m,
+            IsDayFee = false,
+            UserId = userId,
+            CreatedBy = userId,
+            Created = DateTime.UtcNow,
+            DayFeeAmount = null
+        };
+        db.InvoiceItems.Add(invoiceItem2);
+
+        var document = new Document()
         {
             Id = new Guid("8f1b1dbf-0c63-4e0e-a16c-4cc78e66ad98"),
-            Name = "Test Document",
-            FileName = "test.txt",
+            CaseId = caseId,
             ContentType = "text/plain",
-            Size = 1024,
-            UserId = new Guid("6ec0df63-8960-46ec-9163-2de98e04d5e9"),
-            CaseId = new Guid("9ae37995-fb0f-4f86-8f9f-30068950df4c"),
-            CreatedBy = Guid.NewGuid()
-        });
+            FileName = "test.txt",
+            Name = "Test Document",
+            Size = 2048,
+            UserId = userId,
+        };
+        db.Documents.Add(document);
 
-        // Add these lawyers to your database seeding
+        // Seed lawyers
+        AddLawyers(db, userId);
+
+        await db.SaveChangesAsync();
+    }
+
+    private static void AddLawyers(ApplicationDBContext db, Guid userId)
+    {
         db.Lawyers.Add(new Domain.Lawyers.Lawyer
         {
             Id = new Guid("1a2b3c4d-5e6f-7a8b-9c0d-1e2f3a4b5c6d"),
@@ -101,9 +208,9 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
             Name = "James",
             Surname = "Wilson",
             MobileNumber = "+27821234567",
-            UserId = new Guid("6ec0df63-8960-46ec-9163-2de98e04d5e9"),
+            UserId = userId,
             Specialty = Domain.Lawyers.Speciality.CriminalLaw,
-            CreatedBy = Guid.NewGuid(),
+            CreatedBy = userId,
             Created = DateTime.UtcNow
         });
 
@@ -114,9 +221,9 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
             Name = "Sarah",
             Surname = "Johnson",
             MobileNumber = "+27829876543",
-            UserId = new Guid("6ec0df63-8960-46ec-9163-2de98e04d5e9"),
+            UserId = userId,
             Specialty = Domain.Lawyers.Speciality.FamilyLaw,
-            CreatedBy = Guid.NewGuid(),
+            CreatedBy = userId,
             Created = DateTime.UtcNow
         });
 
@@ -127,9 +234,9 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
             Name = "Michael",
             Surname = "Brown",
             MobileNumber = "+27835551234",
-            UserId = new Guid("6ec0df63-8960-46ec-9163-2de98e04d5e9"),
+            UserId = userId,
             Specialty = Domain.Lawyers.Speciality.CorporateLaw,
-            CreatedBy = Guid.NewGuid(),
+            CreatedBy = userId,
             Created = DateTime.UtcNow
         });
 
@@ -140,24 +247,10 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
             Name = "Emily",
             Surname = "Davis",
             MobileNumber = "+27847778888",
-            UserId = new Guid("6ec0df63-8960-46ec-9163-2de98e04d5e9"),
+            UserId = userId,
             Specialty = Domain.Lawyers.Speciality.IntellectualPropertyLaw,
-            CreatedBy = Guid.NewGuid(),
+            CreatedBy = userId,
             Created = DateTime.UtcNow
         });
-
-        await db.SaveChangesAsync();
-    }
-
-    public async Task ResetDatabase(ApplicationDBContext db)
-    {
-        db.Database.EnsureDeleted();
-        db.Database.EnsureCreated();
-        await SeedTestData(db);
-    }
-
-    public void Dispose(ApplicationDBContext db)
-    {
-        db.Dispose();
     }
 }

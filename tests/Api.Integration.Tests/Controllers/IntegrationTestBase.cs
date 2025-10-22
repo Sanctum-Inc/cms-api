@@ -1,4 +1,5 @@
 using System.Net.Http;
+using System.Net.Http.Headers;
 using Api.Integration.Tests;
 using Infrastructure.Persistence;
 using Microsoft.Extensions.DependencyInjection;
@@ -8,33 +9,32 @@ namespace Api.Integration.Tests.Controllers;
 
 public abstract class IntegrationTestBase : IAsyncLifetime
 {
-    protected readonly CustomWebApplicationFactory<Program> _factory;
+    protected CustomWebApplicationFactory<Program> _factory;
     protected HttpClient _client { get; private set; }
 
     protected IntegrationTestBase()
     {
-        _factory = new CustomWebApplicationFactory<Program>();
-        _client = _factory.CreateClient();
+        // Don't create factory here
     }
 
     public async Task InitializeAsync()
     {
-        // Reset DB before each test
-        using var scope = _factory.Services.CreateScope();
-        var db = scope.ServiceProvider.GetRequiredService<ApplicationDBContext>();
-        await _factory.ResetDatabase(db);
+        // 🔹 Create a new factory for each test with unique database
+        _factory = new CustomWebApplicationFactory<Program>();
+        _client = _factory.CreateClient();
 
-        await Task.CompletedTask;
+        // Add test authentication header
+        _client.DefaultRequestHeaders.Authorization =
+            new AuthenticationHeaderValue("Test");
+
+        // 🔹 Seed the database once
+        await _factory.SeedDatabaseAsync();
     }
 
     public async Task DisposeAsync()
     {
-        // Optional: clean up resources after test
-        using var scope = _factory.Services.CreateScope();
-        var db = scope.ServiceProvider.GetRequiredService<ApplicationDBContext>();
-        _factory.Dispose(db);
-
-        _client.Dispose();
+        _client?.Dispose();
+        _factory?.Dispose();
         await Task.CompletedTask;
     }
 }

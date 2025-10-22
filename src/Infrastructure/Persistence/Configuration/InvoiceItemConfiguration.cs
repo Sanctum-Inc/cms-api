@@ -1,59 +1,32 @@
-using Domain.Invoices;
+using Domain.InvoiceItems;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Infrastructure.Persistence.Configuration
+namespace Infrastructure.Persistence.Configuration;
+
+internal class InvoiceItemConfiguration : IEntityTypeConfiguration<InvoiceItem>
 {
-    public class InvoiceConfiguration : IEntityTypeConfiguration<Invoice>
+    public void Configure(EntityTypeBuilder<InvoiceItem> builder)
     {
-        public void Configure(EntityTypeBuilder<Invoice> builder)
-        {
-            builder.HasKey(i => i.Id);
+        builder.HasKey(ii => ii.Id);
 
-            builder.Property(i => i.InvoiceNumber)
-                .HasMaxLength(50)
-                .IsRequired();
+        builder.Property(ii => ii.Name)
+            .IsRequired()
+            .HasMaxLength(200);
 
-            builder.Property(i => i.InvoiceDate)
-                .IsRequired();
+        builder.Property(ii => ii.Hours)
+            .HasDefaultValue(0);
 
-            builder.Property(i => i.ClientName)
-                .HasMaxLength(200)
-                .IsRequired();
+        builder.Property(ii => ii.CostPerHour)
+            .HasColumnType("decimal(18,2)");
 
-            builder.Property(i => i.Reference)
-                .HasMaxLength(200)
-                .IsRequired();
+        builder.Property(ii => ii.DayFeeAmount)
+            .HasColumnType("decimal(18,2)");
 
-            builder.Property(i => i.CaseName)
-                .HasMaxLength(300)
-                .IsRequired();
-
-            builder.Property(i => i.TotalAmount)
-                .HasPrecision(18, 2)
-                .IsRequired();
-
-            builder.Property(i => i.AccountName)
-                .HasMaxLength(200)
-                .IsRequired();
-
-            builder.Property(i => i.Bank)
-                .HasMaxLength(100)
-                .IsRequired();
-
-            builder.Property(i => i.BranchCode)
-                .HasMaxLength(50)
-                .IsRequired();
-
-            builder.Property(i => i.AccountNumber)
-                .HasMaxLength(50)
-                .IsRequired();
-
-            // One-to-Many: Invoice -> InvoiceItems
-            builder.HasMany(i => i.Items)
-                .WithOne(ii => ii.Invoice)
-                .HasForeignKey(ii => ii.InvoiceId)
-                .OnDelete(DeleteBehavior.Cascade);
-        }
+        builder
+            .HasOne(ii => ii.Invoice)
+            .WithMany(i => i.Items)
+            .HasForeignKey(ii => ii.InvoiceId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

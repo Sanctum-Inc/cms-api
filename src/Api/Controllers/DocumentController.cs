@@ -5,11 +5,13 @@ using Application.Document.Commands.Update;
 using Application.Document.Queries.Download;
 using Application.Document.Queries.Get;
 using Application.Document.Queries.GetById;
+using Application.Common.Models;
 using Contracts.Documents.Requests;
 using Contracts.Documents.Responses;
 using MapsterMapper;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace Api.Controllers;
 
@@ -18,15 +20,33 @@ namespace Api.Controllers;
 /// </summary>
 [ApiController]
 [Route("api/[controller]")]
-public class DocumentController : ApiControllerBase
+public class DocumentController
+    : CrudControllerBase<
+        DocumentResult,                   // TResult
+        DocumentResponse,                 // TResponse
+        GetCommand,                       // TGetCommand
+        GetByIdCommand,                   // TGetByIdCommand
+        Object,               // TAddRequest
+        AddCommand,                       // TAddCommand
+        UpdateDocumentRequest,            // TUpdateRequest
+        UpdateCommand,                    // TUpdateCommand
+        DeleteCommand                     // TDeleteCommand
+    >
 {
     private readonly ISender _sender;
     private readonly IMapper _mapper;
 
-    public DocumentController(ISender sender, IMapper mapper) : base(mapper, sender)
+    public DocumentController(IMapper mapper, ISender sender)
+        : base(mapper, sender)
     {
         _sender = sender;
         _mapper = mapper;
+    }
+
+    public override async Task<IActionResult> Create([FromBody][Required] Object addRequest)
+    {
+        await Task.CompletedTask;
+        throw new NotImplementedException();
     }
 
     /// <summary>
@@ -37,13 +57,13 @@ public class DocumentController : ApiControllerBase
     /// <remarks>
     /// Sample request:
     ///
-    ///     POST /api/document
-    ///     FormData:
-    ///       file: myfile.pdf
-    ///       name: "Project Proposal"
+    /// POST /api/document
+    /// FormData:
+    /// file: myfile.pdf
+    /// name: "Project Proposal"
     /// </remarks>
     /// <returns>Information about the created document.</returns>
-    [HttpPost]
+    [HttpPost("upload")]
     [ProducesResponseType(typeof(bool), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Upload(
@@ -51,64 +71,11 @@ public class DocumentController : ApiControllerBase
         [FromForm][Required] string name,
         [FromForm][Required] string caseId)
     {
-        var command = new AddCommand(file, name, caseId);
+        var command = new AddCommand(file, name, new Guid(caseId));
 
         var result = await _sender.Send(command);
 
         return MatchAndMapCreatedResult<bool>(result, _mapper);
-    }
-
-    /// <summary>
-    /// Updates the name of an existing document.
-    /// </summary>
-    /// <param name="id">The ID of the document to update.</param>
-    /// <param name="request">The new name for the document.</param>
-    /// <returns>No content on success.</returns>
-    [HttpPut("{id}")]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> UpdateName(
-        [FromRoute] string id,
-        [FromBody][Required] UpdateDocumentRequest request)
-    {
-        var command = new UpdateCommand(new Guid(id), request.FileName);
-
-        var result = await _sender.Send(command);
-
-        return MatchAndMapNoContentResult<bool>(result, _mapper);
-    }
-
-    /// <summary>
-    /// Gets a file structure representation of all documents and their attributes.
-    /// </summary>
-    /// <returns>List of documents with metadata.</returns>
-    [HttpGet()]
-    [ProducesResponseType(typeof(IEnumerable<DocumentResponse>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetStructure()
-    {
-        var command = new GetCommand();
-
-        var result = await _sender.Send(command);
-
-        return MatchAndMapOkResult<IEnumerable<DocumentResult>, IEnumerable<DocumentResponse>>(result, _mapper);
-    }
-
-    /// <summary>
-    /// Gets metadata and attributes of a specific document.
-    /// </summary>
-    /// <param name="id">The document ID.</param>
-    /// <returns>Document metadata and attributes.</returns>
-    [HttpGet("{id}")]
-    [ProducesResponseType(typeof(GetDocumentByIdResponse), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> GetById([FromRoute][Required] string id)
-    {
-        var command = new GetByIdCommand(new Guid(id));
-
-        var result = await _sender.Send(command);
-
-        return MatchAndMapOkResult<DocumentResult, DocumentResponse>(result, _mapper);
     }
 
     /// <summary>
@@ -122,7 +89,6 @@ public class DocumentController : ApiControllerBase
     public async Task<IActionResult> Download([FromRoute][Required] string id)
     {
         var command = new DownloadCommand(new Guid(id));
-
         var result = await _sender.Send(command);
 
         if (result.IsError)
@@ -130,26 +96,9 @@ public class DocumentController : ApiControllerBase
             return Problem(detail: string.Join(", ", result.Errors.Select(e => e.Description)));
         }
 
-        // For downloads, we bypass MatchAndMapResult to return FileStream directly
-        if (result.Value == null) return NotFound();
+        if (result.Value == null)
+            return NotFound();
 
         return File(result.Value.Stream, result.Value.ContentType, result.Value.FileName);
-    }
-
-    /// <summary>
-    /// Deletes a document by ID.
-    /// </summary>
-    /// <param name="id">The document ID.</param>
-    /// <returns>No content on success.</returns>
-    [HttpDelete("{id}")]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> Delete([FromRoute][Required] string id)
-    {
-        var command = new DeleteCommand(new Guid(id));
-
-        var result = await _sender.Send(command);
-
-        return MatchAndMapNoContentResult<bool>(result, _mapper);
     }
 }

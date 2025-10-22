@@ -18,6 +18,6 @@ public class CourtCaseResult
     public User? User { get; set; }
     public List<CourtCaseDate> CourtCaseDates { get; set; } = [];
     public List<Domain.Documents.Document> Documents { get; set; } = [];
-    public List<InvoiceItem> InvoiceItems { get; set; } = [];
+    public List<Domain.InvoiceItems.InvoiceItem> InvoiceItems { get; set; } = [];
     public List<Domain.Lawyers.Lawyer> Lawyers { get; set; } = [];
 }

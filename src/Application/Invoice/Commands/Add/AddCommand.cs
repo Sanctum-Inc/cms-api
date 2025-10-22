@@ -11,5 +11,6 @@ public record AddCommand(
         string AccountName,
         string Bank,
         string BranchCode,
-        string AccountNumber
+        string AccountNumber,
+        Guid CaseId
     ) : IRequest<ErrorOr<bool>>;

@@ -1,4 +1,4 @@
-﻿using Domain.Users;
+using Domain.Users;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -28,7 +28,7 @@ internal class UserConfiguration : IEntityTypeConfiguration<Domain.Users.User>
             .HasForeignKey(d => d.UserId)
             .OnDelete(DeleteBehavior.Cascade);
 
-        builder.HasMany(u => u.InvoiceItems)
+        builder.HasMany(u => u.Invoices)
             .WithOne(i => i.User)
             .HasForeignKey(i => i.UserId)
             .OnDelete(DeleteBehavior.Cascade);

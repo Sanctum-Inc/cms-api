@@ -5,7 +5,7 @@ using MediatR;
 namespace Application.CourtCase.Commands.Update;
 public class UpdateCommandHandler : IRequestHandler<UpdateCommand, ErrorOr<bool>>
 {
-    public ICourtCaseService _courtCaseService;
+    private readonly ICourtCaseService _courtCaseService;
 
     public UpdateCommandHandler(ICourtCaseService courtCaseService)
     {

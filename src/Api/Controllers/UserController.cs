@@ -17,7 +17,7 @@ public class UserController : ApiControllerBase
     private readonly ISender _sender;
     private readonly IMapper _mapper;
 
-    public UserController(ISender sender, IMapper mapper) : base(mapper, sender)
+    public UserController(ISender sender, IMapper mapper)
     {
         _sender = sender;
         _mapper = mapper;
