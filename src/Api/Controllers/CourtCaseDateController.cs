@@ -22,7 +22,7 @@ public class CourtCaseDateController : CrudControllerBase<
         CourtCaseDatesResponse,                 // TResponse
         GetCommand,                       // TGetCommand
         GetByIdCommand,                   // TGetByIdCommand
-        Object,               // TAddRequest
+        AddCourtCaseDateRequest,               // TAddRequest
         AddCommand,                       // TAddCommand
         UpdateCourtCaseDateRequest,            // TUpdateRequest
         UpdateCommand,                    // TUpdateCommand

@@ -33,7 +33,7 @@ public abstract class CrudControllerBase<
     TDeleteCommand
 > : ApiControllerBase
     where TGetCommand : IRequest<ErrorOr<IEnumerable<TResult>>>, new()
-    where TGetByIdCommand : IRequest<ErrorOr<TResult?>>
+    where TGetByIdCommand : IRequest<ErrorOr<TResult>>
     where TAddCommand : IRequest<ErrorOr<bool>>
     where TUpdateCommand : IRequest<ErrorOr<bool>>
     where TDeleteCommand : IRequest<ErrorOr<bool>>

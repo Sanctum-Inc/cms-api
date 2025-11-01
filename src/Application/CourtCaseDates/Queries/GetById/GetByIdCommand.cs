@@ -3,6 +3,4 @@ using ErrorOr;
 using MediatR;
 
 namespace Application.CourtCaseDates.Queries.GetById;
-public class GetByIdCommand : IRequest<ErrorOr<CourtCaseDateResult?>>
-{
-}
+public record GetByIdCommand(Guid Id) : IRequest<ErrorOr<CourtCaseDateResult>>;

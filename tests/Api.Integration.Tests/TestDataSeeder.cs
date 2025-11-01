@@ -1,3 +1,4 @@
+using Domain.CourtCaseDates;
 using Domain.CourtCases;
 using Domain.Documents;
 using Domain.InvoiceItems;
@@ -22,9 +23,54 @@ public static class TestDataSeeder
         await SeedInvoicesAsync(db, user.Id, courtCase.Id);
         await SeedDocumentsAsync(db, user.Id, courtCase.Id);
         await SeedLawyersAsync(db, user.Id);
+        await SeedCourtCaseDates(db, user.Id);
 
         await db.SaveChangesAsync();
     }
+
+    private static async Task SeedCourtCaseDates(ApplicationDBContext db, Guid userId)
+    {
+
+        // 2️⃣ Create a CourtCase for that user
+        var caseId = Guid.Parse("9ae37995-fb0f-4f86-8f9f-30068950df4c");
+
+        if (!await db.CourtCases.AnyAsync(c => c.Id == caseId))
+        {
+            var courtCase = new CourtCase
+            {
+                Id = caseId,
+                CaseNumber = "CC-2025-001",
+                Location = "Johannesburg High Court",
+                Plaintiff = "John Doe",
+                Defendant = "State of South Africa",
+                Status = "Open",
+                Type = "Criminal",
+                Outcome = "Pending",
+                UserId = userId,
+                Created = DateTime.UtcNow
+            };
+
+            await db.CourtCases.AddAsync(courtCase);
+
+            // 3️⃣ Add at least one CourtCaseDate linked to that case
+            var courtCaseDate = new CourtCaseDate
+            {
+                Id = Guid.NewGuid(),
+                Date = "2025-10-31",
+                Title = "Initial Hearing",
+                CaseId = courtCase.Id,
+                Case = courtCase,
+                Created = DateTime.UtcNow,
+                UserId = userId,
+            };
+
+            await db.CourtCaseDates.AddAsync(courtCaseDate);
+        }
+
+        // 4️⃣ Save all seeded entities
+        await db.SaveChangesAsync();
+    }
+
 
     private static async Task ClearDatabaseAsync(ApplicationDBContext db)
     {
@@ -34,6 +80,7 @@ public static class TestDataSeeder
         db.Lawyers.RemoveRange(db.Lawyers);
         db.Users.RemoveRange(db.Users);
         db.Documents.RemoveRange(db.Documents);
+        db.CourtCaseDates.RemoveRange(db.CourtCaseDates);
 
         await db.SaveChangesAsync();
     }

@@ -1,2 +1,6 @@
 namespace Contracts.CourtCaseDates.Responses;
-public record CourtCaseDatesResponse();
+public record CourtCaseDatesResponse(
+    Guid Id,
+    string Date,
+    string Title,
+    Guid CaseId);
