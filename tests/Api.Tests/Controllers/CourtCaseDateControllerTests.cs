@@ -33,8 +33,9 @@ public class CourtCaseDateControllerTests
     public async Task Get_Should_ReturnOk_WithCourtCaseDates()
     {
         // Arrange
-        var expected = new List<CourtCaseDateResult> { new CourtCaseDateResult() };
-        var expectedResponse = new List<CourtCaseDatesResponse> { new CourtCaseDatesResponse() };
+        var id = Guid.NewGuid();
+        var expected = new List<CourtCaseDateResult> { new CourtCaseDateResult(id, "2014/0101", "title", id) };
+        var expectedResponse = new List<CourtCaseDatesResponse> { new CourtCaseDatesResponse(id, "2014/0101", "title", id) };
 
         _mockSender
             .Setup(s => s.Send(It.IsAny<GetCommand>(), It.IsAny<CancellationToken>()))
@@ -45,7 +46,7 @@ public class CourtCaseDateControllerTests
             .Returns(expectedResponse);
 
         // Act
-        var result = await _controller.Get();
+        var result = await _controller.GetAll();
 
         // Assert
         var ok = result.Should().BeOfType<OkObjectResult>().Subject;
@@ -60,8 +61,8 @@ public class CourtCaseDateControllerTests
     {
         // Arrange
         var id = Guid.NewGuid();
-        var resultModel = new CourtCaseDateResult();
-        var responseModel = new CourtCaseDatesResponse();
+        var resultModel = new CourtCaseDateResult(id, "2014/0101", "title", id);
+        var responseModel = new CourtCaseDatesResponse(id, "2014/0101", "title", id);
 
         _mockSender
             .Setup(s => s.Send(It.Is<GetByIdCommand>(c => c.Id == id), It.IsAny<CancellationToken>()))
@@ -72,7 +73,7 @@ public class CourtCaseDateControllerTests
             .Returns(responseModel);
 
         // Act
-        var result = await _controller.GetById(id.ToString());
+        var result = await _controller.GetById(id);
 
         // Assert
         result.Should().BeOfType<OkObjectResult>().Which.Value.Should().Be(responseModel);
@@ -131,7 +132,7 @@ public class CourtCaseDateControllerTests
             .ReturnsAsync(ErrorOrFactory.From(true));
 
         // Act
-        var result = await _controller.Update(routeId.ToString(), request);
+        var result = await _controller.Update(routeId, request);
 
         // Assert
         result.Should().BeOfType<NoContentResult>();
@@ -142,7 +143,7 @@ public class CourtCaseDateControllerTests
     public async Task Update_Should_ReturnNotFound_WhenNotFound()
     {
         // Arrange
-        var id = Guid.NewGuid().ToString();
+        var id = Guid.NewGuid();
         var request = new UpdateCourtCaseDateRequest();
         var mappedCommand = new UpdateCommand(Guid.NewGuid(), "2025-10-31", "Hearing", Guid.NewGuid());
         var error = Error.NotFound("CourtCaseDate.NotFound", "Court case date not found");
@@ -166,7 +167,7 @@ public class CourtCaseDateControllerTests
             .ReturnsAsync(ErrorOrFactory.From(true));
 
         // Act
-        var result = await _controller.Delete(id.ToString());
+        var result = await _controller.Delete(id);
 
         // Assert
         result.Should().BeOfType<NoContentResult>();
@@ -177,7 +178,7 @@ public class CourtCaseDateControllerTests
     public async Task Delete_Should_ReturnNotFound_WhenNotFound()
     {
         // Arrange
-        var id = Guid.NewGuid().ToString();
+        var id = Guid.NewGuid();
         var error = Error.NotFound("CourtCaseDate.NotFound", "Court case date not found");
         _mockSender.Setup(s => s.Send(It.IsAny<DeleteCommand>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(error);

@@ -35,22 +35,6 @@ namespace Api.Integration.Tests.Controllers
                 invoice.Bank.Should().NotBeNullOrWhiteSpace();
                 invoice.BranchCode.Should().NotBeNullOrWhiteSpace();
                 invoice.AccountNumber.Should().NotBeNullOrWhiteSpace();
-                invoice.TotalAmount.Should().Be(invoice.Items.Sum(i => i.Total));
-                invoice.Items.Should().NotBeNull();
-
-                foreach (var item in invoice.Items)
-                {
-                    item.Id.Should().NotBeEmpty();
-                    item.Name.Should().NotBeNullOrWhiteSpace();
-                    item.Date.Should().BeBefore(DateTime.UtcNow.AddSeconds(1));
-                    item.Hours.Should().BeGreaterThanOrEqualTo(0);
-                    item.Total.Should().BeGreaterThanOrEqualTo(0);
-
-                    if (item.IsDayFee)
-                        item.DayFeeAmount.Should().BePositive();
-                    else
-                        item.CostPerHour.Should().BePositive();
-                }
             }
         }
 
@@ -65,16 +49,6 @@ namespace Api.Integration.Tests.Controllers
             var invoice = await response.Content.ReadFromJsonAsync<InvoiceResponse>();
             invoice.Should().NotBeNull();
             invoice!.Id.Should().Be(Guid.Parse(seededInvoiceId));
-            invoice.TotalAmount.Should().Be(invoice.Items.Sum(i => i.Total));
-
-            foreach (var item in invoice.Items)
-            {
-                item.Id.Should().NotBeEmpty();
-                item.Name.Should().NotBeNullOrWhiteSpace();
-                item.Date.Should().BeBefore(DateTime.UtcNow.AddSeconds(1));
-                item.Hours.Should().BeGreaterThanOrEqualTo(0);
-                item.Total.Should().BeGreaterThanOrEqualTo(0);
-            }
         }
 
         [Fact]
@@ -149,7 +123,6 @@ namespace Api.Integration.Tests.Controllers
             updatedInvoice.BranchCode.Should().Be(updateRequest.BranchCode);
             updatedInvoice.AccountNumber.Should().Be(updateRequest.AccountNumber);
             updatedInvoice.TotalAmount.Should().Be(0);
-            updatedInvoice.Items.Should().BeEmpty();
         }
 
 

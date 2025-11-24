@@ -15,9 +15,4 @@ public class CourtCasesResponse
     public string? Outcome { get; set; }
     public DateTime DateCreated { get; set; }
     public Guid UserId { get; set; }
-    public Domain.Users.User? User { get; set; }
-    public List<CourtCaseDate> CourtCaseDates { get; set; } = [];
-    public List<Document> Documents { get; set; } = [];
-    public List<Domain.Invoices.Invoice> InvoiceItems { get; set; } = [];
-    public List<Domain.Lawyers.Lawyer> Lawyers { get; set; } = [];
 }

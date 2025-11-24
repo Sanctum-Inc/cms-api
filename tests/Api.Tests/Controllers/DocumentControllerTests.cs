@@ -58,9 +58,9 @@ public class DocumentControllerTests
     public async Task UpdateName_ShouldReturnNoContent_WhenSuccessful()
     {
         // Arrange
-        var id = Guid.NewGuid().ToString();
+        var id = Guid.NewGuid();
         var request = new UpdateDocumentRequest("Updated");
-        var command = new UpdateCommand(new Guid(id) ,request.FileName);
+        var command = new UpdateCommand(id ,request.FileName);
 
         _mapperMock
             .Setup(m => m.Map<UpdateCommand>(It.IsAny<UpdateDocumentRequest>()))
@@ -116,7 +116,7 @@ public class DocumentControllerTests
             .Returns(documentsResponse);
 
         // Act
-        var result = await _controller.Get();
+        var result = await _controller.GetAll();
 
         // Assert
         var okResult = result as OkObjectResult;
@@ -161,7 +161,7 @@ public class DocumentControllerTests
         var controller = new DocumentController(_mapperMock.Object, _mediatorMock.Object);
 
         // Act
-        var result = await controller.GetById(id.ToString());
+        var result = await controller.GetById(id);
 
         // Assert
         var okResult = result as OkObjectResult;
@@ -207,7 +207,7 @@ public class DocumentControllerTests
             .ReturnsAsync(ErrorOrFactory.From(true));
 
         // Act
-        var result = await _controller.Delete(id.ToString());
+        var result = await _controller.Delete(id);
 
         // Assert
         var noContent = result as NoContentResult;

@@ -12,6 +12,5 @@ public record InvoiceResponse(
         string AccountName,
         string Bank,
         string BranchCode,
-        string AccountNumber,
-        IReadOnlyList<InvoiceItemResponse> Items
+        string AccountNumber
     );

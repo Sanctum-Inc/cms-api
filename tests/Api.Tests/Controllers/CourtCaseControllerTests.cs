@@ -60,8 +60,6 @@ public class CourtCaseControllerTests
             Outcome = c.Outcome,
             Id = c.Id,
             UserId = c.UserId,
-            Lawyers = c.Lawyers,
-            User = c.User
         });
 
         _mockSender
@@ -73,7 +71,7 @@ public class CourtCaseControllerTests
             .Returns((IEnumerable<CourtCaseResult> source) => expectedResponse);
 
         // Act
-        var result = await _controller.Get();
+        var result = await _controller.GetAll();
 
         // Assert
         var ok = result.Should().BeOfType<OkObjectResult>().Subject;
@@ -199,7 +197,7 @@ public class CourtCaseControllerTests
             .ReturnsAsync(ErrorOrFactory.From(true));
 
         // Act
-        var result = await _controller.Update(routeId.ToString(), request);
+        var result = await _controller.Update(routeId, request);
 
         // Assert
         result.Should().BeOfType<NoContentResult>();
@@ -210,7 +208,7 @@ public class CourtCaseControllerTests
     public async Task Update_Should_ReturnNotFound_WhenNotFound()
     {
         // Arrange
-        var id = Guid.NewGuid().ToString();
+        var id = Guid.NewGuid();
         var request = new UpdateCourtCaseRequest("CASE-404", "Pretoria", "A", "B", "Ongoing", "Civil", null);
         var mappedCommand = new UpdateCommand(Guid.NewGuid(), request.CaseNumber, request.Location, request.Plaintiff, request.Defendant, request.Status, request.Type, request.Outcome);
         var error = Error.NotFound("CourtCase.NotFound", "Court case not found");
@@ -238,7 +236,7 @@ public class CourtCaseControllerTests
             .ReturnsAsync(ErrorOrFactory.From(true));
 
         // Act
-        var result = await _controller.Delete(id.ToString());
+        var result = await _controller.Delete(id);
 
         // Assert
         result.Should().BeOfType<NoContentResult>();
@@ -249,7 +247,7 @@ public class CourtCaseControllerTests
     public async Task Delete_Should_ReturnNotFound_WhenNotFound()
     {
         // Arrange
-        var id = Guid.NewGuid().ToString();
+        var id = Guid.NewGuid();
         var error = Error.NotFound("CourtCase.NotFound", "Court case not found");
         _mockSender.Setup(s => s.Send(It.IsAny<DeleteCommand>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(error);
