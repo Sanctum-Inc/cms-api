@@ -5,6 +5,7 @@ using Application.Common.Interfaces.Services;
 using Application.Common.Interfaces.Session;
 using Application.Common.Models;
 using Application.Invoice.Commands.Add;
+using Application.Invoice.Commands.SetIsPaid;
 using Application.Invoice.Commands.Update;
 using Domain.InvoiceItems;
 using Domain.Invoices;
@@ -74,7 +75,7 @@ public class InvoiceService : BaseService<Invoice, InvoiceResult, AddCommand, Up
                 x.Bank,
                 x.BranchCode,
                 x.AccountNumber,
-                x.IsPaid,
+                x.Status,
                 x.Case!.CaseNumber,
                 x.Case!.Plaintiff,
                 x.Case!.Defendant,
@@ -92,6 +93,21 @@ public class InvoiceService : BaseService<Invoice, InvoiceResult, AddCommand, Up
                 }))
         )
         .ToErrorOr();
+    }
+
+    public async Task<ErrorOr<bool>> UpdateIsPaid(SetIsPaidCommand request, CancellationToken cancellationToken)
+    {
+        var entity = await _invoiceRepository.GetByIdAndUserIdAsync( request.Id, cancellationToken );
+
+        if ( entity == null )
+            return Error.NotFound("Entity.NotFound", "Entity with given Id was not found.");
+
+        entity.Status = request.isPaid;
+
+        await _invoiceRepository.UpdateAsync(entity, cancellationToken);
+        await _invoiceRepository.SaveChangesAsync(cancellationToken);
+
+        return true;
     }
 
     protected override Guid GetIdFromUpdateCommand(UpdateCommand command)

@@ -1,4 +1,5 @@
 using Application.Common.Models;
+using Application.Invoice.Commands.SetIsPaid;
 using ErrorOr;
 
 namespace Application.Common.Interfaces.Services;
@@ -22,4 +23,6 @@ public interface IInvoiceService : IBaseService<InvoiceResult>
     /// This method is typically used to allow users to download or view a finalized invoice document.
     /// </remarks>
     Task<ErrorOr<DownloadDocumentResult>> GenerateInvoicePdf(Guid id, CancellationToken cancellationToken);
+
+    Task<ErrorOr<bool>> UpdateIsPaid(SetIsPaidCommand request, CancellationToken cancellationToken);
 }

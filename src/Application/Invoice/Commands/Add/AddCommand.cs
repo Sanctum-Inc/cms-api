@@ -1,3 +1,4 @@
+using Domain.Invoices;
 using ErrorOr;
 using MediatR;
 
@@ -11,5 +12,6 @@ public record AddCommand(
         string Bank,
         string BranchCode,
         string AccountNumber,
-        Guid CaseId
+        Guid CaseId,
+        InvoiceStatus Status
     ) : IRequest<ErrorOr<Guid>>;

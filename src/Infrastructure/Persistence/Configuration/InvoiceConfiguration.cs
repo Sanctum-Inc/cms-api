@@ -37,6 +37,10 @@ internal class InvoiceConfiguration : IEntityTypeConfiguration<Invoice>
             .IsRequired()
             .HasMaxLength(50);
 
+        builder.Property(i => i.Status)
+            .IsRequired()
+            .HasMaxLength(50);
+
         builder
             .HasOne(i => i.User)
             .WithMany(u => u.Invoices)

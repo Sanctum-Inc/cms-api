@@ -1,3 +1,4 @@
+using Domain.Invoices;
 using MediatR;
 
 namespace Contracts.Invoice.Requests;
@@ -11,5 +12,6 @@ public record UpdateInvoiceRequest(
        string AccountName,
        string Bank,
        string BranchCode,
-       string AccountNumber
+       string AccountNumber,
+       InvoiceStatus Status
    );

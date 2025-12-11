@@ -1,4 +1,5 @@
 using Application.Common.Models;
+using Domain.Invoices;
 
 namespace Application.Common.Models;
 public record InvoiceResult(
@@ -12,7 +13,7 @@ public record InvoiceResult(
     string Bank,
     string BranchCode,
     string AccountNumber,
-    bool IsPaid,
+    InvoiceStatus Status,
     string CaseNumber,
     string Plaintiff,
     string Defendant,

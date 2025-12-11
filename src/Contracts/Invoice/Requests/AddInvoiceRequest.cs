@@ -1,3 +1,5 @@
+using Domain.Invoices;
+
 namespace Contracts.Invoice.Requests;
 public record AddInvoiceRequest(
         string InvoiceNumber,
@@ -8,4 +10,5 @@ public record AddInvoiceRequest(
         string AccountName,
         string Bank,
         string BranchCode,
-        string AccountNumber);
+        string AccountNumber,
+        InvoiceStatus Status);

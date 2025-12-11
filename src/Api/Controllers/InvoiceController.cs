@@ -3,6 +3,7 @@ using Application.Common.Models;
 using Application.Invoice.Commands.Add;
 using Application.Invoice.Commands.Delete;
 using Application.Invoice.Commands.GeneratePdf;
+using Application.Invoice.Commands.SetIsPaid;
 using Application.Invoice.Commands.Update;
 using Application.Invoice.Queries.Get;
 using Application.Invoice.Queries.GetById;
@@ -105,6 +106,20 @@ public class InvoiceController : ApiControllerBase
     public async Task<IActionResult> Update(Guid id, [FromBody] UpdateInvoiceRequest request)
     {
         var command = _mapper.Map<UpdateCommand>(request) with { Id = id };
+
+        var updated = await _sender.Send(command);
+
+        return MatchAndMapNoContentResult<bool>(updated, _mapper);
+    }
+
+    // PUT /api/Invoice/{id}
+    [HttpPut("status/{id}")]
+    [ProducesResponseType(typeof(bool), StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [EndpointName("UpdateInvoicesStatus")]
+    public async Task<IActionResult> UpdateStatus(Guid id, [FromBody] UpdateInvoiceStatusRequest request)
+    {
+        var command = _mapper.Map<SetIsPaidCommand>(request) with { Id = id };
 
         var updated = await _sender.Send(command);
 

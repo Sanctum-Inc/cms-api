@@ -1,3 +1,4 @@
+using Domain.Invoices;
 using ErrorOr;
 using MediatR;
 
@@ -11,5 +12,6 @@ public record UpdateCommand(
        string AccountName,
        string Bank,
        string BranchCode,
-       string AccountNumber
+       string AccountNumber,
+       InvoiceStatus Status
    ) : IRequest<ErrorOr<bool>>;

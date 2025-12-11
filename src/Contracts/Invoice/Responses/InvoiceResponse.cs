@@ -1,5 +1,6 @@
 using Contracts.CourtCases.Responses;
 using Contracts.InvoiceItem.Responses;
+using Domain.Invoices;
 
 namespace Contracts.Invoice.Responses;
 public record InvoiceResponse(
@@ -13,7 +14,7 @@ public record InvoiceResponse(
         string Bank,
         string BranchCode,
         string AccountNumber,
-        bool IsPaid,
+        InvoiceStatus Status,
         string CaseNumber,
         string Plaintiff,
         string Defendant,

@@ -26,5 +26,5 @@ public class Invoice : AuditableEntity
     public required Guid CaseId { get; set; }
     public CourtCase? Case { get; set; }
 
-    public bool IsPaid { get; set; }
+    public InvoiceStatus Status { get; set; }
 }
