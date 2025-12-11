@@ -6,7 +6,7 @@ public record DocumentResult(
     string Name,
     string FileName,
     long Size,
-    DateTime CreatedAt,
+    DateTime Created,
     Guid CaseId,
     string ContentType,
     Guid CreatedBy

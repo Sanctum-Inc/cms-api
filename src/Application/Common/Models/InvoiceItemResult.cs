@@ -4,9 +4,7 @@ public record InvoiceItemResult(
         DateTime Date,
         string Name,
         int Hours,
-        decimal? CostPerHour,
-        bool IsDayFee,
-        decimal? DayFeeAmount,
+        decimal CostPerHour,
         decimal Total
     );
 

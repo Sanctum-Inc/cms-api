@@ -1,4 +1,5 @@
 using Application.Common.Interfaces.Services;
+using Application.Common.Models;
 using ErrorOr;
 using MediatR;
 
@@ -16,6 +17,17 @@ public class GetCommandHandler : IRequestHandler<GetCommand, ErrorOr<IEnumerable
     {
         var result = await _invoiceItemService.Get(cancellationToken);
 
-        return result;
+        return result.Value.Select(x =>
+        {
+            return new InvoiceItemResult(
+                x.Id,
+                x.Date,
+                x.Name,
+                x.Hours,
+                x.CostPerHour,
+                x.CostPerHour * x.Hours
+            );
+        })
+        .ToErrorOr();
     }
 }

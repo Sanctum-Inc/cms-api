@@ -14,10 +14,11 @@ public class CourtCaseResult
     public string? Type { get; set; }
     public string? Outcome { get; set; }
     public DateTime Created { get; set; }
+    public DateTime LastModified { get; set; }
     public Guid UserId { get; set; }
     public User? User { get; set; }
     public List<CourtCaseDate> CourtCaseDates { get; set; } = [];
     public List<Domain.Documents.Document> Documents { get; set; } = [];
-    public List<Domain.InvoiceItems.InvoiceItem> InvoiceItems { get; set; } = [];
+    public List<Domain.Invoices.Invoice> Invoices { get; set; } = [];
     public List<Domain.Lawyers.Lawyer> Lawyers { get; set; } = [];
 }

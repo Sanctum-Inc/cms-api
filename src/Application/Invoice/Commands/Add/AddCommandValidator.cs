@@ -23,10 +23,6 @@ namespace Application.Invoice.Commands.Add
                 .NotEmpty().WithMessage("Reference is required.")
                 .MaximumLength(200);
 
-            RuleFor(x => x.CaseName)
-                .NotEmpty().WithMessage("Case name is required.")
-                .MaximumLength(300);
-
             RuleFor(x => x.AccountName)
                 .NotEmpty().WithMessage("Account name is required.")
                 .MaximumLength(200);

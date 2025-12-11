@@ -30,7 +30,8 @@ namespace Api.Integration.Tests.Controllers
                 invoice.InvoiceNumber.Should().NotBeNullOrWhiteSpace();
                 invoice.ClientName.Should().NotBeNullOrWhiteSpace();
                 invoice.Reference.Should().NotBeNullOrWhiteSpace();
-                invoice.CaseName.Should().NotBeNullOrWhiteSpace();
+                invoice.Plaintiff.Should().NotBeNullOrWhiteSpace();
+                invoice.Defendant.Should().NotBeNullOrWhiteSpace();
                 invoice.AccountName.Should().NotBeNullOrWhiteSpace();
                 invoice.Bank.Should().NotBeNullOrWhiteSpace();
                 invoice.BranchCode.Should().NotBeNullOrWhiteSpace();
@@ -117,7 +118,8 @@ namespace Api.Integration.Tests.Controllers
             updatedInvoice!.InvoiceNumber.Should().Be(updateRequest.InvoiceNumber);
             updatedInvoice.ClientName.Should().Be(updateRequest.ClientName);
             updatedInvoice.Reference.Should().Be(updateRequest.Reference);
-            updatedInvoice.CaseName.Should().Be(updateRequest.CaseName);
+            updatedInvoice.Plaintiff.Should().Be(updateRequest.CaseName);
+            updatedInvoice.Defendant.Should().Be(updateRequest.CaseName);
             updatedInvoice.AccountName.Should().Be(updateRequest.AccountName);
             updatedInvoice.Bank.Should().Be(updateRequest.Bank);
             updatedInvoice.BranchCode.Should().Be(updateRequest.BranchCode);

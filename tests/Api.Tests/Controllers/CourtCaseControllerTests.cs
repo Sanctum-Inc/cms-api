@@ -59,11 +59,10 @@ public class CourtCaseControllerTests
             Type = c.Type,
             Outcome = c.Outcome,
             Id = c.Id,
-            UserId = c.UserId,
         });
 
         _mockSender
-            .Setup(s => s.Send(It.IsAny<GetCommand>(), It.IsAny<CancellationToken>()))
+            .Setup(s => s.Send(It.IsAny<GetQuery>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(expectedCases);
 
         _mockMapper
@@ -77,7 +76,7 @@ public class CourtCaseControllerTests
         var ok = result.Should().BeOfType<OkObjectResult>().Subject;
         ok.Value.Should().BeEquivalentTo(expectedResponse);
 
-        _mockSender.Verify(s => s.Send(It.IsAny<GetCommand>(), It.IsAny<CancellationToken>()), Times.Once);
+        _mockSender.Verify(s => s.Send(It.IsAny<GetQuery>(), It.IsAny<CancellationToken>()), Times.Once);
         _mockMapper.Verify(m => m.Map<IEnumerable<CourtCasesResponse>>(It.IsAny<IEnumerable<CourtCaseResult>>()), Times.Once);
     }
 
@@ -112,7 +111,7 @@ public class CourtCaseControllerTests
 
         _mockMapper.Setup(m => m.Map<AddCommand>(request)).Returns(command);
         _mockSender.Setup(s => s.Send(command, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(ErrorOrFactory.From(true));
+            .ReturnsAsync(ErrorOrFactory.From(Guid.NewGuid()));
 
         // Act
         var result = await _controller.Create(request);

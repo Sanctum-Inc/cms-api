@@ -21,9 +21,6 @@ internal class InvoiceConfiguration : IEntityTypeConfiguration<Invoice>
         builder.Property(i => i.Reference)
             .HasMaxLength(100);
 
-        builder.Property(i => i.CaseName)
-            .HasMaxLength(200);
-
         builder.Property(i => i.AccountName)
             .IsRequired()
             .HasMaxLength(150);
@@ -39,9 +36,6 @@ internal class InvoiceConfiguration : IEntityTypeConfiguration<Invoice>
         builder.Property(i => i.AccountNumber)
             .IsRequired()
             .HasMaxLength(50);
-
-        builder.Property(i => i.TotalAmount)
-            .HasColumnType("decimal(18,2)");
 
         builder
             .HasOne(i => i.User)

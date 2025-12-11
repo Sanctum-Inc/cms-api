@@ -14,6 +14,7 @@ namespace Api.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
+[ProducesErrorResponseType(typeof(ProblemDetails))]
 public class CourtCaseController : ApiControllerBase
 {
     private readonly ISender _sender;
@@ -28,9 +29,10 @@ public class CourtCaseController : ApiControllerBase
     // GET /api/CourtCase
     [HttpGet]
     [ProducesResponseType(typeof(IEnumerable<CourtCasesResponse>), StatusCodes.Status200OK)]
+    [EndpointName("GetAllCourtCases")]
     public async Task<IActionResult> GetAll()
     {
-        var result = await _sender.Send(new GetCommand());
+        var result = await _sender.Send(new GetQuery());
 
         return MatchAndMapOkResult<IEnumerable<CourtCaseResult>, IEnumerable<CourtCasesResponse>>(result, _mapper);
     }
@@ -39,32 +41,36 @@ public class CourtCaseController : ApiControllerBase
     [HttpGet("{id}")]
     [ProducesResponseType(typeof(CourtCasesResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [EndpointName("GetCourtCasesById")]
     public async Task<IActionResult> GetById(Guid id)
     {
         var result = await _sender.Send(new GetByIdCommand(id));
 
         var mapped = _mapper.Map<CourtCasesResponse>(result);
 
-        return Ok(mapped);
+        return MatchAndMapOkResult<CourtCaseResult, CourtCasesResponse>(result, _mapper);
+
     }
 
     // POST /api/CourtCase
     [HttpPost]
-    [ProducesResponseType(typeof(bool), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(Guid), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [EndpointName("CreateCourtCases")]
     public async Task<IActionResult> Create([FromBody] AddCourtCaseRequest request)
     {
         var command = _mapper.Map<AddCommand>(request);
 
         var created = await _sender.Send(command);
 
-        return MatchAndMapCreatedResult<bool>(created, _mapper);
+        return MatchAndMapCreatedResult<Guid>(created, _mapper);
     }
 
     // PUT /api/CourtCase/{id}
     [HttpPut("{id}")]
     [ProducesResponseType(typeof(bool), StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [EndpointName("UpdateCourtCases")]
     public async Task<IActionResult> Update(Guid id, [FromBody] UpdateCourtCaseRequest request)
     {
         var command = _mapper.Map<UpdateCommand>(request) with { Id = id };
@@ -76,8 +82,9 @@ public class CourtCaseController : ApiControllerBase
 
     // DELETE /api/CourtCase/{id}
     [HttpDelete("{id}")]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(bool), StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [EndpointName("DeleteCourtCases")]
     public async Task<IActionResult> Delete(Guid id)
     {
         var command =  new DeleteCommand(id);

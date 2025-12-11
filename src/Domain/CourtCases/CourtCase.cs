@@ -9,8 +9,6 @@ using Domain.Users;
 namespace Domain.CourtCases;
 public class CourtCase : AuditableEntity
 {
-    [Key]
-    public Guid Id { get; set; }
     [Required]
     public required string CaseNumber { get; set; }
     [Required]
@@ -23,6 +21,7 @@ public class CourtCase : AuditableEntity
     public required string Status { get; set; }
     public string? Type { get; set; }
     public string? Outcome { get; set; }
+    public required bool IsPaid { get; set; }
     [Required]
     public Guid UserId { get; set; }
     public User? User { get; set; }

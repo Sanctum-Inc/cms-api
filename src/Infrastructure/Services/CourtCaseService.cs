@@ -43,6 +43,7 @@ public class CourtCaseService : BaseService<CourtCase, CourtCaseResult, AddComma
             Type = command.Type,
             Outcome = command.Outcome,
             UserId = Guid.Parse(userId),
+            IsPaid = false,
         };
     }
 

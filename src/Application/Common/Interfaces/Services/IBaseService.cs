@@ -19,7 +19,7 @@ public interface IBaseService<T>
     /// An <see cref="ErrorOr{T}"/> result containing <c>true</c> if the entity was successfully created,
     /// or an error if the operation failed.
     /// </returns>
-    Task<ErrorOr<bool>> Add(IRequest<ErrorOr<bool>> request, CancellationToken cancellationToken);
+    Task<ErrorOr<Guid>> Add(IRequest<ErrorOr<Guid>> request, CancellationToken cancellationToken);
 
 
     /// <summary>

@@ -8,11 +8,10 @@ namespace Domain.CourtCaseDates;
 
 public class CourtCaseDate : AuditableEntity
 {
-    public Guid Id { get; set; }
-
     public required string Date { get; set; }
 
     public required string Title { get; set; }
+    public required string Type { get; set; }
 
     public required Guid CaseId { get; set; }
     public required CourtCase Case { get; set; }

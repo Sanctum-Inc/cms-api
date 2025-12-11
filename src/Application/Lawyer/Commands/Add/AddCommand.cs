@@ -1,4 +1,4 @@
-﻿using Domain.Lawyers;
+using Domain.Lawyers;
 using ErrorOr;
 using MediatR;
 
@@ -9,4 +9,4 @@ public record AddCommand(
     string Surname,
     string MobileNumber,
     Speciality Specialty
-) : IRequest<ErrorOr<bool>>;
+) : IRequest<ErrorOr<Guid>>;

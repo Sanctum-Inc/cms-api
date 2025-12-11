@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDBContext))]
-    [Migration("20251101055140_AddUserIdToCourtCaseDates")]
-    partial class AddUserIdToCourtCaseDates
+    [Migration("20251209170114_UpdateInvoiceModel")]
+    partial class UpdateInvoiceModel
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -87,6 +87,10 @@ namespace Infrastructure.Persistence.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid");
 
@@ -120,6 +124,9 @@ namespace Infrastructure.Persistence.Migrations
                         .HasColumnType("text");
 
                     b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsPaid")
                         .HasColumnType("boolean");
 
                     b.Property<DateTime?>("LastModified")
@@ -207,6 +214,80 @@ namespace Infrastructure.Persistence.Migrations
                     b.ToTable("Documents");
                 });
 
+            modelBuilder.Entity("Domain.Firms.Firm", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("AccountName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("AccountNumber")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("AdvocateAdmissionDate")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("AttorneyAdmissionDate")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Bank")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("BranchCode")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("CreatedBy")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Fax")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("LastModifiedBy")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Mobile")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Telephone")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Firms");
+                });
+
             modelBuilder.Entity("Domain.InvoiceItems.InvoiceItem", b =>
                 {
                     b.Property<Guid>("Id")
@@ -284,9 +365,6 @@ namespace Infrastructure.Persistence.Migrations
                     b.Property<Guid>("CaseId")
                         .HasColumnType("uuid");
 
-                    b.Property<string>("CaseName")
-                        .HasColumnType("text");
-
                     b.Property<string>("ClientName")
                         .IsRequired()
                         .HasColumnType("text");
@@ -305,6 +383,9 @@ namespace Infrastructure.Persistence.Migrations
                         .HasColumnType("text");
 
                     b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsPaid")
                         .HasColumnType("boolean");
 
                     b.Property<DateTime?>("LastModified")

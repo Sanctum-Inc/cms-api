@@ -34,8 +34,6 @@ public class InvoiceItemService : BaseService<InvoiceItem, InvoiceItemResult, Ad
             Name = command.Name,
             Hours = command.Hours,
             CostPerHour = command.CostPerHour,
-            DayFeeAmount = command.DayFeeAmount,
-            IsDayFee = command.IsDayFee,
             Id = Guid.NewGuid(),
             UserId = new Guid(userId),
         };
@@ -47,7 +45,5 @@ public class InvoiceItemService : BaseService<InvoiceItem, InvoiceItemResult, Ad
         entity.Name = command.Name;
         entity.Hours = command.Hours;
         entity.CostPerHour = command.CostPerHour;
-        entity.DayFeeAmount = command.DayFeeAmount;
-        entity.IsDayFee = command.IsDayFee;
     }
 }

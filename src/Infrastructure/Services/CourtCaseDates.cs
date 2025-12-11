@@ -36,6 +36,7 @@ public class CourtCaseDatesService : BaseService<CourtCaseDate, CourtCaseDateRes
             Date = command.Date,
             Title = command.Title,
             CaseId = command.CaseId,
+            Type = command.Type,
             Case = null!,
             UserId = new Guid(userId),
         };

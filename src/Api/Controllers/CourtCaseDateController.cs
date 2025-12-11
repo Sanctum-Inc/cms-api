@@ -32,6 +32,7 @@ public class CourtCaseDateController : ApiControllerBase
     // GET /api/CourtCase
     [HttpGet]
     [ProducesResponseType(typeof(IEnumerable<CourtCaseDatesResponse>), StatusCodes.Status200OK)]
+    [EndpointName("GetAllCourtCaseDates")]
     public async Task<IActionResult> GetAll()
     {
         var result = await _sender.Send(new GetCommand());
@@ -43,6 +44,7 @@ public class CourtCaseDateController : ApiControllerBase
     [HttpGet("{id}")]
     [ProducesResponseType(typeof(CourtCaseDatesResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [EndpointName("GetCourtCaseDatesById")]
     public async Task<IActionResult> GetById(Guid id)
     {
         var result = await _sender.Send(new GetByIdCommand(id));
@@ -54,19 +56,21 @@ public class CourtCaseDateController : ApiControllerBase
     [HttpPost]
     [ProducesResponseType(typeof(bool), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [EndpointName("CreateCourtCaseDates")]
     public async Task<IActionResult> Create([FromBody] AddCourtCaseDateRequest request)
     {
         var command = _mapper.Map<AddCommand>(request);
 
         var created = await _sender.Send(command);
 
-        return MatchAndMapCreatedResult<bool>(created, _mapper);
+        return MatchAndMapCreatedResult<Guid>(created, _mapper);
     }
 
     // PUT /api/CourtCase/{id}
     [HttpPut("{id}")]
     [ProducesResponseType(typeof(bool), StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [EndpointName("UpdateCourtCaseDates")]
     public async Task<IActionResult> Update(Guid id, [FromBody] UpdateCourtCaseDateRequest request)
     {
         var command = _mapper.Map<UpdateCommand>(request) with { Id = id };
@@ -78,8 +82,9 @@ public class CourtCaseDateController : ApiControllerBase
 
     // DELETE /api/CourtCase/{id}
     [HttpDelete("{id}")]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(bool), StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [EndpointName("DeleteCourtCaseDates")]
     public async Task<IActionResult> Delete(Guid id)
     {
         var command = new DeleteCommand(id);

@@ -4,8 +4,6 @@ using Domain.Common;
 namespace Domain.Firms;
 public class Firm : AuditableEntity
 {
-    [Key]
-    public required Guid Id { get; set; }
     public required string Name { get; set; }
     public required string Address { get; set; }
     public required string Telephone { get; set; }

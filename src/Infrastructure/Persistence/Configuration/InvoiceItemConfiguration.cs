@@ -20,9 +20,6 @@ internal class InvoiceItemConfiguration : IEntityTypeConfiguration<InvoiceItem>
         builder.Property(ii => ii.CostPerHour)
             .HasColumnType("decimal(18,2)");
 
-        builder.Property(ii => ii.DayFeeAmount)
-            .HasColumnType("decimal(18,2)");
-
         builder
             .HasOne(ii => ii.Invoice)
             .WithMany(i => i.Items)

@@ -22,27 +22,9 @@ namespace Application.InvoiceItem.Commands.Update
             RuleFor(x => x.CaseId)
                 .NotEmpty().WithMessage("CaseId is required.");
 
-            When(x => x.IsDayFee, () =>
-            {
-                RuleFor(x => x.DayFeeAmount)
-                    .NotNull().WithMessage("Day fee amount is required when IsDayFee is true.")
-                    .GreaterThanOrEqualTo(0).WithMessage("Day fee amount must be zero or positive.");
-
-                RuleFor(x => x.CostPerHour)
-                    .Must(x => x == null)
-                    .WithMessage("Cost per hour must be null when IsDayFee is true.");
-            });
-
-            When(x => !x.IsDayFee, () =>
-            {
-                RuleFor(x => x.CostPerHour)
-                    .NotNull().WithMessage("Cost per hour is required when IsDayFee is false.")
-                    .GreaterThanOrEqualTo(0).WithMessage("Cost per hour must be zero or positive.");
-
-                RuleFor(x => x.DayFeeAmount)
-                    .Must(x => x == null)
-                    .WithMessage("Day fee amount must be null when IsDayFee is false.");
-            });
+            RuleFor(x => x.CostPerHour)
+                .NotNull().WithMessage("Cost per hour is required.")
+                .GreaterThanOrEqualTo(0).WithMessage("Cost per hour must be zero or positive.");
         }
     }
 }

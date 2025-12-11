@@ -47,7 +47,8 @@ public static class TestDataSeeder
                 Type = "Criminal",
                 Outcome = "Pending",
                 UserId = userId,
-                Created = DateTime.UtcNow
+                Created = DateTime.UtcNow,
+                IsPaid = false,
             };
 
             await db.CourtCases.AddAsync(courtCase);
@@ -62,6 +63,7 @@ public static class TestDataSeeder
                 Case = courtCase,
                 Created = DateTime.UtcNow,
                 UserId = userId,
+                Type = courtCase.Type,
             };
 
             await db.CourtCaseDates.AddAsync(courtCaseDate);
@@ -113,7 +115,8 @@ public static class TestDataSeeder
             Defendant = "Jane",
             Status = "Active",
             Type = "Criminal",
-            UserId = userId
+            UserId = userId,
+            IsPaid = false,
         };
         db.CourtCases.Add(courtCase);
         await db.SaveChangesAsync();
@@ -134,7 +137,6 @@ public static class TestDataSeeder
             InvoiceDate = DateTime.UtcNow,
             ClientName = "John Doe",
             Reference = "REF-001",
-            CaseName = "John vs Jane",
             UserId = userId,
             CaseId = caseId,
             AccountName = "Test Account",
@@ -154,7 +156,6 @@ public static class TestDataSeeder
             Name = "Consultation Fee",
             Hours = 2,
             CostPerHour = 1500m,
-            IsDayFee = false,
             UserId = userId,
             CreatedBy = userId,
             Created = DateTime.UtcNow
@@ -166,7 +167,6 @@ public static class TestDataSeeder
             Name = "Court Appearance",
             Hours = 5,
             CostPerHour = 2000m,
-            IsDayFee = false,
             UserId = userId,
             CreatedBy = userId,
             Created = DateTime.UtcNow

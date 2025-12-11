@@ -27,6 +27,7 @@ public class UserController : ApiControllerBase
     [ProducesResponseType(typeof(LoginResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [EndpointName("Login")]
     public async Task<IActionResult> Login(LoginRequest loginRequest)
     {
         var command = _mapper.Map<LoginCommand>(loginRequest);
@@ -40,6 +41,7 @@ public class UserController : ApiControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [EndpointName("Register")]
     public async Task<IActionResult> Register(RegisterRequest registerRequest)
     {
         var command = _mapper.Map<RegisterCommand>(registerRequest);
@@ -50,7 +52,8 @@ public class UserController : ApiControllerBase
     }
 
     [HttpGet("{id}")]
-    public async Task<IActionResult> Get([FromRoute] string id)
+    [EndpointName("GetById")]
+    public async Task<IActionResult> GetById([FromRoute] string id)
     {
         var query = new GetQuery(id);
 

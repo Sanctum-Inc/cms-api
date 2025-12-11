@@ -37,14 +37,15 @@ public class LawyerController : ApiControllerBase
     /// <returns>Status message.</returns>
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<IActionResult> Get()
+    [EndpointName("GetAllLawyers")]
+    public async Task<IActionResult> GetAll()
     {
 
         var command = new GetCommand();
 
         var result = await _sender.Send(command);
 
-        return MatchAndMapOkResult<IEnumerable<LawyerResult>, IEnumerable<GetLawyerResponse>>(result, _mapper);
+        return MatchAndMapOkResult<IEnumerable<LawyerResult>, IEnumerable<LawyerResponse>>(result, _mapper);
     }
 
     /// <summary>
@@ -55,6 +56,7 @@ public class LawyerController : ApiControllerBase
     [HttpGet("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [EndpointName("GetLawyersById")]
     public async Task<IActionResult> GetById([FromRoute][Required] string id)
     {
 
@@ -62,7 +64,7 @@ public class LawyerController : ApiControllerBase
 
         var result = await _sender.Send(command);
 
-        return MatchAndMapOkResult<LawyerResult, GetLawyerResponse>(result, _mapper);
+        return MatchAndMapOkResult<LawyerResult, LawyerResponse>(result, _mapper);
     }
 
     /// <summary>
@@ -73,13 +75,14 @@ public class LawyerController : ApiControllerBase
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [EndpointName("CreateLawyers")]
     public async Task<IActionResult> Create([FromBody] AddLawyerRequest lawyer)
     {
         var command = _mapper.Map<AddCommand>(lawyer);
 
         var result = await _sender.Send(command);
 
-        return MatchAndMapNoContentResult<bool>(result, _mapper);
+        return MatchAndMapNoContentResult<Guid>(result, _mapper);
     }
 
     /// <summary>
@@ -91,6 +94,7 @@ public class LawyerController : ApiControllerBase
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [EndpointName("UpdateLawyers")]
     public async Task<IActionResult> Update([FromRoute][Required] string id, [FromBody][Required] UpdateLawyerRequest lawyer)
     {
         var command = _mapper.Map<UpdateCommand>(lawyer);
@@ -108,6 +112,7 @@ public class LawyerController : ApiControllerBase
     [HttpDelete("{id}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [EndpointName("DeleteLawyers")]
     public async Task<IActionResult> Delete([FromRoute][Required] string id)
     {
         var command = new DeleteCommand(new Guid(id));

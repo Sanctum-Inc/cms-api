@@ -8,8 +8,6 @@ public record UpdateCommand(
     Guid InvoiceId,
     string Name,
     int Hours,
-    decimal? CostPerHour,
-    decimal? DayFeeAmount,
-    Guid CaseId,
-    bool IsDayFee
+    decimal CostPerHour,
+    Guid CaseId
 ) : IRequest<ErrorOr<bool>>;

@@ -1,4 +1,4 @@
-﻿using ErrorOr;
+using ErrorOr;
 using MediatR;
 
 namespace Application.CourtCase.Commands.Add;
@@ -9,4 +9,4 @@ public record AddCommand(
         string Defendant,
         string Status,
         string? Type,
-        string? Outcome) : IRequest<ErrorOr<bool>>;
+        string? Outcome) : IRequest<ErrorOr<Guid>>;

@@ -34,8 +34,8 @@ public class CourtCaseDateControllerTests
     {
         // Arrange
         var id = Guid.NewGuid();
-        var expected = new List<CourtCaseDateResult> { new CourtCaseDateResult(id, "2014/0101", "title", id) };
-        var expectedResponse = new List<CourtCaseDatesResponse> { new CourtCaseDatesResponse(id, "2014/0101", "title", id) };
+        var expected = new List<CourtCaseDateResult> { new CourtCaseDateResult(id, "2014/0101", "title", "type", id) };
+        var expectedResponse = new List<CourtCaseDatesResponse> { new CourtCaseDatesResponse(id, "2014/0101", "title", "type", id) };
 
         _mockSender
             .Setup(s => s.Send(It.IsAny<GetCommand>(), It.IsAny<CancellationToken>()))
@@ -61,8 +61,8 @@ public class CourtCaseDateControllerTests
     {
         // Arrange
         var id = Guid.NewGuid();
-        var resultModel = new CourtCaseDateResult(id, "2014/0101", "title", id);
-        var responseModel = new CourtCaseDatesResponse(id, "2014/0101", "title", id);
+        var resultModel = new CourtCaseDateResult(id, "2014/0101", "title", "type", id);
+        var responseModel = new CourtCaseDatesResponse(id, "2014/0101", "title", "type", id);
 
         _mockSender
             .Setup(s => s.Send(It.Is<GetByIdCommand>(c => c.Id == id), It.IsAny<CancellationToken>()))
@@ -83,12 +83,12 @@ public class CourtCaseDateControllerTests
     public async Task Create_Should_ReturnCreated_WhenSuccessful()
     {
         // Arrange
-        var request = new AddCourtCaseDateRequest("2025-10-31", "Hearing", Guid.NewGuid());
-        var command = new AddCommand(request.Date, request.Title, request.CaseId);
+        var request = new AddCourtCaseDateRequest("2025-10-31", "Hearing", Guid.NewGuid(), "Type");
+        var command = new AddCommand(request.Date, request.Title, request.CaseId, request.Type);
 
         _mockMapper.Setup(m => m.Map<AddCommand>(request)).Returns(command);
         _mockSender.Setup(s => s.Send(command, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(ErrorOrFactory.From(true));
+            .ReturnsAsync(ErrorOrFactory.From(request.CaseId));
 
         // Act
         var result = await _controller.Create(request);
@@ -103,8 +103,8 @@ public class CourtCaseDateControllerTests
     public async Task Create_Should_ReturnBadRequest_OnValidationError()
     {
         // Arrange
-        var request = new AddCourtCaseDateRequest("", "", Guid.Empty);
-        var command = new AddCommand(request.Date, request.Title, request.CaseId);
+        var request = new AddCourtCaseDateRequest("", "", Guid.Empty, "");
+        var command = new AddCommand(request.Date, request.Title, request.CaseId, request.Type);
         var error = Error.Validation("CourtCaseDate.Invalid", "Invalid create request");
 
         _mockMapper.Setup(m => m.Map<AddCommand>(request)).Returns(command);

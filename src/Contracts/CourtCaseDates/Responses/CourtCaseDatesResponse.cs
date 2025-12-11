@@ -3,4 +3,5 @@ public record CourtCaseDatesResponse(
     Guid Id,
     string Date,
     string Title,
+    string Type,
     Guid CaseId);

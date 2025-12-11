@@ -7,10 +7,9 @@ public record AddCommand(
         DateTime InvoiceDate,
         string ClientName,
         string Reference,
-        string CaseName,
         string AccountName,
         string Bank,
         string BranchCode,
         string AccountNumber,
         Guid CaseId
-    ) : IRequest<ErrorOr<bool>>;
+    ) : IRequest<ErrorOr<Guid>>;

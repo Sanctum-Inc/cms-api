@@ -1,3 +1,4 @@
+using Contracts.CourtCases.Responses;
 using Contracts.InvoiceItem.Responses;
 
 namespace Contracts.Invoice.Responses;
@@ -7,10 +8,15 @@ public record InvoiceResponse(
         DateTime InvoiceDate,
         string ClientName,
         string Reference,
-        string CaseName,
         decimal TotalAmount,
         string AccountName,
         string Bank,
         string BranchCode,
-        string AccountNumber
+        string AccountNumber,
+        bool IsPaid,
+        string CaseNumber,
+        string Plaintiff,
+        string Defendant,
+        Guid CaseId,
+        IEnumerable<InvoiceItemResponse> Items
     );

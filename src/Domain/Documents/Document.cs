@@ -6,7 +6,6 @@ namespace Domain.Documents;
 
 public class Document : AuditableEntity
 {
-    public Guid Id { get; set; }
     public required string Name { get; set; }
     public required string FileName { get; set; }
     public required string ContentType { get; set; }

@@ -2,13 +2,16 @@ using System.ComponentModel.DataAnnotations;
 using Application.Common.Models;
 using Application.Invoice.Commands.Add;
 using Application.Invoice.Commands.Delete;
+using Application.Invoice.Commands.GeneratePdf;
 using Application.Invoice.Commands.Update;
 using Application.Invoice.Queries.Get;
 using Application.Invoice.Queries.GetById;
 using Contracts.CourtCases.Responses;
+using Contracts.Documents.Responses;
 using Contracts.Invoice.Requests;
 using Contracts.Invoice.Responses;
 using Contracts.InvoiceItem.Requests;
+using Contracts.InvoiceItem.Responses;
 using MapsterMapper;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -34,6 +37,7 @@ public class InvoiceController : ApiControllerBase
     // GET /api/CourtCase
     [HttpGet]
     [ProducesResponseType(typeof(IEnumerable<InvoiceResponse>), StatusCodes.Status200OK)]
+    [EndpointName("GetAllInvoices")]
     public async Task<IActionResult> GetAll()
     {
         var result = await _sender.Send(new GetCommand());
@@ -41,10 +45,11 @@ public class InvoiceController : ApiControllerBase
         return MatchAndMapOkResult<IEnumerable<InvoiceResult>, IEnumerable<InvoiceResponse>>(result, _mapper);
     }
 
-    // GET /api/CourtCase/{id}
+    // GET /api/Invoice/{id}
     [HttpGet("{id}")]
     [ProducesResponseType(typeof(InvoiceResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [EndpointName("GetInvoicesById")]
     public async Task<IActionResult> GetById(Guid id)
     {
         var result = await _sender.Send(new GetByIdCommand(id));
@@ -53,23 +58,50 @@ public class InvoiceController : ApiControllerBase
 
     }
 
-    // POST /api/CourtCase
+    // Fix for the CS1503 error in the GeneratePDF method
+    // The issue is that the second argument of the `Match` method expects a `Func<List<Error>, IActionResult>`
+    // but `result.Errors` is being passed directly, which is a `List<Error>`.
+
+    /// <summary>Generate PDF for invoice</summary>
+    /// <param name="id">Invoice Id</param>
+    /// <returns>PDF file</returns>
+    [HttpGet("pdf/{id}")]
+    [ProducesResponseType(typeof(FileContentResult), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [Produces("application/pdf")]
+    [EndpointName("GeneratePDF")]
+    public async Task<IActionResult> GeneratePDF(Guid id)
+    {
+        var result = await _sender.Send(new GeneratePdfCommand(id));
+
+        return result.Match<IActionResult>(
+            data => File(data.Stream, data.ContentType, data.FileName),
+            errors => Problem(
+                detail: string.Join(", ", errors.Select(e => e.Description)),
+                statusCode: StatusCodes.Status404NotFound)
+        );
+    }
+
+
+    // POST /api/Invoice
     [HttpPost]
     [ProducesResponseType(typeof(bool), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [EndpointName("CreateInvoices")]
     public async Task<IActionResult> Create([FromBody] AddInvoiceRequest request)
     {
         var command = _mapper.Map<AddCommand>(request);
 
         var created = await _sender.Send(command);
 
-        return MatchAndMapCreatedResult<bool>(created, _mapper);
+        return MatchAndMapCreatedResult<Guid>(created, _mapper);
     }
 
-    // PUT /api/CourtCase/{id}
+    // PUT /api/Invoice/{id}
     [HttpPut("{id}")]
     [ProducesResponseType(typeof(bool), StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [EndpointName("UpdateInvoices")]
     public async Task<IActionResult> Update(Guid id, [FromBody] UpdateInvoiceRequest request)
     {
         var command = _mapper.Map<UpdateCommand>(request) with { Id = id };
@@ -79,10 +111,11 @@ public class InvoiceController : ApiControllerBase
         return MatchAndMapNoContentResult<bool>(updated, _mapper);
     }
 
-    // DELETE /api/CourtCase/{id}
+    // DELETE /api/Invoice/{id}
     [HttpDelete("{id}")]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(bool), StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [EndpointName("DeleteInvoices")]
     public async Task<IActionResult> Delete(Guid id)
     {
         var command = new DeleteCommand(id);
@@ -91,4 +124,5 @@ public class InvoiceController : ApiControllerBase
 
         return MatchAndMapNoContentResult<bool>(success, _mapper);
     }
+
 }

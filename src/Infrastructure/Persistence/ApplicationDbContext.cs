@@ -10,6 +10,7 @@ using Domain.Users;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using System.Linq;
+using Domain.Firms;
 
 namespace Infrastructure.Persistence;
 
@@ -27,6 +28,7 @@ public class ApplicationDBContext : DbContext, IApplicationDBContext
     public DbSet<InvoiceItem> InvoiceItems => Set<InvoiceItem>();
     public DbSet<Lawyer> Lawyers => Set<Lawyer>();
     public DbSet<CourtCaseDate> CourtCaseDates => Set<CourtCaseDate>();
+    public DbSet<Firm> Firms => Set<Firm>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

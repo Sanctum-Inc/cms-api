@@ -38,8 +38,6 @@ public class InvoiceItemIntegrationTests : IntegrationTestBase
         item.Name.Should().Be("Consultation Fee");
         item.Hours.Should().Be(2);
         item.CostPerHour.Should().Be(1500m);
-        item.DayFeeAmount.Should().BeNull();
-        item.IsDayFee.Should().BeFalse();
     }
 
     [Fact]
@@ -66,9 +64,7 @@ public class InvoiceItemIntegrationTests : IntegrationTestBase
             Name: "Drafting of Affidavit",
             Hours: 3,
             CostPerHour: 950,
-            DayFeeAmount: null,
-            CaseId: ExistingCourtCaseId,
-            IsDayFee: false
+            CaseId: ExistingCourtCaseId
         );
 
         // Act
@@ -88,14 +84,11 @@ public class InvoiceItemIntegrationTests : IntegrationTestBase
     {
         // Arrange
         var request = new UpdateInvoiceItemRequest(
-            Id: ExistingInvoiceItemId,
             InvoiceId: ExistingInvoiceId,
             Name: "Consultation Fee (Updated)",
             Hours: 4,
             CostPerHour: 1550,
-            DayFeeAmount: null,
-            CaseId: ExistingCourtCaseId,
-            IsDayFee: false
+            CaseId: ExistingCourtCaseId
         );
 
         // Act

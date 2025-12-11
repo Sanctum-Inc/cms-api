@@ -17,7 +17,7 @@ public class LawyerIntegrationTests : IntegrationTestBase
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
-        var content = await response.Content.ReadFromJsonAsync<List<GetLawyerResponse>>();
+        var content = await response.Content.ReadFromJsonAsync<List<LawyerResponse>>();
         content.Should().NotBeNull();
         content.Should().NotBeEmpty();
         content![0].Name.Should().NotBeNullOrEmpty();
@@ -31,7 +31,7 @@ public class LawyerIntegrationTests : IntegrationTestBase
     {
         // Arrange - Get a lawyer first to get a valid ID
         var getAllResponse = await _client.GetAsync("/api/lawyer");
-        var lawyers = await getAllResponse.Content.ReadFromJsonAsync<List<GetLawyerResponse>>();
+        var lawyers = await getAllResponse.Content.ReadFromJsonAsync<List<LawyerResponse>>();
         var validId = lawyers![0].Id;
 
         // Act
@@ -39,7 +39,7 @@ public class LawyerIntegrationTests : IntegrationTestBase
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
-        var content = await response.Content.ReadFromJsonAsync<GetLawyerResponse>();
+        var content = await response.Content.ReadFromJsonAsync<LawyerResponse>();
         content.Should().NotBeNull();
         content!.Id.Should().Be(validId);
         content.Name.Should().NotBeNullOrEmpty();
@@ -104,7 +104,7 @@ public class LawyerIntegrationTests : IntegrationTestBase
     {
         // Arrange - Get an existing lawyer first
         var getAllResponse = await _client.GetAsync("/api/lawyer");
-        var lawyers = await getAllResponse.Content.ReadFromJsonAsync<List<GetLawyerResponse>>();
+        var lawyers = await getAllResponse.Content.ReadFromJsonAsync<List<LawyerResponse>>();
         var existingLawyer = lawyers![0];
 
         var updateRequest = new UpdateLawyerRequest(
@@ -123,7 +123,7 @@ public class LawyerIntegrationTests : IntegrationTestBase
 
         // Verify the update
         var getResponse = await _client.GetAsync($"/api/lawyer/{existingLawyer.Id}");
-        var updatedLawyer = await getResponse.Content.ReadFromJsonAsync<GetLawyerResponse>();
+        var updatedLawyer = await getResponse.Content.ReadFromJsonAsync<LawyerResponse>();
         updatedLawyer!.Name.Should().Be("UpdatedName");
         updatedLawyer.Surname.Should().Be("UpdatedSurname");
     }
@@ -153,7 +153,7 @@ public class LawyerIntegrationTests : IntegrationTestBase
     {
         // Arrange - Get an existing lawyer first
         var getAllResponse = await _client.GetAsync("/api/lawyer");
-        var lawyers = await getAllResponse.Content.ReadFromJsonAsync<List<GetLawyerResponse>>();
+        var lawyers = await getAllResponse.Content.ReadFromJsonAsync<List<LawyerResponse>>();
         var existingLawyer = lawyers![0];
 
         var invalidUpdateRequest = new UpdateLawyerRequest(
@@ -186,7 +186,7 @@ public class LawyerIntegrationTests : IntegrationTestBase
 
         // Get the created lawyer
         var getAllResponse = await _client.GetAsync("/api/lawyer");
-        var lawyers = await getAllResponse.Content.ReadFromJsonAsync<List<GetLawyerResponse>>();
+        var lawyers = await getAllResponse.Content.ReadFromJsonAsync<List<LawyerResponse>>();
         var lawyerToDelete = lawyers!.First(l => l.Email == "delete.test@example.com");
 
         // Act
@@ -229,13 +229,13 @@ public class LawyerIntegrationTests : IntegrationTestBase
 
         // Get all and find created lawyer
         var getAllResponse = await _client.GetAsync("/api/lawyer");
-        var lawyers = await getAllResponse.Content.ReadFromJsonAsync<List<GetLawyerResponse>>();
+        var lawyers = await getAllResponse.Content.ReadFromJsonAsync<List<LawyerResponse>>();
         var createdLawyer = lawyers!.First(l => l.Email == "workflow.test@example.com");
 
         // Get by ID
         var getByIdResponse = await _client.GetAsync($"/api/lawyer/{createdLawyer.Id}");
         getByIdResponse.StatusCode.Should().Be(HttpStatusCode.OK);
-        var retrievedLawyer = await getByIdResponse.Content.ReadFromJsonAsync<GetLawyerResponse>();
+        var retrievedLawyer = await getByIdResponse.Content.ReadFromJsonAsync<LawyerResponse>();
         retrievedLawyer!.Email.Should().Be(createRequest.Email);
 
         // Update
@@ -251,7 +251,7 @@ public class LawyerIntegrationTests : IntegrationTestBase
 
         // Verify update
         var verifyResponse = await _client.GetAsync($"/api/lawyer/{createdLawyer.Id}");
-        var updatedLawyer = await verifyResponse.Content.ReadFromJsonAsync<GetLawyerResponse>();
+        var updatedLawyer = await verifyResponse.Content.ReadFromJsonAsync<LawyerResponse>();
         updatedLawyer!.Name.Should().Be("UpdatedWorkflow");
 
         // Delete

@@ -10,9 +10,6 @@ namespace Domain.Users;
 
 public class User : AuditableEntity
 {
-    [Key]
-    public Guid Id { get; set; }
-
     [Required]
     [EmailAddress]
     public required string Email { get; set; }

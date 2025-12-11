@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Application.Common.Interfaces.Repositories;
 using Application.Common.Interfaces.Services;
 using Application.Common.Interfaces.Session;
+using Domain.Common;
 using ErrorOr;
 using MapsterMapper;
 using MediatR;
@@ -13,9 +14,9 @@ using MediatR;
 namespace Infrastructure.Services.Base
 {
     public abstract class BaseService<TEntity, TResult, TAddCommand, TUpdateCommand> : IBaseService<TResult>
-        where TEntity : class
+        where TEntity : AuditableEntity
         where TResult : class
-        where TAddCommand : IRequest<ErrorOr<bool>>
+        where TAddCommand : IRequest<ErrorOr<Guid>>
         where TUpdateCommand : IRequest<ErrorOr<bool>>
     {
         private readonly IBaseRepository<TEntity> _repository;
@@ -44,18 +45,18 @@ namespace Infrastructure.Services.Base
         /// </summary>
         protected virtual string? ResolveUserId() => _sessionResolver.UserId;
 
-        public virtual async Task<ErrorOr<bool>> Add(IRequest<ErrorOr<bool>> request, CancellationToken cancellationToken)
+        public virtual async Task<ErrorOr<Guid>> Add(IRequest<ErrorOr<Guid>> request, CancellationToken cancellationToken)
         {
             if (request is not TAddCommand addCommand)
                 return Error.Failure(description: "Invalid request type.");
 
-            var entity = MapFromAddCommand(addCommand, ResolveUserId());
+            ErrorOr<TEntity> entity = MapFromAddCommand(addCommand, ResolveUserId());
             if (entity.IsError) return entity.Errors;
 
             await _repository.AddAsync(entity.Value!, cancellationToken);
             await _repository.SaveChangesAsync(cancellationToken);
 
-            return true;
+            return entity.Value.Id;
         }
 
         public virtual async Task<ErrorOr<bool>> Update(IRequest<ErrorOr<bool>> request, CancellationToken cancellationToken)

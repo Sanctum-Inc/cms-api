@@ -27,7 +27,8 @@ public class CourtCaseDatesControllerTests : IntegrationTestBase
         var request = new AddCourtCaseDateRequest(
             Date: "2025-10-31",
             Title: "Hearing",
-            CaseId: new Guid("9ae37995-fb0f-4f86-8f9f-30068950df4c")
+            CaseId: new Guid("9ae37995-fb0f-4f86-8f9f-30068950df4c"),
+            Type: ""
         );
 
         // Act
@@ -44,7 +45,8 @@ public class CourtCaseDatesControllerTests : IntegrationTestBase
         var request = new AddCourtCaseDateRequest(
             Date: "",
             Title: "",
-            CaseId: Guid.Empty
+            CaseId: Guid.Empty,
+            Type: ""
         );
 
         // Act

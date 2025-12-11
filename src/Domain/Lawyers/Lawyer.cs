@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using Domain.Common;
 using Domain.CourtCaseDates;
 using Domain.CourtCases;
@@ -8,9 +8,6 @@ namespace Domain.Lawyers;
 
 public class Lawyer : AuditableEntity
 {
-    [Key]
-    public Guid Id { get; set; }
-
     [Required]
     [EmailAddress]
     public required string Email { get; set; }

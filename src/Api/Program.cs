@@ -30,6 +30,8 @@ builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddJwtAuthentication(builder.Configuration, builder.Environment);
 
+builder.Services.AddCustomCors();
+
 var app = builder.Build();
 
 app.ExecutePendingMigrations(builder.Environment);
@@ -40,6 +42,8 @@ app.UseStaticFiles();
 
 app.UseHttpsRedirection();
 
+app.UseCors("AllowUI");
+
 app.UseAuthentication();
 
 app.UseAuthorization();
@@ -49,6 +53,8 @@ app.MapControllers();
 app.MapOpenApi();
 
 ScalarConfiguration.ConfigureServices(app);
+
+QuestPDF.Settings.License = QuestPDF.Infrastructure.LicenseType.Community;
 
 await app.RunAsync();
 

@@ -6,6 +6,4 @@ public record AddCommand(
     Guid InvoiceId,
     string Name,
     int Hours,
-    decimal? CostPerHour,
-    decimal? DayFeeAmount,
-    bool IsDayFee) : IRequest<ErrorOr<bool>>;
+    decimal CostPerHour) : IRequest<ErrorOr<Guid>>;

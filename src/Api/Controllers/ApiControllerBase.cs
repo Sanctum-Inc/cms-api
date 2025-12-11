@@ -41,7 +41,7 @@ public abstract class ApiControllerBase: ControllerBase
     )
     {
         return result.Match<IActionResult>(
-            data => Created(),
+            data => Created("",data),
             errors => Problem(errors)
             );
     }

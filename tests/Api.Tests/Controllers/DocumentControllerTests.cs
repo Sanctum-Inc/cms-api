@@ -39,14 +39,14 @@ public class DocumentControllerTests
         var fileMock = new Mock<IFormFile>();
         fileMock.Setup(f => f.FileName).Returns("test.pdf");
         var name = "My File";
-        var caseId = Guid.NewGuid().ToString();
+        var caseId = Guid.NewGuid();
 
         _mediatorMock
             .Setup(m => m.Send(It.IsAny<AddCommand>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(ErrorOrFactory.From(true));
+            .ReturnsAsync(ErrorOrFactory.From(caseId));
 
         // Act
-        var result = await _controller.Upload(fileMock.Object, name, caseId);
+        var result = await _controller.Upload(fileMock.Object, name, caseId.ToString());
 
         // Assert
         var createdResult = result as ObjectResult;
@@ -152,7 +152,7 @@ public class DocumentControllerTests
                 documentResult.Name,
                 documentResult.FileName,
                 documentResult.Size,
-                documentResult.CreatedAt,
+                documentResult.Created,
                 documentResult.CaseId,
                 documentResult.ContentType,
                 documentResult.CreatedBy

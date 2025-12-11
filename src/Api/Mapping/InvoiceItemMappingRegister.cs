@@ -2,6 +2,8 @@ using Mapster;
 using Domain.InvoiceItems;
 using Contracts.InvoiceItem.Responses;
 using Contracts.InvoiceItem.Requests;
+using Contracts.CourtCases.Responses;
+using Application.Common.Models;
 
 namespace Api.Mappings;
 
@@ -19,16 +21,12 @@ public class InvoiceItemMappingRegister : IRegister
         config.NewConfig<AddInvoiceItemRequest, InvoiceItem>()
             .IgnoreNullValues(false)
             .Map(dest => dest.Hours, src => src.Hours)
-            .Map(dest => dest.CostPerHour, src => src.CostPerHour)
-            .Map(dest => dest.DayFeeAmount, src => src.DayFeeAmount)
-            .Map(dest => dest.IsDayFee, src => src.IsDayFee);
+            .Map(dest => dest.CostPerHour, src => src.CostPerHour);
 
         config.NewConfig<UpdateInvoiceItemRequest, InvoiceItem>()
             .IgnoreNullValues(false)
             .Map(dest => dest.Hours, src => src.Hours)
-            .Map(dest => dest.CostPerHour, src => src.CostPerHour)
-            .Map(dest => dest.DayFeeAmount, src => src.DayFeeAmount)
-            .Map(dest => dest.IsDayFee, src => src.IsDayFee);
+            .Map(dest => dest.CostPerHour, src => src.CostPerHour);
     }
 }
 
@@ -40,6 +38,7 @@ public class InvoiceMappingRegister : IRegister
         config.NewConfig<Domain.Invoices.Invoice, Contracts.Invoice.Responses.InvoiceResponse>()
             .IgnoreNullValues(false)
             .TwoWays();
+
     }
 }
 
@@ -57,7 +56,7 @@ public class LawyerMappingRegister : IRegister
 {
     public void Register(TypeAdapterConfig config)
     {
-        config.NewConfig<Domain.Lawyers.Lawyer, Contracts.Lawyer.Responses.GetLawyerResponse>()
+        config.NewConfig<Domain.Lawyers.Lawyer, Contracts.Lawyer.Responses.LawyerResponse>()
             .IgnoreNullValues(false)
             .TwoWays();
     }

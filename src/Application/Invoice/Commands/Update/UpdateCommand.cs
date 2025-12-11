@@ -8,7 +8,6 @@ public record UpdateCommand(
        DateTime InvoiceDate,
        string ClientName,
        string Reference,
-       string CaseName,
        string AccountName,
        string Bank,
        string BranchCode,

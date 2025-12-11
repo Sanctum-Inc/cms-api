@@ -11,7 +11,7 @@ public class BaseRepository<T> : IBaseRepository<T> where T : class
 {
     protected readonly IApplicationDBContext _context;
     protected readonly DbSet<T> _dbSet;
-    private readonly ISessionResolver _sessionResolver;
+    protected readonly ISessionResolver _sessionResolver;
 
     public BaseRepository(IApplicationDBContext context, ISessionResolver sessionResolver)
     {
@@ -105,7 +105,7 @@ public class BaseRepository<T> : IBaseRepository<T> where T : class
                 cancellationToken);
     }
 
-    public async Task<IEnumerable<T>> GetAll(CancellationToken cancellationToken = default)
+    public virtual async Task<IEnumerable<T>> GetAll(CancellationToken cancellationToken = default)
     {
         return await _dbSet.Where(x => EF.Property<Guid>(x, "UserId") == new Guid(_sessionResolver.UserId!)).ToListAsync(cancellationToken);
     }

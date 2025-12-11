@@ -3,7 +3,7 @@ using ErrorOr;
 using MediatR;
 
 namespace Application.Document.Commands.Add;
-public class AddCommandHandler : IRequestHandler<AddCommand, ErrorOr<bool>>
+public class AddCommandHandler : IRequestHandler<AddCommand, ErrorOr<Guid>>
 {
     private readonly IDocumentService _documentService;
     public AddCommandHandler(IDocumentService documentService)
@@ -11,7 +11,7 @@ public class AddCommandHandler : IRequestHandler<AddCommand, ErrorOr<bool>>
         _documentService = documentService;
     }
 
-    public async Task<ErrorOr<bool>> Handle(AddCommand request, CancellationToken cancellationToken)
+    public async Task<ErrorOr<Guid>> Handle(AddCommand request, CancellationToken cancellationToken)
     {
         var result = await _documentService.Add(request, cancellationToken);
 

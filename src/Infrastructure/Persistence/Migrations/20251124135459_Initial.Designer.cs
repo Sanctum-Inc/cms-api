@@ -3,6 +3,7 @@ using System;
 using Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDBContext))]
-    partial class ApplicationDBContextModelSnapshot : ModelSnapshot
+    [Migration("20251124135459_Initial")]
+    partial class Initial
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -84,10 +87,6 @@ namespace Infrastructure.Persistence.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("Type")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid");
 
@@ -121,9 +120,6 @@ namespace Infrastructure.Persistence.Migrations
                         .HasColumnType("text");
 
                     b.Property<bool>("IsDeleted")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("IsPaid")
                         .HasColumnType("boolean");
 
                     b.Property<DateTime?>("LastModified")
@@ -291,7 +287,7 @@ namespace Infrastructure.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<decimal>("CostPerHour")
+                    b.Property<decimal?>("CostPerHour")
                         .HasColumnType("numeric");
 
                     b.Property<DateTime>("Created")
@@ -300,11 +296,17 @@ namespace Infrastructure.Persistence.Migrations
                     b.Property<Guid?>("CreatedBy")
                         .HasColumnType("uuid");
 
+                    b.Property<decimal?>("DayFeeAmount")
+                        .HasColumnType("numeric");
+
                     b.Property<int>("Hours")
                         .HasColumnType("integer");
 
                     b.Property<Guid>("InvoiceId")
                         .HasColumnType("uuid");
+
+                    b.Property<bool>("IsDayFee")
+                        .HasColumnType("boolean");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
@@ -356,6 +358,9 @@ namespace Infrastructure.Persistence.Migrations
                     b.Property<Guid>("CaseId")
                         .HasColumnType("uuid");
 
+                    b.Property<string>("CaseName")
+                        .HasColumnType("text");
+
                     b.Property<string>("ClientName")
                         .IsRequired()
                         .HasColumnType("text");
@@ -376,9 +381,6 @@ namespace Infrastructure.Persistence.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
 
-                    b.Property<bool>("IsPaid")
-                        .HasColumnType("boolean");
-
                     b.Property<DateTime?>("LastModified")
                         .HasColumnType("timestamp with time zone");
 
@@ -387,6 +389,9 @@ namespace Infrastructure.Persistence.Migrations
 
                     b.Property<string>("Reference")
                         .HasColumnType("text");
+
+                    b.Property<decimal>("TotalAmount")
+                        .HasColumnType("numeric");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid");

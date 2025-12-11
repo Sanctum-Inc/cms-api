@@ -48,6 +48,7 @@ public class DocumentController : ApiControllerBase
     [HttpPost("upload")]
     [ProducesResponseType(typeof(bool), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [EndpointName("UploadDocument")]
     public async Task<IActionResult> Upload(
         [FromForm] IFormFile file,
         [FromForm][Required] string name,
@@ -57,7 +58,7 @@ public class DocumentController : ApiControllerBase
 
         var result = await _sender.Send(command);
 
-        return MatchAndMapCreatedResult<bool>(result, _mapper);
+        return MatchAndMapCreatedResult<Guid>(result, _mapper);
     }
 
     /// <summary>
@@ -68,6 +69,7 @@ public class DocumentController : ApiControllerBase
     [HttpGet("{id}/download")]
     [ProducesResponseType(typeof(FileStreamResult), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [EndpointName("DownloadDocument")]
     public async Task<IActionResult> Download([FromRoute][Required] string id)
     {
         var command = new DownloadCommand(new Guid(id));
@@ -88,6 +90,7 @@ public class DocumentController : ApiControllerBase
     // GET /api/CourtCase
     [HttpGet]
     [ProducesResponseType(typeof(IEnumerable<DocumentResponse>), StatusCodes.Status200OK)]
+    [EndpointName("GetAllDocument")]
     public async Task<IActionResult> GetAll()
     {
         var result = await _sender.Send(new GetCommand());
@@ -99,6 +102,7 @@ public class DocumentController : ApiControllerBase
     [HttpGet("{id}")]
     [ProducesResponseType(typeof(DocumentResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [EndpointName("GetDocumentById")]
     public async Task<IActionResult> GetById(Guid id)
     {
         var result = await _sender.Send(new GetByIdCommand(id));
@@ -111,6 +115,7 @@ public class DocumentController : ApiControllerBase
     [HttpPut("{id}")]
     [ProducesResponseType(typeof(bool), StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [EndpointName("UpdateDocument")]
     public async Task<IActionResult> Update(Guid id, [FromBody] UpdateDocumentRequest request)
     {
         var command = _mapper.Map<UpdateCommand>(request) with { Id = id };
@@ -122,8 +127,9 @@ public class DocumentController : ApiControllerBase
 
     // DELETE /api/CourtCase/{id}
     [HttpDelete("{id}")]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(bool), StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [EndpointName("DeleteDocument")]
     public async Task<IActionResult> Delete(Guid id)
     {
         var command = new DeleteCommand(id);

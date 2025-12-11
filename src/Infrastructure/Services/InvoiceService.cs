@@ -59,6 +59,41 @@ public class InvoiceService : BaseService<Invoice, InvoiceResult, AddCommand, Up
         );
     }
 
+    public override async Task<ErrorOr<IEnumerable<InvoiceResult>>> Get(CancellationToken cancellationToken)
+    {
+        var result = await _invoiceRepository.GetAll(cancellationToken);
+
+        return result.Select(x => new InvoiceResult(
+                x.Id,
+                x.InvoiceNumber,
+                x.InvoiceDate,
+                x.ClientName,
+                x.Reference,
+                x.Items.Sum(x => x.CostPerHour * x.Hours),
+                x.AccountName,
+                x.Bank,
+                x.BranchCode,
+                x.AccountNumber,
+                x.IsPaid,
+                x.Case!.CaseNumber,
+                x.Case!.Plaintiff,
+                x.Case!.Defendant,
+                x.CaseId,
+                x.Items.Select(x =>
+                {
+                    return new InvoiceItemResult(
+                        x.Id,
+                        x.Created,
+                        x.Name,
+                        x.Hours,
+                        x.CostPerHour,
+                        x.Hours * x.CostPerHour
+                    );
+                }))
+        )
+        .ToErrorOr();
+    }
+
     protected override Guid GetIdFromUpdateCommand(UpdateCommand command)
     {
         return command.Id;
@@ -74,14 +109,12 @@ public class InvoiceService : BaseService<Invoice, InvoiceResult, AddCommand, Up
             Id = Guid.NewGuid(),
             InvoiceNumber = command.InvoiceNumber,
             InvoiceDate = command.InvoiceDate,
-            TotalAmount = 0,
             UserId = Guid.Parse(userId),
             ClientName = command.ClientName,
             Reference = command.Reference,
             AccountName = command.AccountName,
             AccountNumber = command.AccountNumber,
             Bank = command.Bank,
-            CaseName = command.CaseName,
             BranchCode = command.BranchCode,
             IsDeleted = false,
             CaseId = command.CaseId,
@@ -97,7 +130,6 @@ public class InvoiceService : BaseService<Invoice, InvoiceResult, AddCommand, Up
         entity.AccountName = command.AccountName;
         entity.AccountNumber = command.AccountNumber;
         entity.Bank = command.Bank;
-        entity.CaseName = command.CaseName;
         entity.BranchCode = command.BranchCode;
     }
 }
