@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDBContext))]
-    [Migration("20251209170114_UpdateInvoiceModel")]
-    partial class UpdateInvoiceModel
+    [Migration("20260119102900_LinkUserToFirm")]
+    partial class LinkUserToFirm
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -151,6 +151,7 @@ namespace Infrastructure.Persistence.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("Type")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<Guid>("UserId")
@@ -232,13 +233,11 @@ namespace Infrastructure.Persistence.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("AdvocateAdmissionDate")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<DateTime>("AdvocateAdmissionDate")
+                        .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("AttorneyAdmissionDate")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<DateTime>("AttorneyAdmissionDate")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Bank")
                         .IsRequired()
@@ -294,7 +293,7 @@ namespace Infrastructure.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<decimal?>("CostPerHour")
+                    b.Property<decimal>("CostPerHour")
                         .HasColumnType("numeric");
 
                     b.Property<DateTime>("Created")
@@ -303,17 +302,11 @@ namespace Infrastructure.Persistence.Migrations
                     b.Property<Guid?>("CreatedBy")
                         .HasColumnType("uuid");
 
-                    b.Property<decimal?>("DayFeeAmount")
-                        .HasColumnType("numeric");
-
                     b.Property<int>("Hours")
                         .HasColumnType("integer");
 
                     b.Property<Guid>("InvoiceId")
                         .HasColumnType("uuid");
-
-                    b.Property<bool>("IsDayFee")
-                        .HasColumnType("boolean");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
@@ -385,9 +378,6 @@ namespace Infrastructure.Persistence.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
 
-                    b.Property<bool>("IsPaid")
-                        .HasColumnType("boolean");
-
                     b.Property<DateTime?>("LastModified")
                         .HasColumnType("timestamp with time zone");
 
@@ -397,8 +387,8 @@ namespace Infrastructure.Persistence.Migrations
                     b.Property<string>("Reference")
                         .HasColumnType("text");
 
-                    b.Property<decimal>("TotalAmount")
-                        .HasColumnType("numeric");
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid");
@@ -478,6 +468,9 @@ namespace Infrastructure.Persistence.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<Guid?>("FirmId")
+                        .HasColumnType("uuid");
+
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
 
@@ -508,6 +501,8 @@ namespace Infrastructure.Persistence.Migrations
                         .HasColumnType("text");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("FirmId");
 
                     b.ToTable("Users");
                 });
@@ -640,6 +635,15 @@ namespace Infrastructure.Persistence.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("Domain.Users.User", b =>
+                {
+                    b.HasOne("Domain.Firms.Firm", "Firm")
+                        .WithMany("Users")
+                        .HasForeignKey("FirmId");
+
+                    b.Navigation("Firm");
+                });
+
             modelBuilder.Entity("Domain.CourtCases.CourtCase", b =>
                 {
                     b.Navigation("CourtCaseDates");
@@ -647,6 +651,11 @@ namespace Infrastructure.Persistence.Migrations
                     b.Navigation("Documents");
 
                     b.Navigation("Invoices");
+                });
+
+            modelBuilder.Entity("Domain.Firms.Firm", b =>
+                {
+                    b.Navigation("Users");
                 });
 
             modelBuilder.Entity("Domain.Invoices.Invoice", b =>

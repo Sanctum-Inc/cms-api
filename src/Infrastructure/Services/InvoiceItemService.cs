@@ -6,16 +6,29 @@ using Application.InvoiceItem.Commands.Add;
 using Application.InvoiceItem.Commands.Update;
 using Domain.CourtCases;
 using Domain.InvoiceItems;
+using Domain.Users;
 using ErrorOr;
 using Infrastructure.Services.Base;
 using MapsterMapper;
+using MediatR;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace Infrastructure.Services;
 public class InvoiceItemService : BaseService<InvoiceItem, InvoiceItemResult, AddCommand, UpdateCommand>, IInvoiceItemService
 {
+    private readonly ISessionResolver _sessionResolver;
+    private readonly IInvoiceItemRepository _repository;
+    private readonly ICourtCaseService _courtCaseService;
 
-    public InvoiceItemService(IInvoiceItemRepository repository, IMapper mapper, ISessionResolver sessionResolver) : base(repository, mapper, sessionResolver)
+    public InvoiceItemService(
+        IInvoiceItemRepository repository,
+        IMapper mapper,
+        ISessionResolver sessionResolver,
+        ICourtCaseService courtCaseService) : base(repository, mapper, sessionResolver)
     {
+        _sessionResolver = sessionResolver;
+        _repository = repository;
+        _courtCaseService = courtCaseService;
     }
 
     protected override Guid GetIdFromUpdateCommand(UpdateCommand command)
@@ -30,7 +43,7 @@ public class InvoiceItemService : BaseService<InvoiceItem, InvoiceItemResult, Ad
 
         return new InvoiceItem()
         {
-            InvoiceId = command.InvoiceId,
+            InvoiceId = new Guid(command.InvoiceId),
             Name = command.Name,
             Hours = command.Hours,
             CostPerHour = command.CostPerHour,
@@ -46,4 +59,43 @@ public class InvoiceItemService : BaseService<InvoiceItem, InvoiceItemResult, Ad
         entity.Hours = command.Hours;
         entity.CostPerHour = command.CostPerHour;
     }
+
+    //public async override Task<ErrorOr<Guid>> Add(IRequest<ErrorOr<Guid>> request, CancellationToken cancellationToken)
+    //{
+    //    if (request is not AddCommand addCommand)
+    //        return Error.Failure(description: "Invalid request type.");
+
+    //    var courtCase = await _courtCaseService.GetById(addCommand.CaseId, cancellationToken);
+    //    if (courtCase.IsError)
+    //    {
+    //        return courtCase.Errors;
+    //    }
+
+    //    if (addCommand.InvoiceId.ToLower() == "new")
+    //    {
+    //        var invoiceCommand = new Application.Invoice.Commands.Add.AddCommand(
+    //            Guid.NewGuid().ToString(),
+    //            DateTime.Now,
+    //            courtCase.Value.Lawyers,
+    //            );
+    //        var entity = new InvoiceItem()
+    //        {
+    //            InvoiceId = new Guid(invoiceCommand.InvoiceNumber),
+    //            Name = addCommand.Name,
+    //            Hours = addCommand.Hours,
+    //            CostPerHour = addCommand.CostPerHour,
+    //            Id = Guid.NewGuid(),
+    //            UserId = new Guid(_sessionResolver.UserId!),
+    //        };
+
+    //        await _repository.AddAsync(entity, cancellationToken);
+    //        await _repository.SaveChangesAsync(cancellationToken);
+
+    //        return entity.Id;
+    //    }
+    //    else
+    //    {
+    //        return await base.Add(request, cancellationToken);
+    //    }
+    //}
 }

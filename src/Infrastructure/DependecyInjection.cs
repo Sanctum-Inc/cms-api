@@ -58,5 +58,6 @@ public static partial class DependecyInjection
         services.AddScoped<IInvoiceService, InvoiceService>();
         services.AddScoped<IInvoiceItemService, InvoiceItemService>();
         services.AddScoped<ICourtCaseDatesService, CourtCaseDatesService>();
+        services.AddScoped<IFirmService, FirmService>();
     }
 }

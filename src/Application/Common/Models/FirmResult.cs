@@ -1,21 +1,23 @@
-using System.ComponentModel.DataAnnotations;
-using Domain.Common;
-using Domain.Users;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace Domain.Firms;
-public class Firm : AuditableEntity
+namespace Application.Common.Models;
+public record FirmResult
 {
+    public required Guid Id { get; set; }
     public required string Name { get; set; }
     public required string Address { get; set; }
     public required string Telephone { get; set; }
     public required string Fax { get; set; }
     public required string Mobile { get; set; }
     public required string Email { get; set; }
-    public required DateTime AttorneyAdmissionDate { get; set; }
-    public required DateTime AdvocateAdmissionDate { get; set; }
+    public required string AttorneyAdmissionDate { get; set; }
+    public required string AdvocateAdmissionDate { get; set; }
     public required string AccountName { get; set; }
     public required string Bank { get; set; }
     public required string BranchCode { get; set; }
     public required string AccountNumber { get; set; }
-    public List<User> Users { get; set; } = [];
 }

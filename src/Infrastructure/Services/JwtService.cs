@@ -20,7 +20,8 @@ public class JwtService : IJwtService
         string email,
         string id,
         string name,
-        string surname)
+        string surname,
+        string firmId)
     {
         var jwtSettings = _config.GetSection("Jwt");
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["Key"]!));
@@ -33,6 +34,7 @@ public class JwtService : IJwtService
             new Claim(ClaimTypes.Role, role),
             new Claim(ClaimTypes.Email, email),
             new Claim("custom:user_id", id),
+            new Claim("custom:firm_id", firmId),
         };
 
         var token = new JwtSecurityToken(

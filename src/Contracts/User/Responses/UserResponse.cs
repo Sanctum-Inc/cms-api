@@ -9,8 +9,4 @@ public record UserResponse(
     string Name,
     string Surname,
     string MobileNumber,
-    DateTime DateCreated,
-    List<CourtCase> CourtCases,
-    List<Document> Documents,
-    List<Domain.Invoices.Invoice> Invoices,
-    List<Domain.Lawyers.Lawyer> Lawyers);
+    DateTime DateCreated);

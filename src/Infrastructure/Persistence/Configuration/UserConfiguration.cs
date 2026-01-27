@@ -37,5 +37,10 @@ internal class UserConfiguration : IEntityTypeConfiguration<Domain.Users.User>
             .WithOne(l => l.User)
             .HasForeignKey(l => l.UserId)
             .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasOne(x => x.Firm)
+            .WithMany(p => p.Users)
+            .HasForeignKey(x => x.FirmId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

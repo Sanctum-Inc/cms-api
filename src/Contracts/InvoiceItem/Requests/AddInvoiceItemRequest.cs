@@ -1,6 +1,6 @@
 namespace Contracts.InvoiceItem.Requests;
 public record AddInvoiceItemRequest(
-    Guid InvoiceId,
+    string InvoiceId,
     string Name,
     int Hours,
     decimal CostPerHour,

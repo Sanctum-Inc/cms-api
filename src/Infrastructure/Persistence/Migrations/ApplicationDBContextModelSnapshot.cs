@@ -148,6 +148,7 @@ namespace Infrastructure.Persistence.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("Type")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<Guid>("UserId")
@@ -229,13 +230,11 @@ namespace Infrastructure.Persistence.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("AdvocateAdmissionDate")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<DateTime>("AdvocateAdmissionDate")
+                        .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("AttorneyAdmissionDate")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<DateTime>("AttorneyAdmissionDate")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Bank")
                         .IsRequired()
@@ -466,6 +465,9 @@ namespace Infrastructure.Persistence.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<Guid?>("FirmId")
+                        .HasColumnType("uuid");
+
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
 
@@ -496,6 +498,8 @@ namespace Infrastructure.Persistence.Migrations
                         .HasColumnType("text");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("FirmId");
 
                     b.ToTable("Users");
                 });
@@ -628,6 +632,15 @@ namespace Infrastructure.Persistence.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("Domain.Users.User", b =>
+                {
+                    b.HasOne("Domain.Firms.Firm", "Firm")
+                        .WithMany("Users")
+                        .HasForeignKey("FirmId");
+
+                    b.Navigation("Firm");
+                });
+
             modelBuilder.Entity("Domain.CourtCases.CourtCase", b =>
                 {
                     b.Navigation("CourtCaseDates");
@@ -635,6 +648,11 @@ namespace Infrastructure.Persistence.Migrations
                     b.Navigation("Documents");
 
                     b.Navigation("Invoices");
+                });
+
+            modelBuilder.Entity("Domain.Firms.Firm", b =>
+                {
+                    b.Navigation("Users");
                 });
 
             modelBuilder.Entity("Domain.Invoices.Invoice", b =>

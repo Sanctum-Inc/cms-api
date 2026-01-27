@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDBContext))]
-    [Migration("20251211140348_RemoveTotalAmountFromInvoice")]
-    partial class RemoveTotalAmountFromInvoice
+    [Migration("20260119092612_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -151,6 +151,7 @@ namespace Infrastructure.Persistence.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("Type")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<Guid>("UserId")
@@ -232,13 +233,11 @@ namespace Infrastructure.Persistence.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("AdvocateAdmissionDate")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<DateTime>("AdvocateAdmissionDate")
+                        .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("AttorneyAdmissionDate")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<DateTime>("AttorneyAdmissionDate")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Bank")
                         .IsRequired()
@@ -379,9 +378,6 @@ namespace Infrastructure.Persistence.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
 
-                    b.Property<bool>("IsPaid")
-                        .HasColumnType("boolean");
-
                     b.Property<DateTime?>("LastModified")
                         .HasColumnType("timestamp with time zone");
 
@@ -390,6 +386,9 @@ namespace Infrastructure.Persistence.Migrations
 
                     b.Property<string>("Reference")
                         .HasColumnType("text");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid");

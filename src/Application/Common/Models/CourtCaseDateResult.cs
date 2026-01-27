@@ -4,4 +4,8 @@ public record CourtCaseDateResult(
     string Date,
     string Title,
     string Type,
-    Guid CaseId);
+    string CaseNumber,
+    Guid CaseId,
+    string CaseType,
+    string Platiniff,
+    string Defendent);

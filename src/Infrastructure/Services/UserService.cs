@@ -1,5 +1,6 @@
 using Application.Common.Interfaces.Repositories;
 using Application.Common.Interfaces.Services;
+using Application.Common.Interfaces.Session;
 using Application.Users.Commands.Login;
 using Application.Users.Commands.Register;
 using Application.Users.Queries;
@@ -14,20 +15,31 @@ public class UserService : IUserService
     private readonly IUserRepository _userRepository;
     private readonly IJwtService _jwtService;
     private readonly IMapper _mapper;
+    private readonly ISessionResolver _sessionResolver;
 
     public UserService(
         IUserRepository userRepository,
         IJwtService jwtService,
-        IMapper mapper)
+        IMapper mapper,
+        ISessionResolver sessionResolver)
     {
         _userRepository = userRepository;
         _jwtService = jwtService;
         _mapper = mapper;
+        _sessionResolver = sessionResolver;
     }
 
     public async Task<ErrorOr<UserResult>> GetUserById(string id, CancellationToken cancellationToken)
     {
-        var user = await _userRepository.GetByIdAsync(Guid.Parse(id), cancellationToken);
+        User? user = null;
+        if (id is "current")
+        {
+            user = await _userRepository.GetByIdAsync(Guid.Parse(_sessionResolver.UserId!), cancellationToken);
+        }
+        else
+        {
+            user = await _userRepository.GetByIdAsync(Guid.Parse(id), cancellationToken);
+        }
 
         if (user == null)
             return Error.Validation("User.NotFound", "User not found.");
@@ -56,7 +68,8 @@ public class UserService : IUserService
             user.Email,
             user.Id.ToString(),
             user.Name,
-            user.Surname);
+            user.Surname,
+            user.FirmId.ToString() ?? ""); // ToDo: Ensure that on register FirmId is set properly
 
         // 5. Generate refresh token (simple example — use a secure random generator in production)
         // ToDo: Refresh token logic to be implemented

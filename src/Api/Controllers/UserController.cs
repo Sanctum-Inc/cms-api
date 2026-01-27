@@ -5,6 +5,7 @@ using Contracts.User.Requests;
 using Contracts.User.Responses;
 using MapsterMapper;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers;
@@ -53,6 +54,10 @@ public class UserController : ApiControllerBase
 
     [HttpGet("{id}")]
     [EndpointName("GetById")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [Authorize]
     public async Task<IActionResult> GetById([FromRoute] string id)
     {
         var query = new GetQuery(id);

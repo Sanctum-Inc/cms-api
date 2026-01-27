@@ -21,5 +21,6 @@ public interface IJwtService
         string email,
         string id,
         string name,
-        string surname);
+        string surname,
+        string firmId);
 }

@@ -1,4 +1,4 @@
-﻿using System.Security.Claims;
+using System.Security.Claims;
 using Application.Common.Interfaces.Session;
 using Microsoft.AspNetCore.Http;
 
@@ -30,6 +30,7 @@ public class SessionResolver : ISessionResolver
     }
 
     public string? UserId => GetClaim(ClaimTypes.NameIdentifier) ?? GetClaim("custom:user_id");
+    public string? FirmId => GetClaim(ClaimTypes.NameIdentifier) ?? GetClaim("custom:firm_id");
 
     public string? UserEmail => GetClaim(ClaimTypes.Email) ?? GetClaim("email");
 

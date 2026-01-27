@@ -19,7 +19,7 @@ public class CourtCase : AuditableEntity
     public required string Defendant { get; set; }
     [Required]
     public required string Status { get; set; }
-    public string? Type { get; set; }
+    public required string Type { get; set; }
     public string? Outcome { get; set; }
     public required bool IsPaid { get; set; }
     [Required]

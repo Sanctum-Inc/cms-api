@@ -34,7 +34,7 @@ public class CourtCaseDateControllerTests
     {
         // Arrange
         var id = Guid.NewGuid();
-        var expected = new List<CourtCaseDateResult> { new CourtCaseDateResult(id, "2014/0101", "title", "type", id) };
+        var expected = new List<CourtCaseDateResult> { new CourtCaseDateResult(id, "2014/0101", "title", "type", id, id) };
         var expectedResponse = new List<CourtCaseDatesResponse> { new CourtCaseDatesResponse(id, "2014/0101", "title", "type", id) };
 
         _mockSender
@@ -124,7 +124,7 @@ public class CourtCaseDateControllerTests
         // Arrange
         var routeId = Guid.NewGuid();
         var request = new UpdateCourtCaseDateRequest();
-        var command = new UpdateCommand(routeId, "2025-11-01", "Updated Title", Guid.NewGuid());
+        var command = new UpdateCommand(routeId, "2025-11-01", Guid.NewGuid());
 
         _mockMapper.Setup(m => m.Map<UpdateCommand>(request))
             .Returns(command with { Id = Guid.NewGuid() });

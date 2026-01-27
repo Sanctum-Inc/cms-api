@@ -13,11 +13,14 @@ namespace Infrastructure.Services;
 
 public class CourtCaseDatesService : BaseService<CourtCaseDate, CourtCaseDateResult, AddCommand, UpdateCommand>, ICourtCaseDatesService
 {
+    public readonly ICourtCaseDateRepository _courtCaseDateRepository;
+
     public CourtCaseDatesService(
         IMapper mapper,
         ICourtCaseDateRepository courtCaseDateRepository,
         ISessionResolver sessionResolver) : base(courtCaseDateRepository, mapper, sessionResolver)
     {
+        _courtCaseDateRepository = courtCaseDateRepository;
     }
 
     protected override Guid GetIdFromUpdateCommand(UpdateCommand command)
@@ -44,6 +47,26 @@ public class CourtCaseDatesService : BaseService<CourtCaseDate, CourtCaseDateRes
 
     protected override void MapFromUpdateCommand(CourtCaseDate entity, UpdateCommand command)
     {
-        throw new NotImplementedException();
+        entity.Date = command.Date;
+        entity.Title = command.Title;
+        entity.CaseId = command.CaseId;
+    }
+
+    public override async Task<ErrorOr<IEnumerable<CourtCaseDateResult>>> Get(CancellationToken cancellationToken)
+    {
+        var result = await _courtCaseDateRepository.GetAll(cancellationToken);
+
+        return result.Select(x => new CourtCaseDateResult(
+
+            Id: x.Id,
+            Date: x.Date,
+            Title: x.Title,
+            Type: x.Type,
+            CaseNumber: x.Case.CaseNumber,
+            CaseId: x.CaseId,
+            CaseType: x.Case.Type,
+            Defendent: x.Case.Defendant,
+            Platiniff: x.Case.Plaintiff)
+        ).ToErrorOr(); // ToDo: change this to subtitle and add it to database and frontend
     }
 }

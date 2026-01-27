@@ -3,7 +3,8 @@ using MediatR;
 
 namespace Application.InvoiceItem.Commands.Add;
 public record AddCommand(
-    Guid InvoiceId,
+    string InvoiceId,
     string Name,
     int Hours,
-    decimal CostPerHour) : IRequest<ErrorOr<Guid>>;
+    decimal CostPerHour,
+    Guid CaseId) : IRequest<ErrorOr<Guid>>;
