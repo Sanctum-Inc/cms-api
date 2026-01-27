@@ -28,7 +28,7 @@ public class CourtCaseControllerTests : IntegrationTestBase
             Location: "Johannesburg",
             Plaintiff: "John",
             Defendant: "Jane",
-            Status: "Active",
+            Status: Domain.Invoices.InvoiceStatus.PAID,
             Type: "Criminal",
             Outcome: null
         );
@@ -49,7 +49,7 @@ public class CourtCaseControllerTests : IntegrationTestBase
             Location: "",
             Plaintiff: "",
             Defendant: "",
-            Status: "Active",
+            Status: Domain.Invoices.InvoiceStatus.PAID,
             Type: "Criminal",
             Outcome: null
         );

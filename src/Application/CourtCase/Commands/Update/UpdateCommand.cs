@@ -1,3 +1,4 @@
+using Domain.Invoices;
 using ErrorOr;
 using MediatR;
 
@@ -8,6 +9,6 @@ public record UpdateCommand(
         string Location,
         string Plaintiff,
         string Defendant,
-        string Status,
+        InvoiceStatus Status,
         string? Type,
         string? Outcome) : IRequest<ErrorOr<bool>>;

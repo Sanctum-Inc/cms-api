@@ -27,8 +27,6 @@ public class AddCourtCaseCommandValidator : AbstractValidator<AddCommand>
             .NotNull();
 
         RuleFor(x => x.Status)
-            .NotEmpty().WithMessage("Status is required.")
-            .MaximumLength(100).WithMessage("Status must not exceed 100 characters.")
             .NotNull();
 
         RuleFor(x => x.Type)

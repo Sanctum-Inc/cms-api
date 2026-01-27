@@ -34,8 +34,8 @@ public class CourtCaseDateControllerTests
     {
         // Arrange
         var id = Guid.NewGuid();
-        var expected = new List<CourtCaseDateResult> { new CourtCaseDateResult(id, "2014/0101", "title", "type", id, id) };
-        var expectedResponse = new List<CourtCaseDatesResponse> { new CourtCaseDatesResponse(id, "2014/0101", "title", "type", id) };
+        var expected = new List<CourtCaseDateResult> { new CourtCaseDateResult(id, "2014/0101", "title", "type", "case123", id, "divorce", "plaintiff", "defendent") };
+        var expectedResponse = new List<CourtCaseDatesResponse> { new CourtCaseDatesResponse(id, "2014/0101", "title", "type", "case123", id, "divorce", "plaintiff", "defendent") };
 
         _mockSender
             .Setup(s => s.Send(It.IsAny<GetCommand>(), It.IsAny<CancellationToken>()))
@@ -61,8 +61,8 @@ public class CourtCaseDateControllerTests
     {
         // Arrange
         var id = Guid.NewGuid();
-        var resultModel = new CourtCaseDateResult(id, "2014/0101", "title", "type", id);
-        var responseModel = new CourtCaseDatesResponse(id, "2014/0101", "title", "type", id);
+        var resultModel = new CourtCaseDateResult(id, "2014/0101", "title", "type", "case123", id, "divorce", "plaintiff", "defendent");
+        var responseModel = new CourtCaseDatesResponse(id, "2014/0101", "title", "type", "case123", id, "divorce", "plaintiff", "defendent");
 
         _mockSender
             .Setup(s => s.Send(It.Is<GetByIdCommand>(c => c.Id == id), It.IsAny<CancellationToken>()))
@@ -84,7 +84,7 @@ public class CourtCaseDateControllerTests
     {
         // Arrange
         var request = new AddCourtCaseDateRequest("2025-10-31", "Hearing", Guid.NewGuid(), "Type");
-        var command = new AddCommand(request.Date, request.Title, request.CaseId, request.Type);
+        var command = new AddCommand(request.Date, request.Title, "subtitle", request.CaseId, request.Type);
 
         _mockMapper.Setup(m => m.Map<AddCommand>(request)).Returns(command);
         _mockSender.Setup(s => s.Send(command, It.IsAny<CancellationToken>()))
@@ -104,7 +104,7 @@ public class CourtCaseDateControllerTests
     {
         // Arrange
         var request = new AddCourtCaseDateRequest("", "", Guid.Empty, "");
-        var command = new AddCommand(request.Date, request.Title, request.CaseId, request.Type);
+        var command = new AddCommand(request.Date, request.Title, "subtitle", request.CaseId, request.Type);
         var error = Error.Validation("CourtCaseDate.Invalid", "Invalid create request");
 
         _mockMapper.Setup(m => m.Map<AddCommand>(request)).Returns(command);
@@ -123,8 +123,8 @@ public class CourtCaseDateControllerTests
     {
         // Arrange
         var routeId = Guid.NewGuid();
-        var request = new UpdateCourtCaseDateRequest();
-        var command = new UpdateCommand(routeId, "2025-11-01", Guid.NewGuid());
+        var request = new UpdateCourtCaseDateRequest("2024/01/01", "title", routeId);
+        var command = new UpdateCommand(routeId, "2025-11-01","title", Guid.NewGuid());
 
         _mockMapper.Setup(m => m.Map<UpdateCommand>(request))
             .Returns(command with { Id = Guid.NewGuid() });
@@ -144,7 +144,7 @@ public class CourtCaseDateControllerTests
     {
         // Arrange
         var id = Guid.NewGuid();
-        var request = new UpdateCourtCaseDateRequest();
+        var request = new UpdateCourtCaseDateRequest("2024/01/01", "title", id);
         var mappedCommand = new UpdateCommand(Guid.NewGuid(), "2025-10-31", "Hearing", Guid.NewGuid());
         var error = Error.NotFound("CourtCaseDate.NotFound", "Court case date not found");
 

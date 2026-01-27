@@ -64,7 +64,8 @@ namespace Api.Integration.Tests.Controllers
                 AccountName: "John Doe",
                 Bank: "Bank X",
                 BranchCode: "123456",
-                AccountNumber: "000111222"
+                AccountNumber: "000111222",
+                Status: Domain.Invoices.InvoiceStatus.SENT
             );
 
             var response = await _client.PostAsJsonAsync("/api/invoice", request);
@@ -84,7 +85,8 @@ namespace Api.Integration.Tests.Controllers
                 "Jane Doe",
                 "Bank Y",
                 "654321",
-                "333444555"
+                "333444555",
+                Status: Domain.Invoices.InvoiceStatus.SENT
             );
 
             await _client.PostAsJsonAsync("/api/invoice", createRequest);
@@ -103,7 +105,8 @@ namespace Api.Integration.Tests.Controllers
                 "Jane Doe Updated",
                 "Bank Y",
                 "654321",
-                "333444555"
+                "333444555",
+                Status: Domain.Invoices.InvoiceStatus.SENT
             );
 
             // Act
@@ -141,7 +144,8 @@ namespace Api.Integration.Tests.Controllers
                 "Alice Doe",
                 "Bank Z",
                 "112233",
-                "777888999"
+                "777888999",
+                Status: Domain.Invoices.InvoiceStatus.SENT
             );
 
             await _client.PostAsJsonAsync("/api/invoice", createRequest);

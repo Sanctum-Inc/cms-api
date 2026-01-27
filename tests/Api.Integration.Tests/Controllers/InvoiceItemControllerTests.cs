@@ -60,7 +60,7 @@ public class InvoiceItemIntegrationTests : IntegrationTestBase
     {
         // Arrange
         var request = new AddInvoiceItemRequest(
-            InvoiceId: ExistingInvoiceId,
+            InvoiceId: ExistingInvoiceId.ToString(),
             Name: "Drafting of Affidavit",
             Hours: 3,
             CostPerHour: 950,

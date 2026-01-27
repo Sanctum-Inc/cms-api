@@ -1,4 +1,4 @@
-﻿using FluentValidation;
+using FluentValidation;
 
 namespace Application.CourtCase.Commands.Update;
 public class UpdateCommandValidator : AbstractValidator<UpdateCommand>
@@ -30,9 +30,7 @@ public class UpdateCommandValidator : AbstractValidator<UpdateCommand>
             .MaximumLength(200).WithMessage("Defendant name must not exceed 200 characters.");
 
         RuleFor(x => x.Status)
-            .NotEmpty().WithMessage("Status is required.")
-            .NotNull().WithMessage("Status must not be null")
-            .MaximumLength(100).WithMessage("Status must not exceed 100 characters.");
+            .NotNull().WithMessage("Status must not be null");
 
         RuleFor(x => x.Type)
             .NotEmpty().WithMessage("Type is required.")

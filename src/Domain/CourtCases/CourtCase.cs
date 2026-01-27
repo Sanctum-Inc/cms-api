@@ -18,7 +18,7 @@ public class CourtCase : AuditableEntity
     [Required]
     public required string Defendant { get; set; }
     [Required]
-    public required string Status { get; set; }
+    public required InvoiceStatus Status { get; set; }
     public required string Type { get; set; }
     public string? Outcome { get; set; }
     public required bool IsPaid { get; set; }
