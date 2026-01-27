@@ -1,5 +1,6 @@
 using Domain.CourtCaseDates;
 using Domain.InvoiceItems;
+using Domain.Invoices;
 using Domain.Users;
 
 namespace Application.Common.Models;
@@ -10,7 +11,7 @@ public class CourtCaseResult
     public required string Location { get; set; }
     public required string Plaintiff { get; set; }
     public required string Defendant { get; set; }
-    public required string Status { get; set; }
+    public required InvoiceStatus Status { get; set; }
     public string? Type { get; set; }
     public string? Outcome { get; set; }
     public DateTime Created { get; set; }
