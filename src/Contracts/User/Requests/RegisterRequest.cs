@@ -1,7 +1,8 @@
-﻿namespace Contracts.User.Requests;
+namespace Contracts.User.Requests;
 public record RegisterRequest(
     string Email,
     string Name,
     string Surname,
     string MobileNumber,
-    string Password);
+    string Password,
+    string FirmId);

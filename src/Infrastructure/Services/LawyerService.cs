@@ -34,7 +34,7 @@ public class LawyerService : BaseService<Lawyer, LawyerResult, AddCommand, Updat
             Specialty = command.Specialty,
             MobileNumber = command.MobileNumber,
             Email = command.Email,
-            UserId = new Guid(userId),
+            CreatedByUserId = Guid.Parse(userId),
         };
     }
 

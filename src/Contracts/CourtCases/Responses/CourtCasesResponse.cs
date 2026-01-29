@@ -3,7 +3,7 @@ using Contracts.Documents.Responses;
 using Contracts.Invoice.Responses;
 using Contracts.InvoiceItem.Responses;
 using Contracts.Lawyer.Responses;
-using Domain.CourtCaseDates;
+using Domain.CourtCases;
 using Domain.Documents;
 using Domain.InvoiceItems;
 using Domain.Invoices;

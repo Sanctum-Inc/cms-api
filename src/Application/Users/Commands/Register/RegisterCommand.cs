@@ -1,4 +1,4 @@
-﻿using ErrorOr;
+using ErrorOr;
 using MediatR;
 
 namespace Application.Users.Commands.Register;
@@ -7,5 +7,6 @@ public record RegisterCommand(
     string Name,
     string Surname,
     string MobileNumber,
-    string Password) : IRequest<ErrorOr<bool>>;
+    string Password,
+    string FirmId) : IRequest<ErrorOr<bool>>;
 

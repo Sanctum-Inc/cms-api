@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Infrastructure.Persistence.Configuration;
 
-internal class InvoiceItemConfiguration : IEntityTypeConfiguration<InvoiceItem>
+public class InvoiceItemConfiguration : IEntityTypeConfiguration<InvoiceItem>
 {
     public void Configure(EntityTypeBuilder<InvoiceItem> builder)
     {
@@ -15,14 +15,24 @@ internal class InvoiceItemConfiguration : IEntityTypeConfiguration<InvoiceItem>
             .HasMaxLength(200);
 
         builder.Property(ii => ii.Hours)
-            .HasDefaultValue(0);
+            .IsRequired();
 
         builder.Property(ii => ii.CostPerHour)
-            .HasColumnType("decimal(18,2)");
+            .IsRequired()
+            .HasPrecision(18, 2);
 
+        // Relationship with Invoice - CASCADE (primary relationship)
         builder
             .HasOne(ii => ii.Invoice)
             .WithMany(i => i.Items)
-            .HasForeignKey(ii => ii.InvoiceId);
+            .HasForeignKey(ii => ii.InvoiceId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        // Relationship with User - NO ACTION (to prevent cascade conflicts)
+        builder
+            .HasOne(ii => ii.User)
+            .WithMany()
+            .HasForeignKey(ii => ii.UserId)
+            .OnDelete(DeleteBehavior.NoAction);
     }
 }

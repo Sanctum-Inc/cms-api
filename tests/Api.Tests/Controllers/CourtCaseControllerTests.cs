@@ -6,6 +6,7 @@ using Application.CourtCase.Commands.Update;
 using Application.CourtCase.Queries.Get;
 using Contracts.CourtCases.Requests;
 using Contracts.CourtCases.Responses;
+using Domain.CourtCases;
 using ErrorOr;
 using FluentAssertions;
 using MapsterMapper;
@@ -43,7 +44,7 @@ public class CourtCaseControllerTests
             Location = "Johannesburg High Court",
             Plaintiff = "John Doe",
             Defendant = "Jane Smith",
-            Status = Domain.CourtCaseDates.CourtCaseStatus.Draft,
+            Status = CourtCaseStatus.Draft,
             Type = "Civil",
             Outcome = null
         }
@@ -94,7 +95,7 @@ public class CourtCaseControllerTests
             "Johannesburg High Court",
             "John Doe",
             "Jane Smith",
-            Domain.CourtCaseDates.CourtCaseStatus.Draft,
+            CourtCaseStatus.Draft,
             "Civil",
             null
         );
@@ -131,7 +132,7 @@ public class CourtCaseControllerTests
             "Johannesburg High Court",
             "John Doe",
             "Jane Smith",
-            Domain.CourtCaseDates.CourtCaseStatus.Draft,
+            CourtCaseStatus.Draft,
             "Civil",
             null
         );
@@ -174,7 +175,7 @@ public class CourtCaseControllerTests
             "Johannesburg High Court",
             "John Doe",
             "Jane Smith",
-            Domain.CourtCaseDates.CourtCaseStatus.Draft,
+            CourtCaseStatus.Draft,
             "Civil",
             null
         );
@@ -208,7 +209,7 @@ public class CourtCaseControllerTests
     {
         // Arrange
         var id = Guid.NewGuid();
-        var request = new UpdateCourtCaseRequest("CASE-404", "Pretoria", "A", "B", Domain.CourtCaseDates.CourtCaseStatus.Draft, "Civil", null);
+        var request = new UpdateCourtCaseRequest("CASE-404", "Pretoria", "A", "B", CourtCaseStatus.Draft, "Civil", null);
         var mappedCommand = new UpdateCommand(Guid.NewGuid(), request.CaseNumber, request.Location, request.Plaintiff, request.Defendant, request.Status, request.Type, request.Outcome);
         var error = Error.NotFound("CourtCase.NotFound", "Court case not found");
 

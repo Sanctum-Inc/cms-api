@@ -8,17 +8,15 @@ public class DocumentConfiguration : IEntityTypeConfiguration<Document>
 {
     public void Configure(EntityTypeBuilder<Document> builder)
     {
-        // Primary key
         builder.HasKey(d => d.Id);
 
-        // Properties
         builder.Property(d => d.Name)
             .IsRequired()
             .HasMaxLength(200);
 
         builder.Property(d => d.FileName)
             .IsRequired()
-            .HasMaxLength(250);
+            .HasMaxLength(255);
 
         builder.Property(d => d.ContentType)
             .IsRequired()
@@ -27,16 +25,18 @@ public class DocumentConfiguration : IEntityTypeConfiguration<Document>
         builder.Property(d => d.Size)
             .IsRequired();
 
-        // Relationships
-
-        // Document -> User (many-to-one)
-        builder.HasOne(d => d.User)
-            .WithMany(u => u.Documents)
-            .HasForeignKey(d => d.UserId);
-
-        // Document -> CourtCase (many-to-one)
-        builder.HasOne(d => d.Case)
+        // Relationship with CourtCase - CASCADE (primary relationship)
+        builder
+            .HasOne(d => d.Case)
             .WithMany(c => c.Documents)
-            .HasForeignKey(d => d.CaseId);
+            .HasForeignKey(d => d.CaseId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        // Relationship with User - NO ACTION (to prevent cascade conflicts)
+        builder
+            .HasOne(d => d.User)
+            .WithMany(u => u.Documents)
+            .HasForeignKey(d => d.UserId)
+            .OnDelete(DeleteBehavior.NoAction);
     }
 }

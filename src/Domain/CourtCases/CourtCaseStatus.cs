@@ -1,4 +1,4 @@
-namespace Domain.CourtCaseDates;
+namespace Domain.CourtCases;
 
 public enum CourtCaseStatus
 {

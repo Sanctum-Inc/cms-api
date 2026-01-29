@@ -108,6 +108,8 @@ public class UserService : IUserService
             MobileNumber = request.MobileNumber,
             PasswordHash = hash,
             PasswordSalt = salt,
+            Role = UserRole.FirmUser,
+            FirmId = new Guid(request.FirmId)
         };
 
         // 4. Save to DB

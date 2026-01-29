@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Infrastructure.Persistence.Configuration;
 
-internal class InvoiceConfiguration : IEntityTypeConfiguration<Invoice>
+public class InvoiceConfiguration : IEntityTypeConfiguration<Invoice>
 {
     public void Configure(EntityTypeBuilder<Invoice> builder)
     {
@@ -13,6 +13,12 @@ internal class InvoiceConfiguration : IEntityTypeConfiguration<Invoice>
         builder.Property(i => i.InvoiceNumber)
             .IsRequired()
             .HasMaxLength(50);
+
+        builder.HasIndex(i => i.InvoiceNumber)
+            .IsUnique();
+
+        builder.Property(i => i.InvoiceDate)
+            .IsRequired();
 
         builder.Property(i => i.ClientName)
             .IsRequired()
@@ -23,7 +29,7 @@ internal class InvoiceConfiguration : IEntityTypeConfiguration<Invoice>
 
         builder.Property(i => i.AccountName)
             .IsRequired()
-            .HasMaxLength(150);
+            .HasMaxLength(200);
 
         builder.Property(i => i.Bank)
             .IsRequired()
@@ -31,7 +37,7 @@ internal class InvoiceConfiguration : IEntityTypeConfiguration<Invoice>
 
         builder.Property(i => i.BranchCode)
             .IsRequired()
-            .HasMaxLength(50);
+            .HasMaxLength(20);
 
         builder.Property(i => i.AccountNumber)
             .IsRequired()
@@ -39,21 +45,20 @@ internal class InvoiceConfiguration : IEntityTypeConfiguration<Invoice>
 
         builder.Property(i => i.Status)
             .IsRequired()
-            .HasMaxLength(50);
+            .HasConversion<int>();
 
-        builder
-            .HasOne(i => i.User)
-            .WithMany(u => u.Invoices)
-            .HasForeignKey(i => i.UserId);
-
+        // Relationship with CourtCase - CASCADE (primary relationship)
         builder
             .HasOne(i => i.Case)
             .WithMany(c => c.Invoices)
-            .HasForeignKey(i => i.CaseId);
+            .HasForeignKey(i => i.CaseId)
+            .OnDelete(DeleteBehavior.Cascade);
 
+        // Relationship with User - NO ACTION (to prevent cascade conflicts)
         builder
-            .HasMany(i => i.Items)
-            .WithOne(ii => ii.Invoice)
-            .HasForeignKey(ii => ii.InvoiceId);
+            .HasOne(i => i.User)
+            .WithMany(u => u.Invoices)
+            .HasForeignKey(i => i.UserId)
+            .OnDelete(DeleteBehavior.NoAction);
     }
 }

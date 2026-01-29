@@ -1,4 +1,4 @@
-using Domain.CourtCaseDates;
+using Domain.CourtCases;
 using Domain.Invoices;
 
 namespace Contracts.CourtCases.Requests;

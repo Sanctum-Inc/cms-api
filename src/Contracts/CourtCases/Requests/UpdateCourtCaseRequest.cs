@@ -1,4 +1,4 @@
-using Domain.CourtCaseDates;
+using Domain.CourtCases;
 using Domain.Invoices;
 using ErrorOr;
 using MediatR;

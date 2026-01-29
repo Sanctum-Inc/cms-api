@@ -2,6 +2,7 @@ using System.Net;
 using System.Net.Http.Json;
 using Contracts.CourtCases.Requests;
 using Contracts.CourtCases.Responses;
+using Domain.CourtCases;
 using FluentAssertions;
 
 namespace Api.Integration.Tests.Controllers;
@@ -28,7 +29,7 @@ public class CourtCaseControllerTests : IntegrationTestBase
             Location: "Johannesburg",
             Plaintiff: "John",
             Defendant: "Jane",
-            Status: Domain.CourtCaseDates.CourtCaseStatus.Draft,
+            Status: CourtCaseStatus.Draft,
             Type: "Criminal",
             Outcome: null
         );
@@ -49,7 +50,7 @@ public class CourtCaseControllerTests : IntegrationTestBase
             Location: "",
             Plaintiff: "",
             Defendant: "",
-            Status: Domain.CourtCaseDates.CourtCaseStatus.Draft,
+            Status: CourtCaseStatus.Draft,
             Type: "Criminal",
             Outcome: null
         );

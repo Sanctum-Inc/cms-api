@@ -1,41 +1,45 @@
-﻿using Domain.CourtCaseDates;
-using Domain.CourtCases;
 using Domain.Lawyers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Infrastructure.Persistence.Configuration;
-public class LawyerConfiguration : IEntityTypeConfiguration<Domain.Lawyers.Lawyer>
+
+public class LawyerConfiguration : IEntityTypeConfiguration<Lawyer>
 {
     public void Configure(EntityTypeBuilder<Lawyer> builder)
     {
         builder.HasKey(l => l.Id);
 
+        builder.Property(l => l.Email)
+            .IsRequired()
+            .HasMaxLength(255);
+
+        builder.HasIndex(l => l.Email);
+
         builder.Property(l => l.Name)
-            .IsRequired();
+            .IsRequired()
+            .HasMaxLength(100);
 
         builder.Property(l => l.Surname)
-            .IsRequired();
-
-        builder.Property(l => l.Email)
-            .IsRequired();
+            .IsRequired()
+            .HasMaxLength(100);
 
         builder.Property(l => l.MobileNumber)
-            .IsRequired();
+            .IsRequired()
+            .HasMaxLength(20);
 
-        // Many-to-Many: Lawyer <-> CourtCase
-        builder.HasMany(l => l.CourtCases)
-            .WithMany(c => c.Lawyers)
-            .UsingEntity<Dictionary<string, object>>(
-                "CourtCaseLawyers", // Table name
-                j => j.HasOne<CourtCase>().WithMany().HasForeignKey("CourtCaseId"),
-                j => j.HasOne<Lawyer>().WithMany().HasForeignKey("LawyerId"));
+        builder.Property(l => l.FirmName)
+            .HasMaxLength(200);
 
-        builder.HasMany(l => l.CourtCaseDates)
-            .WithMany(d => d.Lawyers)
-            .UsingEntity<Dictionary<string, object>>(
-                "LawyerCourtCaseDates", // Table name
-                j => j.HasOne<CourtCaseDate>().WithMany().HasForeignKey("CourtCaseDateId"),
-                j => j.HasOne<Lawyer>().WithMany().HasForeignKey("LawyerId"));
+        builder.Property(l => l.Specialty)
+            .IsRequired()
+            .HasConversion<int>();
+
+        // Relationship with User (CreatedBy) - NO ACTION (to prevent cascade conflicts)
+        builder
+            .HasOne(l => l.CreatedByUser)
+            .WithMany(u => u.Lawyers)
+            .HasForeignKey(l => l.CreatedByUserId)
+            .OnDelete(DeleteBehavior.NoAction);
     }
 }

@@ -3,39 +3,47 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Infrastructure.Persistence.Configuration;
-internal class UserConfiguration : IEntityTypeConfiguration<Domain.Users.User>
+
+public class UserConfiguration : IEntityTypeConfiguration<User>
 {
     public void Configure(EntityTypeBuilder<User> builder)
     {
         builder.HasKey(u => u.Id);
 
+        builder.Property(u => u.Email)
+            .IsRequired()
+            .HasMaxLength(255);
+
+        builder.HasIndex(u => u.Email)
+            .IsUnique();
+
         builder.Property(u => u.Name)
-            .IsRequired();
+            .IsRequired()
+            .HasMaxLength(100);
 
         builder.Property(u => u.Surname)
+            .IsRequired()
+            .HasMaxLength(100);
+
+        builder.Property(u => u.MobileNumber)
+            .IsRequired()
+            .HasMaxLength(20);
+
+        builder.Property(u => u.PasswordHash)
             .IsRequired();
 
-        builder.Property(u => u.Email)
+        builder.Property(u => u.PasswordSalt)
             .IsRequired();
 
-        builder.HasMany(u => u.CourtCases)
-            .WithOne(c => c.User)
-            .HasForeignKey(c => c.UserId);
+        builder.Property(u => u.Role)
+            .IsRequired()
+            .HasConversion<int>();
 
-        builder.HasMany(u => u.Documents)
-            .WithOne(d => d.User)
-            .HasForeignKey(d => d.UserId);
-
-        builder.HasMany(u => u.Invoices)
-            .WithOne(i => i.User)
-            .HasForeignKey(i => i.UserId);
-
-        builder.HasMany(u => u.Lawyers)
-            .WithOne(l => l.User)
-            .HasForeignKey(l => l.UserId);
-
-        builder.HasOne(x => x.Firm)
-            .WithMany(p => p.Users)
-            .HasForeignKey(x => x.FirmId);
+        // Relationship with Firm
+        builder
+            .HasOne(u => u.Firm)
+            .WithMany(f => f.Users)
+            .HasForeignKey(u => u.FirmId)
+            .OnDelete(DeleteBehavior.Restrict); // Don't cascade delete users when firm is deleted
     }
 }

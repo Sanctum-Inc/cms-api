@@ -21,12 +21,16 @@ public class Lawyer : AuditableEntity
     [Required]
     public required string MobileNumber { get; set; }
 
-    [Required]
-    public Guid UserId { get; set; }
-    public User? User { get; set; }
+    public string? FirmName { get; set; } // Just for reference, not a FK
 
-    // Relations
+    public required Speciality Specialty { get; set; }
+
+    // Created by user (for tracking purposes)
+    [Required]
+    public required Guid CreatedByUserId { get; set; }
+    public User? CreatedByUser { get; set; }
+
+    // Relations - Many-to-Many with CourtCases and CourtCaseDates
     public List<CourtCase> CourtCases { get; set; } = [];
     public List<CourtCaseDate> CourtCaseDates { get; set; } = [];
-    public required Speciality Specialty { get; set; }
 }
