@@ -23,7 +23,6 @@ internal class InvoiceItemConfiguration : IEntityTypeConfiguration<InvoiceItem>
         builder
             .HasOne(ii => ii.Invoice)
             .WithMany(i => i.Items)
-            .HasForeignKey(ii => ii.InvoiceId)
-            .OnDelete(DeleteBehavior.Cascade);
+            .HasForeignKey(ii => ii.InvoiceId);
     }
 }

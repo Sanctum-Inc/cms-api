@@ -20,27 +20,22 @@ internal class UserConfiguration : IEntityTypeConfiguration<Domain.Users.User>
 
         builder.HasMany(u => u.CourtCases)
             .WithOne(c => c.User)
-            .HasForeignKey(c => c.UserId)
-            .OnDelete(DeleteBehavior.Cascade);
+            .HasForeignKey(c => c.UserId);
 
         builder.HasMany(u => u.Documents)
             .WithOne(d => d.User)
-            .HasForeignKey(d => d.UserId)
-            .OnDelete(DeleteBehavior.Cascade);
+            .HasForeignKey(d => d.UserId);
 
         builder.HasMany(u => u.Invoices)
             .WithOne(i => i.User)
-            .HasForeignKey(i => i.UserId)
-            .OnDelete(DeleteBehavior.Cascade);
+            .HasForeignKey(i => i.UserId);
 
         builder.HasMany(u => u.Lawyers)
             .WithOne(l => l.User)
-            .HasForeignKey(l => l.UserId)
-            .OnDelete(DeleteBehavior.Cascade);
+            .HasForeignKey(l => l.UserId);
 
         builder.HasOne(x => x.Firm)
             .WithMany(p => p.Users)
-            .HasForeignKey(x => x.FirmId)
-            .OnDelete(DeleteBehavior.Cascade);
+            .HasForeignKey(x => x.FirmId);
     }
 }

@@ -43,7 +43,7 @@ public class CourtCaseControllerTests
             Location = "Johannesburg High Court",
             Plaintiff = "John Doe",
             Defendant = "Jane Smith",
-            Status = Domain.Invoices.InvoiceStatus.CANCELLED,
+            Status = Domain.CourtCaseDates.CourtCaseStatus.Draft,
             Type = "Civil",
             Outcome = null
         }
@@ -94,7 +94,7 @@ public class CourtCaseControllerTests
             "Johannesburg High Court",
             "John Doe",
             "Jane Smith",
-            Domain.Invoices.InvoiceStatus.CANCELLED,
+            Domain.CourtCaseDates.CourtCaseStatus.Draft,
             "Civil",
             null
         );
@@ -131,7 +131,7 @@ public class CourtCaseControllerTests
             "Johannesburg High Court",
             "John Doe",
             "Jane Smith",
-            Domain.Invoices.InvoiceStatus.CANCELLED,
+            Domain.CourtCaseDates.CourtCaseStatus.Draft,
             "Civil",
             null
         );
@@ -174,7 +174,7 @@ public class CourtCaseControllerTests
             "Johannesburg High Court",
             "John Doe",
             "Jane Smith",
-            Domain.Invoices.InvoiceStatus.PENDING,
+            Domain.CourtCaseDates.CourtCaseStatus.Draft,
             "Civil",
             null
         );
@@ -208,7 +208,7 @@ public class CourtCaseControllerTests
     {
         // Arrange
         var id = Guid.NewGuid();
-        var request = new UpdateCourtCaseRequest("CASE-404", "Pretoria", "A", "B", Domain.Invoices.InvoiceStatus.CANCELLED, "Civil", null);
+        var request = new UpdateCourtCaseRequest("CASE-404", "Pretoria", "A", "B", Domain.CourtCaseDates.CourtCaseStatus.Draft, "Civil", null);
         var mappedCommand = new UpdateCommand(Guid.NewGuid(), request.CaseNumber, request.Location, request.Plaintiff, request.Defendant, request.Status, request.Type, request.Outcome);
         var error = Error.NotFound("CourtCase.NotFound", "Court case not found");
 

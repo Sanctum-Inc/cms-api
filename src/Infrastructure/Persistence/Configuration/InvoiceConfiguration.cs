@@ -44,19 +44,16 @@ internal class InvoiceConfiguration : IEntityTypeConfiguration<Invoice>
         builder
             .HasOne(i => i.User)
             .WithMany(u => u.Invoices)
-            .HasForeignKey(i => i.UserId)
-            .OnDelete(DeleteBehavior.Cascade);
+            .HasForeignKey(i => i.UserId);
 
         builder
             .HasOne(i => i.Case)
             .WithMany(c => c.Invoices)
-            .HasForeignKey(i => i.CaseId)
-            .OnDelete(DeleteBehavior.Cascade);
+            .HasForeignKey(i => i.CaseId);
 
         builder
             .HasMany(i => i.Items)
             .WithOne(ii => ii.Invoice)
-            .HasForeignKey(ii => ii.InvoiceId)
-            .OnDelete(DeleteBehavior.Cascade);
+            .HasForeignKey(ii => ii.InvoiceId);
     }
 }

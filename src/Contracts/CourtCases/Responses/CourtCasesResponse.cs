@@ -16,7 +16,7 @@ public class CourtCasesResponse
     public required string Location { get; set; }
     public required string Plaintiff { get; set; }
     public required string Defendant { get; set; }
-    public required InvoiceStatus Status { get; set; }
+    public required CourtCaseStatus Status { get; set; }
     public required string? Type { get; set; }
     public string? Outcome { get; set; }
     public DateTime Created { get; set; }

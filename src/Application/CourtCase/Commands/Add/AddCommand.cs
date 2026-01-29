@@ -1,3 +1,4 @@
+using Domain.CourtCaseDates;
 using Domain.Invoices;
 using ErrorOr;
 using MediatR;
@@ -8,6 +9,6 @@ public record AddCommand(
         string Location,
         string Plaintiff,
         string Defendant,
-        InvoiceStatus Status,
+        CourtCaseStatus Status,
         string? Type,
         string? Outcome) : IRequest<ErrorOr<Guid>>;

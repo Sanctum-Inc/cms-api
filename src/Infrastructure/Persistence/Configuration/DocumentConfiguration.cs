@@ -1,4 +1,4 @@
-﻿using Domain.Documents;
+using Domain.Documents;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -32,13 +32,11 @@ public class DocumentConfiguration : IEntityTypeConfiguration<Document>
         // Document -> User (many-to-one)
         builder.HasOne(d => d.User)
             .WithMany(u => u.Documents)
-            .HasForeignKey(d => d.UserId)
-            .OnDelete(DeleteBehavior.Cascade);
+            .HasForeignKey(d => d.UserId);
 
         // Document -> CourtCase (many-to-one)
         builder.HasOne(d => d.Case)
             .WithMany(c => c.Documents)
-            .HasForeignKey(d => d.CaseId)
-            .OnDelete(DeleteBehavior.Cascade);
+            .HasForeignKey(d => d.CaseId);
     }
 }

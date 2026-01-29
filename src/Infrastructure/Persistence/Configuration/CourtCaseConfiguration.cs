@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Infrastructure.Persistence.Configuration;
+
 public class CourtCaseConfiguration : IEntityTypeConfiguration<CourtCase>
 {
     public void Configure(EntityTypeBuilder<CourtCase> builder)
@@ -14,49 +15,49 @@ public class CourtCaseConfiguration : IEntityTypeConfiguration<CourtCase>
             .HasMaxLength(50)
             .IsRequired();
 
-        builder.Property(c => c.Location)
-            .IsRequired();
+        builder.Property(c => c.Location).IsRequired();
+        builder.Property(c => c.Plaintiff).IsRequired();
+        builder.Property(c => c.Defendant).IsRequired();
+        builder.Property(c => c.Status).IsRequired();
+        builder.Property(c => c.UserId).IsRequired();
 
-        builder.Property(c => c.Plaintiff)
-            .IsRequired();
-
-        builder.Property(c => c.Defendant)
-            .IsRequired();
-
-        builder.Property(c => c.Status)
-            .IsRequired();
-
-        builder.Property(c => c.UserId)
-            .IsRequired();
-
+        // CourtCase -> User
         builder.HasOne(c => c.User)
             .WithMany(u => u.CourtCases)
             .HasForeignKey(c => c.UserId)
-            .OnDelete(DeleteBehavior.Cascade);
+            .OnDelete(DeleteBehavior.NoAction);
 
         // Many-to-Many: CourtCase <-> Lawyer
         builder.HasMany(c => c.Lawyers)
             .WithMany(l => l.CourtCases)
             .UsingEntity<Dictionary<string, object>>(
-                "CourtCaseLawyers", // Table name
-                j => j.HasOne<Lawyer>().WithMany().HasForeignKey("LawyerId"),
-                j => j.HasOne<CourtCase>().WithMany().HasForeignKey("CourtCaseId"));
+                "CourtCaseLawyers",
+                j => j.HasOne<Lawyer>()
+                      .WithMany()
+                      .HasForeignKey("LawyerId")
+                      .OnDelete(DeleteBehavior.NoAction),
 
-        // One-to-Many: CourtCase -> CourtCaseDates
+                j => j.HasOne<CourtCase>()
+                      .WithMany()
+                      .HasForeignKey("CourtCaseId")
+                      .OnDelete(DeleteBehavior.Cascade)
+            );
+
+        // CourtCase -> CourtCaseDates
         builder.HasMany(c => c.CourtCaseDates)
-            .WithOne(d => d.Case)
+            .WithOne()
             .HasForeignKey(d => d.CaseId)
             .OnDelete(DeleteBehavior.Cascade);
 
-        // One-to-Many: CourtCase -> Documents
+        // CourtCase -> Documents
         builder.HasMany(c => c.Documents)
             .WithOne(d => d.Case)
             .HasForeignKey(d => d.CaseId)
             .OnDelete(DeleteBehavior.Cascade);
 
-        // One-to-Many: CourtCase -> InvoiceItems
+        // CourtCase -> Invoices
         builder.HasMany(c => c.Invoices)
-            .WithOne(i => i.Case)
+            .WithOne()
             .HasForeignKey(i => i.CaseId)
             .OnDelete(DeleteBehavior.Cascade);
     }

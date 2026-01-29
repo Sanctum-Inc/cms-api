@@ -1,4 +1,4 @@
-﻿using Infrastructure.Persistence;
+using Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 
 namespace Api.Configuration;
@@ -21,7 +21,7 @@ public static class PersistenceConfigurator
         {
             // Production / Dev database
             services.AddDbContext<ApplicationDBContext>(options =>
-                options.UseNpgsql(configuration.GetConnectionString("DefaultConnection"))
+                options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"))
             );
         }
 

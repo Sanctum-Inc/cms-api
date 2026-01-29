@@ -1,4 +1,4 @@
-﻿using Domain.CourtCaseDates;
+using Domain.CourtCaseDates;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -20,7 +20,6 @@ public class CourtCaseDateConfiguration : IEntityTypeConfiguration<CourtCaseDate
 
         builder.HasOne(d => d.Case)
             .WithMany(c => c.CourtCaseDates)
-            .HasForeignKey(d => d.CaseId)
-            .OnDelete(DeleteBehavior.Cascade);
+            .HasForeignKey(d => d.CaseId);
     }
 }
