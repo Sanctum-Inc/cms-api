@@ -4,6 +4,7 @@ using Application.CourtCase.Commands.Delete;
 using Application.CourtCase.Commands.Update;
 using Application.CourtCase.Queries.Get;
 using Application.CourtCase.Queries.GetById;
+using Application.CourtCase.Queries.GetCaseNumbers;
 using Contracts.CourtCases.Requests;
 using Contracts.CourtCases.Responses;
 using MapsterMapper;
@@ -28,13 +29,25 @@ public class CourtCaseController : ApiControllerBase
 
     // GET /api/CourtCase
     [HttpGet]
-    [ProducesResponseType(typeof(IEnumerable<CourtCasesResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(IEnumerable<string>), StatusCodes.Status200OK)]
     [EndpointName("GetAllCourtCases")]
     public async Task<IActionResult> GetAll()
     {
         var result = await _sender.Send(new GetQuery());
 
         return MatchAndMapOkResult<IEnumerable<CourtCaseResult>, IEnumerable<CourtCasesResponse>>(result, _mapper);
+    }
+
+
+    // GET /api/CourtCase/case-numbers
+    [HttpGet("case-numbers")]
+    [ProducesResponseType(typeof(IEnumerable<string>), StatusCodes.Status200OK)]
+    [EndpointName("GetAllCaseNumbers")]
+    public async Task<IActionResult> GetAllCaseNumbers()
+    {
+        var result = await _sender.Send(new GetCaseNumbersQuery());
+
+        return MatchAndMapOkResult<IEnumerable<string>, IEnumerable<string>>(result, _mapper);
     }
 
     // GET /api/CourtCase/{id}

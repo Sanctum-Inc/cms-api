@@ -2,14 +2,16 @@ using Domain.CourtCaseDates;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Infrastructure.Persistence.Configuration;
+namespace Infrastructure.Persistence.Configurations;
 
-public class CourtCaseDateConfiguration : IEntityTypeConfiguration<CourtCaseDate>
+public class CourtCaseDateConfiguration : BaseConfiguration<CourtCaseDate>
 {
-    public void Configure(EntityTypeBuilder<CourtCaseDate> builder)
+    public override void Configure(EntityTypeBuilder<CourtCaseDate> builder)
     {
-        builder.HasKey(d => d.Id);
+        // IMPORTANT: Call base configuration FIRST
+        base.Configure(builder);
 
+        // Then add entity-specific configuration
         builder.Property(d => d.Date)
             .IsRequired()
             .HasMaxLength(50);
@@ -22,6 +24,8 @@ public class CourtCaseDateConfiguration : IEntityTypeConfiguration<CourtCaseDate
             .IsRequired()
             .HasMaxLength(100);
 
+        // CRITICAL: Configure relationships AFTER base configuration
+
         // Relationship with CourtCase - CASCADE (primary relationship)
         builder
             .HasOne(ccd => ccd.Case)
@@ -29,7 +33,7 @@ public class CourtCaseDateConfiguration : IEntityTypeConfiguration<CourtCaseDate
             .HasForeignKey(ccd => ccd.CaseId)
             .OnDelete(DeleteBehavior.Cascade);
 
-        // Relationship with User - NO ACTION (to prevent cascade conflicts)
+        // CRITICAL: Relationship with User - NO ACTION (to prevent cascade conflicts)
         builder
             .HasOne(ccd => ccd.User)
             .WithMany(u => u.CourtCasesDates)

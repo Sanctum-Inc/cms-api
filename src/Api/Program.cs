@@ -22,6 +22,8 @@ builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 builder.Services.AddControllers();
 
 
+
+
 builder.Services.AddOpenApiWithAuth();
 
 builder.Services.AddMapsterMappings();
@@ -33,6 +35,8 @@ builder.Services.AddJwtAuthentication(builder.Configuration, builder.Environment
 builder.Services.AddCustomCors();
 
 var app = builder.Build();
+
+
 
 app.ExecutePendingMigrations(builder.Environment);
 

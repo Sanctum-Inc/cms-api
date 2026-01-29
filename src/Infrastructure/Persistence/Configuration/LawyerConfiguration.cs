@@ -2,14 +2,16 @@ using Domain.Lawyers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Infrastructure.Persistence.Configuration;
+namespace Infrastructure.Persistence.Configurations;
 
-public class LawyerConfiguration : IEntityTypeConfiguration<Lawyer>
+public class LawyerConfiguration : BaseConfiguration<Lawyer>
 {
-    public void Configure(EntityTypeBuilder<Lawyer> builder)
+    public override void Configure(EntityTypeBuilder<Lawyer> builder)
     {
-        builder.HasKey(l => l.Id);
+        // IMPORTANT: Call base configuration FIRST
+        base.Configure(builder);
 
+        // Then add entity-specific configuration
         builder.Property(l => l.Email)
             .IsRequired()
             .HasMaxLength(255);
@@ -35,7 +37,7 @@ public class LawyerConfiguration : IEntityTypeConfiguration<Lawyer>
             .IsRequired()
             .HasConversion<int>();
 
-        // Relationship with User (CreatedBy) - NO ACTION (to prevent cascade conflicts)
+        // CRITICAL: Relationship with User (CreatedBy) - NO ACTION (to prevent cascade conflicts)
         builder
             .HasOne(l => l.CreatedByUser)
             .WithMany(u => u.Lawyers)

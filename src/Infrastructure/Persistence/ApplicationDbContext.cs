@@ -11,6 +11,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using System.Linq;
 using Domain.Firms;
+using Domain.CourtCases;
 
 namespace Infrastructure.Persistence;
 
@@ -22,7 +23,7 @@ public class ApplicationDBContext : DbContext, IApplicationDBContext
     }
 
     public DbSet<User> Users => Set<User>();
-    public DbSet<Domain.CourtCases.CourtCase> CourtCases => Set<Domain.CourtCases.CourtCase>();
+    public DbSet<CourtCase> CourtCases => Set<CourtCase>();
     public DbSet<Document> Documents => Set<Document>();
     public DbSet<Invoice> Invoices => Set<Invoice>();
     public DbSet<InvoiceItem> InvoiceItems => Set<InvoiceItem>();
@@ -32,17 +33,79 @@ public class ApplicationDBContext : DbContext, IApplicationDBContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        foreach (var method in from entityType in modelBuilder.Model.GetEntityTypes()
-                               where typeof(AuditableEntity).IsAssignableFrom(entityType.ClrType)
-                               let method = typeof(ApplicationDBContext)
-                            .GetMethod(nameof(SetGlobalQueryFilter), BindingFlags.NonPublic | BindingFlags.Static)!
-                            .MakeGenericMethod(entityType.ClrType)
-                               select method)
+        // CRITICAL: Call base.OnModelCreating FIRST
+        base.OnModelCreating(modelBuilder);
+
+        // CRITICAL: Apply all entity configurations from assembly
+        // This is what was missing!
+        modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+
+        // Set up soft delete query filters AFTER configurations are applied
+        foreach (var entityType in modelBuilder.Model.GetEntityTypes()
+                     .Where(t => typeof(AuditableEntity).IsAssignableFrom(t.ClrType)))
         {
-            method.Invoke(null, [modelBuilder]);
+            var method = typeof(ApplicationDBContext)
+                .GetMethod(nameof(SetGlobalQueryFilter), BindingFlags.NonPublic | BindingFlags.Static)!
+                .MakeGenericMethod(entityType.ClrType);
+
+            method.Invoke(null, new object[] { modelBuilder });
         }
 
-        base.OnModelCreating(modelBuilder);
+        // OPTIONAL BUT RECOMMENDED: Override critical cascade behaviors inline
+        // This ensures they're set correctly even if configurations have issues
+        ConfigureCascadeBehaviors(modelBuilder);
+    }
+
+    private static void ConfigureCascadeBehaviors(ModelBuilder modelBuilder)
+    {
+        // User -> Firm: RESTRICT (prevent firm deletion if users exist)
+        modelBuilder.Entity<User>()
+            .HasOne(u => u.Firm)
+            .WithMany(f => f.Users)
+            .HasForeignKey(u => u.FirmId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        // CourtCase -> User: NO ACTION (prevent cascade conflicts)
+        modelBuilder.Entity<CourtCase>()
+            .HasOne(c => c.User)
+            .WithMany(u => u.CourtCases)
+            .HasForeignKey(c => c.UserId)
+            .OnDelete(DeleteBehavior.NoAction);
+
+        // CourtCaseDate -> User: NO ACTION (prevent cascade conflicts)
+        modelBuilder.Entity<CourtCaseDate>()
+            .HasOne(d => d.User)
+            .WithMany(u => u.CourtCasesDates)
+            .HasForeignKey(d => d.UserId)
+            .OnDelete(DeleteBehavior.NoAction);
+
+        // Document -> User: NO ACTION (prevent cascade conflicts)
+        modelBuilder.Entity<Document>()
+            .HasOne(d => d.User)
+            .WithMany(u => u.Documents)
+            .HasForeignKey(d => d.UserId)
+            .OnDelete(DeleteBehavior.NoAction);
+
+        // Invoice -> User: NO ACTION (prevent cascade conflicts)
+        modelBuilder.Entity<Invoice>()
+            .HasOne(i => i.User)
+            .WithMany(u => u.Invoices)
+            .HasForeignKey(i => i.UserId)
+            .OnDelete(DeleteBehavior.NoAction);
+
+        // InvoiceItem -> User: NO ACTION (prevent cascade conflicts)
+        modelBuilder.Entity<InvoiceItem>()
+            .HasOne(ii => ii.User)
+            .WithMany()
+            .HasForeignKey(ii => ii.UserId)
+            .OnDelete(DeleteBehavior.NoAction);
+
+        // Lawyer -> User (CreatedBy): NO ACTION (prevent cascade conflicts)
+        modelBuilder.Entity<Lawyer>()
+            .HasOne(l => l.CreatedByUser)
+            .WithMany(u => u.Lawyers)
+            .HasForeignKey(l => l.CreatedByUserId)
+            .OnDelete(DeleteBehavior.NoAction);
     }
 
     private static void SetGlobalQueryFilter<TEntity>(ModelBuilder builder) where TEntity : AuditableEntity
@@ -53,9 +116,7 @@ public class ApplicationDBContext : DbContext, IApplicationDBContext
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         optionsBuilder
-            // your existing options
             .ConfigureWarnings(warnings =>
                 warnings.Ignore(CoreEventId.AccidentalEntityType));
     }
-
 }

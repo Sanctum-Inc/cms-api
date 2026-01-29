@@ -2,14 +2,16 @@ using Domain.Firms;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Infrastructure.Persistence.Configuration;
+namespace Infrastructure.Persistence.Configurations;
 
-public class FirmConfiguration : IEntityTypeConfiguration<Firm>
+public class FirmConfiguration : BaseConfiguration<Firm>
 {
-    public void Configure(EntityTypeBuilder<Firm> builder)
+    public override void Configure(EntityTypeBuilder<Firm> builder)
     {
-        builder.HasKey(f => f.Id);
+        // IMPORTANT: Call base configuration FIRST
+        base.Configure(builder);
 
+        // Then add entity-specific configuration
         builder.Property(f => f.Name)
             .IsRequired()
             .HasMaxLength(200);

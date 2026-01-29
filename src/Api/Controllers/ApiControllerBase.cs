@@ -48,7 +48,6 @@ public abstract class ApiControllerBase: ControllerBase
 
     private ObjectResult Problem(List<Error> errors)
     {
-        // Take the first error to determine the status code
         var firstError = errors[0];
 
         var statusCode = firstError.Type switch
@@ -61,9 +60,29 @@ public abstract class ApiControllerBase: ControllerBase
             _ => StatusCodes.Status500InternalServerError
         };
 
-        return Problem(
-            statusCode: statusCode,
-            detail: string.Join(", ", errors.Select(e => e.Description))
-        );
+        var problemDetails = new ProblemDetails
+        {
+            Status = statusCode,
+            Title = firstError.Description,  // Could customize more here
+            Detail = "See errors property for details.",
+            Instance = HttpContext.Request.Path
+        };
+
+        // Add all error descriptions as a list under "errors" property
+        problemDetails.Extensions["errors"] = errors.Select(e => new
+        {
+            code = e.Code,          // If your Error has a code
+            description = e.Description
+        });
+
+        // Optionally add traceId for tracking
+        problemDetails.Extensions["traceId"] = HttpContext.TraceIdentifier;
+
+        return new ObjectResult(problemDetails)
+        {
+            StatusCode = statusCode,
+            ContentTypes = { "application/problem+json" }
+        };
     }
+
 }

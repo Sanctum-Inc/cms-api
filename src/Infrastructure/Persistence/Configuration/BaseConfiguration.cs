@@ -1,4 +1,4 @@
-﻿using Domain.Common;
+using Domain.Common;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -7,32 +7,32 @@ namespace Infrastructure.Persistence.Configurations;
 public class BaseConfiguration<T> : IEntityTypeConfiguration<T>
     where T : AuditableEntity
 {
-    public void Configure(EntityTypeBuilder<T> builder)
+    public virtual void Configure(EntityTypeBuilder<T> builder)
     {
-        // 👇 Primary key (assuming all entities have an Id)
+        // Primary key (assuming all entities have an Id)
         builder.HasKey("Id");
 
-        // 👇 Created timestamp
+        // Created timestamp
         builder.Property(e => e.Created)
             .IsRequired()
             .ValueGeneratedOnAdd();
 
-        // 👇 CreatedBy user
+        // CreatedBy user
         builder.Property(e => e.CreatedBy)
             .HasMaxLength(256)
             .IsRequired(false);
 
-        // 👇 LastModified timestamp
+        // LastModified timestamp
         builder.Property(e => e.LastModified)
             .IsRequired(false)
             .ValueGeneratedOnAddOrUpdate();
 
-        // 👇 LastModifiedBy user
+        // LastModifiedBy user
         builder.Property(e => e.LastModifiedBy)
             .HasMaxLength(256)
             .IsRequired(false);
 
-        // 👇 Soft delete flag
+        // Soft delete flag
         builder.Property(e => e.IsDeleted)
             .HasDefaultValue(false)
             .IsRequired();

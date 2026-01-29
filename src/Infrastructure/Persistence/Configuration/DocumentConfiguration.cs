@@ -2,14 +2,16 @@ using Domain.Documents;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Infrastructure.Persistence.Configuration;
+namespace Infrastructure.Persistence.Configurations;
 
-public class DocumentConfiguration : IEntityTypeConfiguration<Document>
+public class DocumentConfiguration : BaseConfiguration<Document>
 {
-    public void Configure(EntityTypeBuilder<Document> builder)
+    public override void Configure(EntityTypeBuilder<Document> builder)
     {
-        builder.HasKey(d => d.Id);
+        // IMPORTANT: Call base configuration FIRST
+        base.Configure(builder);
 
+        // Then add entity-specific configuration
         builder.Property(d => d.Name)
             .IsRequired()
             .HasMaxLength(200);
@@ -32,7 +34,7 @@ public class DocumentConfiguration : IEntityTypeConfiguration<Document>
             .HasForeignKey(d => d.CaseId)
             .OnDelete(DeleteBehavior.Cascade);
 
-        // Relationship with User - NO ACTION (to prevent cascade conflicts)
+        // CRITICAL: Relationship with User - NO ACTION (to prevent cascade conflicts)
         builder
             .HasOne(d => d.User)
             .WithMany(u => u.Documents)

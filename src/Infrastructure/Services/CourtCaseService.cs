@@ -22,6 +22,20 @@ public class CourtCaseService : BaseService<CourtCase, CourtCaseResult, AddComma
     {
     }
 
+    public async Task<ErrorOr<IEnumerable<string>?>> GetCaseNumbers(CancellationToken cancellationToken)
+    {
+        var entity = await base.Get(cancellationToken);
+
+        if (entity.IsError)
+        {
+            return entity.Errors;
+        }
+
+        var caseNumbers = entity.Value.Select(x => x.CaseNumber);
+
+        return caseNumbers.ToErrorOr();
+    }
+
     protected override Guid GetIdFromUpdateCommand(UpdateCommand command)
     {
         return command.Id;

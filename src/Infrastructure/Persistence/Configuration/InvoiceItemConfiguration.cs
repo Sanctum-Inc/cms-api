@@ -2,14 +2,16 @@ using Domain.InvoiceItems;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Infrastructure.Persistence.Configuration;
+namespace Infrastructure.Persistence.Configurations;
 
-public class InvoiceItemConfiguration : IEntityTypeConfiguration<InvoiceItem>
+public class InvoiceItemConfiguration : BaseConfiguration<InvoiceItem>
 {
-    public void Configure(EntityTypeBuilder<InvoiceItem> builder)
+    public override void Configure(EntityTypeBuilder<InvoiceItem> builder)
     {
-        builder.HasKey(ii => ii.Id);
+        // IMPORTANT: Call base configuration FIRST
+        base.Configure(builder);
 
+        // Then add entity-specific configuration
         builder.Property(ii => ii.Name)
             .IsRequired()
             .HasMaxLength(200);
@@ -28,7 +30,7 @@ public class InvoiceItemConfiguration : IEntityTypeConfiguration<InvoiceItem>
             .HasForeignKey(ii => ii.InvoiceId)
             .OnDelete(DeleteBehavior.Cascade);
 
-        // Relationship with User - NO ACTION (to prevent cascade conflicts)
+        // CRITICAL: Relationship with User - NO ACTION (to prevent cascade conflicts)
         builder
             .HasOne(ii => ii.User)
             .WithMany()

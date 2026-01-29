@@ -2,14 +2,16 @@ using Domain.CourtCases;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Infrastructure.Persistence.Configuration;
+namespace Infrastructure.Persistence.Configurations;
 
-public class CourtCaseConfiguration : IEntityTypeConfiguration<CourtCase>
+public class CourtCaseConfiguration : BaseConfiguration<CourtCase>
 {
-    public void Configure(EntityTypeBuilder<CourtCase> builder)
+    public override void Configure(EntityTypeBuilder<CourtCase> builder)
     {
-        builder.HasKey(c => c.Id);
+        // IMPORTANT: Call base configuration FIRST
+        base.Configure(builder);
 
+        // Then add entity-specific configuration
         builder.Property(c => c.CaseNumber)
             .IsRequired()
             .HasMaxLength(50);
@@ -43,7 +45,7 @@ public class CourtCaseConfiguration : IEntityTypeConfiguration<CourtCase>
         builder.Property(c => c.IsPaid)
             .IsRequired();
 
-        // Relationship with User - NO ACTION to prevent cascade conflicts
+        // CRITICAL: Relationship with User - NO ACTION to prevent cascade conflicts
         builder
             .HasOne(c => c.User)
             .WithMany(u => u.CourtCases)

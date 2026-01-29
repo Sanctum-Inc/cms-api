@@ -1,0 +1,131 @@
+INSERT INTO [dbo].[Firms]
+(
+    [Id],
+    [Name],
+    [Address],
+    [Telephone],
+    [Fax],
+    [Mobile],
+    [Email],
+    [AttorneyAdmissionDate],
+    [AdvocateAdmissionDate],
+    [AccountName],
+    [Bank],
+    [BranchCode],
+    [AccountNumber],
+    [Created],
+    [CreatedBy],
+    [LastModified],
+    [LastModifiedBy],
+    [IsDeleted]
+)
+VALUES
+-- 1
+(
+    NEWID(),
+    'Mokoena Attorneys',
+    '123 Justice Rd, Johannesburg',
+    '0115551234',
+    '0115551235',
+    '0825551234',
+    'info@mokoenaattorneys.co.za',
+    '2015-03-10',
+    '2017-06-15',
+    'Mokoena Attorneys Trust',
+    'FNB',
+    '250655',
+    '62123456789',
+    GETDATE(),
+    NEWID(),
+    GETDATE(),
+    NEWID(),
+    0
+),
+
+-- 2
+(
+    NEWID(),
+    'Nkosi Legal',
+    '45 Court St, Pretoria',
+    '0124447890',
+    '0124447891',
+    '0834447890',
+    'contact@nkosilegal.co.za',
+    '2012-01-20',
+    '2014-09-12',
+    'Nkosi Legal Trust',
+    'Standard Bank',
+    '051001',
+    '53214567890',
+    GETDATE(),
+    NEWID(),
+    GETDATE(),
+    NEWID(),
+    0
+),
+
+-- 3
+(
+    NEWID(),
+    'Ubuntu Law Group',
+    '78 Freedom Ave, Durban',
+    '0313332222',
+    '0313332223',
+    '0843332222',
+    'admin@ubuntulaw.co.za',
+    '2018-05-05',
+    '2020-02-02',
+    'Ubuntu Law Trust',
+    'ABSA',
+    '632005',
+    '40567890123',
+    GETDATE(),
+    NEWID(),
+    GETDATE(),
+    NEWID(),
+    0
+),
+
+-- 4
+(
+    NEWID(),
+    'Khumalo & Partners',
+    '9 Heritage Blvd, Cape Town',
+    '0217778888',
+    '0217778889',
+    '0817778888',
+    'info@khumalolaw.co.za',
+    '2010-11-01',
+    '2013-07-19',
+    'Khumalo Partners Trust',
+    'Nedbank',
+    '198765',
+    '99887766554',
+    GETDATE(),
+    NEWID(),
+    GETDATE(),
+    NEWID(),
+    0
+),
+
+-- 5
+(
+    NEWID(),
+    'Masondo Inc.',
+    '16 Legal Lane, Sandton',
+    '0112223333',
+    '0112223334',
+    '0822223333',
+    'hello@masondoinc.co.za',
+    '2016-08-14',
+    '2019-04-21',
+    'Masondo Inc Trust',
+    'Capitec',
+    '470010',
+    '15678923456',
+    GETDATE(),
+    NEWID(),
+    GETDATE(),
+    NEWID(),
+    0
+);

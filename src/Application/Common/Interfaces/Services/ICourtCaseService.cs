@@ -12,4 +12,5 @@ namespace Application.Common.Interfaces.Services;
 /// </summary>
 public interface ICourtCaseService : IBaseService<CourtCaseResult>
 {
+    Task<ErrorOr<IEnumerable<string>?>> GetCaseNumbers(CancellationToken cancellationToken);
 }

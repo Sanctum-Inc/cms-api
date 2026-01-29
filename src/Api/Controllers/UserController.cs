@@ -26,8 +26,8 @@ public class UserController : ApiControllerBase
 
     [HttpPost("login")]
     [ProducesResponseType(typeof(LoginResponse), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
     [EndpointName("Login")]
     public async Task<IActionResult> Login(LoginRequest loginRequest)
     {
@@ -40,8 +40,8 @@ public class UserController : ApiControllerBase
 
     [HttpPost("register")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
     [EndpointName("Register")]
     public async Task<IActionResult> Register(RegisterRequest registerRequest)
     {
@@ -55,8 +55,8 @@ public class UserController : ApiControllerBase
     [HttpGet("{id}")]
     [EndpointName("GetById")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
     [Authorize]
     public async Task<IActionResult> GetById([FromRoute] string id)
     {
