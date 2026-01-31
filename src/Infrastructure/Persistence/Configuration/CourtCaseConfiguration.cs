@@ -40,6 +40,7 @@ public class CourtCaseConfiguration : BaseConfiguration<CourtCase>
             .HasMaxLength(100);
 
         builder.Property(c => c.Outcome)
+            .IsRequired()
             .HasMaxLength(500);
 
         builder.Property(c => c.IsPaid)

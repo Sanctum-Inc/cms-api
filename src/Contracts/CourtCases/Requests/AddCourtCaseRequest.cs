@@ -8,5 +8,5 @@ public record AddCourtCaseRequest(
         string Plaintiff,
         string Defendant,
         CourtCaseStatus Status,
-        string? Type,
-        string? Outcome);
+        CourtCaseTypes Type,
+        CourtCaseOutcomes Outcome);

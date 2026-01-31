@@ -41,12 +41,15 @@ public class InvoiceItemService : BaseService<InvoiceItem, InvoiceItemResult, Ad
         if (string.IsNullOrEmpty(userId))
             return Error.Unauthorized(description: "User is not authenticated.");
 
+        var culture = System.Globalization.CultureInfo.InvariantCulture;
+
         return new InvoiceItem()
         {
             InvoiceId = new Guid(command.InvoiceId),
             Name = command.Name,
             Hours = command.Hours,
             CostPerHour = command.CostPerHour,
+            DateOfService = DateTime.Parse(command.Date, culture),
             Id = Guid.NewGuid(),
             UserId = new Guid(userId),
         };

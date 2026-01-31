@@ -30,8 +30,6 @@ public class AddCourtCaseCommandValidator : AbstractValidator<AddCommand>
             .NotNull();
 
         RuleFor(x => x.Type)
-            .MaximumLength(100).WithMessage("Type must not exceed 100 characters.")
-            .When(x => !string.IsNullOrWhiteSpace(x.Type))
-            .NotNull();
+            .NotNull().WithMessage("Type is required.");
     }
 }

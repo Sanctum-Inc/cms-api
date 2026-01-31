@@ -61,7 +61,6 @@ public class CourtCaseDatesService : BaseService<CourtCaseDate, CourtCaseDateRes
             Id: x.Id,
             Date: x.Date,
             Title: x.Title,
-            Type: x.Type,
             CaseNumber: x.Case.CaseNumber,
             CaseId: x.CaseId,
             CaseType: x.Case.Type,

@@ -4,4 +4,5 @@ public record AddInvoiceItemRequest(
     string Name,
     int Hours,
     decimal CostPerHour,
+    string date,
     Guid CaseId);

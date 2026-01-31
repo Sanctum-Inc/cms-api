@@ -34,13 +34,11 @@ public class UpdateCommandValidator : AbstractValidator<UpdateCommand>
 
         RuleFor(x => x.Type)
             .NotEmpty().WithMessage("Type is required.")
-            .NotNull().WithMessage("Type must not be null")
-            .MaximumLength(100).WithMessage("Type must not exceed 100 characters.");
+            .NotNull().WithMessage("Type must not be null");
 
         RuleFor(x => x.Outcome)
             .NotEmpty().WithMessage("Outcome is required.")
-            .NotNull().WithMessage("Outcome must not be null")
-            .MaximumLength(500).WithMessage("Outcome must not exceed 500 characters.");
+            .NotNull().WithMessage("Outcome must not be null");
 
 
 

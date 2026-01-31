@@ -10,5 +10,5 @@ public record AddCommand(
         string Plaintiff,
         string Defendant,
         CourtCaseStatus Status,
-        string? Type,
-        string? Outcome) : IRequest<ErrorOr<Guid>>;
+        CourtCaseTypes Type,
+        CourtCaseOutcomes Outcome) : IRequest<ErrorOr<Guid>>;

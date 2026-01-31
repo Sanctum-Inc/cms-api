@@ -12,6 +12,7 @@ public class InvoiceItem : AuditableEntity
     public required string Name { get; set; }
     public int Hours { get; set; }
     public decimal CostPerHour { get; set; }
+    public DateTime DateOfService { get; set; }
 
     public required Guid UserId { get; set; }
     public User? User { get; set; }

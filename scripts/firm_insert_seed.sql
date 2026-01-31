@@ -1,4 +1,4 @@
-INSERT INTO [dbo].[Firms]
+INSERT INTO [Firms]
 (
     [Id],
     [Name],

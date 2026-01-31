@@ -24,9 +24,9 @@ public class CourtCase : AuditableEntity
     [Required]
     public required CourtCaseStatus Status { get; set; }
 
-    public required string Type { get; set; }
+    public required CourtCaseTypes Type { get; set; }
 
-    public string? Outcome { get; set; }
+    public CourtCaseOutcomes Outcome { get; set; }
 
     public required bool IsPaid { get; set; }
 

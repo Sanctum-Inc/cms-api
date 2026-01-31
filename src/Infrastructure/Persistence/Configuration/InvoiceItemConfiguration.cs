@@ -23,6 +23,9 @@ public class InvoiceItemConfiguration : BaseConfiguration<InvoiceItem>
             .IsRequired()
             .HasPrecision(18, 2);
 
+        builder.Property(ii => ii.DateOfService)
+            .IsRequired();
+
         // Relationship with Invoice - CASCADE (primary relationship)
         builder
             .HasOne(ii => ii.Invoice)

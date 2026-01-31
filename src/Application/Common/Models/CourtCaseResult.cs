@@ -13,8 +13,8 @@ public class CourtCaseResult
     public required string Plaintiff { get; set; }
     public required string Defendant { get; set; }
     public required CourtCaseStatus Status { get; set; }
-    public string? Type { get; set; }
-    public string? Outcome { get; set; }
+    public CourtCaseTypes Type { get; set; }
+    public CourtCaseOutcomes Outcome { get; set; }
     public DateTime Created { get; set; }
     public DateTime LastModified { get; set; }
     public Guid UserId { get; set; }

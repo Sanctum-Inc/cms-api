@@ -11,5 +11,5 @@ public record UpdateCommand(
         string Plaintiff,
         string Defendant,
         CourtCaseStatus Status,
-        string? Type,
-        string? Outcome) : IRequest<ErrorOr<bool>>;
+        CourtCaseTypes Type,
+        CourtCaseOutcomes Outcome) : IRequest<ErrorOr<bool>>;

@@ -7,4 +7,5 @@ public record AddCommand(
     string Name,
     int Hours,
     decimal CostPerHour,
+    string Date,
     Guid CaseId) : IRequest<ErrorOr<Guid>>;
