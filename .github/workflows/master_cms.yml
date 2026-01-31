@@ -79,32 +79,24 @@ jobs:
           path: ${{ runner.temp }}/myapp
 
   deploy:
-    name: Deploy to Azure Web App
-    runs-on: ubuntu-latest
-    needs: build-and-analyze
-    # Only run deployment on push to master (not on PRs)
-    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
-    permissions:
-      id-token: write #This is required for requesting the JWT
-      contents: read #This is required for actions/checkout
-    
-    steps:
-      - name: Download artifact from build job
-        uses: actions/download-artifact@v4
-        with:
-          name: .net-app
-      
-      - name: Login to Azure
-        uses: azure/login@v2
-        with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_C4F57FED286E4FB7818DABB1F5C30A47 }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_49B313A2203B48C0AEAD6C0391B93191 }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_1A742FBA33B74704A71816DDD99F85C9 }}
-      
-      - name: Deploy to Azure Web App
-        id: deploy-to-webapp
-        uses: azure/webapps-deploy@v3
-        with:
-          app-name: 'cms'
-          slot-name: 'Production'
-          package: .
+      name: Deploy via FTP
+      runs-on: ubuntu-latest
+      needs: build-and-analyze
+      if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+
+      steps:
+        - name: Download artifact from build job
+          uses: actions/download-artifact@v4
+          with:
+            name: .net-app
+            path: ./publish
+
+        - name: FTP Deploy to lexcase.co.za
+          uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+          with:
+            server: lexcase.co.za
+            username: ${{ secrets.FTP_USERNAME }}
+            password: ${{ secrets.FTP_PASSWORD }}
+            local-dir: ./publish/
+            server-dir: /public_html/
+
