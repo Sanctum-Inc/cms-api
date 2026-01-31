@@ -97,7 +97,9 @@ public static class TestDataSeeder
             Email = "testuser@example.com",
             MobileNumber = "+27812198232",
             PasswordHash = "BFqr1L1tvZ2mmThXw9i13LtCaHa/caTOr/uBMuQ6d/k=",
-            PasswordSalt = "qxAHZlcWRdQdB4+Nb+RpTg=="
+            PasswordSalt = "qxAHZlcWRdQdB4+Nb+RpTg==",
+            FirmId = Guid.NewGuid(),
+            Role = UserRole.FirmUser
         };
         db.Users.Add(user);
         await db.SaveChangesAsync();
@@ -203,8 +205,8 @@ public static class TestDataSeeder
                 Name = "James",
                 Surname = "Wilson",
                 MobileNumber = "+27821234567",
-                UserId = userId,
-                Specialty = Speciality.CriminalLaw,
+                CreatedByUserId = userId,
+                Specialty = Speciality.Corporate,
                 CreatedBy = userId,
                 Created = DateTime.UtcNow
             },
@@ -215,8 +217,8 @@ public static class TestDataSeeder
                 Name = "Sarah",
                 Surname = "Johnson",
                 MobileNumber = "+27829876543",
-                UserId = userId,
-                Specialty = Speciality.FamilyLaw,
+                CreatedByUserId = userId,
+                Specialty = Speciality.Corporate,
                 CreatedBy = userId,
                 Created = DateTime.UtcNow
             },
@@ -227,8 +229,8 @@ public static class TestDataSeeder
                 Name = "Michael",
                 Surname = "Brown",
                 MobileNumber = "+27835551234",
-                UserId = userId,
-                Specialty = Speciality.CorporateLaw,
+                CreatedByUserId = userId,
+                Specialty = Speciality.Environmental,
                 CreatedBy = userId,
                 Created = DateTime.UtcNow
             },
@@ -239,8 +241,8 @@ public static class TestDataSeeder
                 Name = "Emily",
                 Surname = "Davis",
                 MobileNumber = "+27847778888",
-                UserId = userId,
-                Specialty = Speciality.IntellectualPropertyLaw,
+                CreatedByUserId = userId,
+                Specialty = Speciality.RealEstate,
                 CreatedBy = userId,
                 Created = DateTime.UtcNow
             }
