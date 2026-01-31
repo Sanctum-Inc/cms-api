@@ -29,7 +29,7 @@ public class CourtCaseController : ApiControllerBase
 
     // GET /api/CourtCase
     [HttpGet]
-    [ProducesResponseType(typeof(IEnumerable<string>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(IEnumerable<CourtCasesResponse>), StatusCodes.Status200OK)]
     [EndpointName("GetAllCourtCases")]
     public async Task<IActionResult> GetAll()
     {
