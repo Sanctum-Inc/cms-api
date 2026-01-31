@@ -98,5 +98,5 @@ jobs:
             username: ${{ secrets.FTP_USERNAME }}
             password: ${{ secrets.FTP_PASSWORD }}
             local-dir: ./publish/
-            server-dir: /api.lexcase.co.za/wwwroot
+            server-dir: /api.lexcase.co.za/wwwroot/
 
