@@ -26,11 +26,29 @@ public class AddCommandHandler : IRequestHandler<AddCommand, ErrorOr<Guid>>
 
     public async Task<ErrorOr<Guid>> Handle(AddCommand request, CancellationToken cancellationToken)
     {
-        var firm =  await _firmService.GetById(new Guid(_sessionResolver.FirmId ?? ""), cancellationToken);
+        List<Error>? invoiceErrors = [];
+        if (request.InvoiceId.Equals("new", StringComparison.CurrentCultureIgnoreCase))
+        {
+            invoiceErrors = await AddNewInvoice(request, cancellationToken);
+        }
+
+        if (invoiceErrors?.Count > 0)
+        {
+            return invoiceErrors;
+        }
+
+        var result = await _invoiceItemService.Add(request, cancellationToken);
+
+        return result;
+    }
+
+    private async Task<List<Error>?> AddNewInvoice(AddCommand request, CancellationToken cancellationToken)
+    {
+        var firm = await _firmService.GetById(new Guid(_sessionResolver.FirmId ?? ""), cancellationToken);
 
         if (firm.IsError)
         {
-            return Error.Conflict("No firm configuration found");
+            return [Error.Conflict("No firm configuration found")];
         }
 
         var invoiceNumber = await _invoiceService.GetNewInvoiceNumber(cancellationToken);
@@ -59,8 +77,6 @@ public class AddCommandHandler : IRequestHandler<AddCommand, ErrorOr<Guid>>
 
         request.InvoiceId = invoiceResult.Value.ToString();
 
-        var result = await _invoiceItemService.Add(request, cancellationToken);
-
-        return result;
+        return null;
     }
 }

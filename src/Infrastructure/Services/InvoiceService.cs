@@ -95,6 +95,19 @@ public class InvoiceService : BaseService<Invoice, InvoiceResult, AddCommand, Up
         .ToErrorOr();
     }
 
+    public async Task<ErrorOr<IEnumerable<InvoiceNumbersResult>>> GetInvoiceNumbers(CancellationToken cancellationToken)
+    {
+        var result = await base.Get(cancellationToken);
+        if (result.IsError)
+        {
+            return result.Errors;
+        }
+
+        return result.Value
+            .Select(x => new InvoiceNumbersResult(x.Id.ToString(), x.InvoiceNumber))
+            .ToErrorOr();
+    }
+
     public async Task<string> GetNewInvoiceNumber(CancellationToken cancellationToken)
     {
         var result = await _invoiceRepository.GetNewInvoiceNumber(cancellationToken);

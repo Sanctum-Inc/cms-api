@@ -7,6 +7,7 @@ using Application.Invoice.Commands.SetIsPaid;
 using Application.Invoice.Commands.Update;
 using Application.Invoice.Queries.Get;
 using Application.Invoice.Queries.GetById;
+using Application.Invoice.Queries.GetInvoiceNumbers;
 using Contracts.CourtCases.Responses;
 using Contracts.Documents.Responses;
 using Contracts.Invoice.Requests;
@@ -44,6 +45,17 @@ public class InvoiceController : ApiControllerBase
         var result = await _sender.Send(new GetCommand());
 
         return MatchAndMapOkResult<IEnumerable<InvoiceResult>, IEnumerable<InvoiceResponse>>(result, _mapper);
+    }
+
+    // GET /api/CourtCase/invoice-numbers
+    [HttpGet("invoice-numbers")]
+    [ProducesResponseType(typeof(IEnumerable<InvoiceNumberResponse>), StatusCodes.Status200OK)]
+    [EndpointName("GetAllInvoiceNumbers")]
+    public async Task<IActionResult> GetAllInvoiceNumbers()
+    {
+        var result = await _sender.Send(new GetInvoiceNumbersQuery());
+
+        return MatchAndMapOkResult<IEnumerable<InvoiceNumbersResult>, IEnumerable<InvoiceNumberResponse>>(result, _mapper);
     }
 
     // GET /api/Invoice/{id}

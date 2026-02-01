@@ -25,4 +25,5 @@ public interface IInvoiceService : IBaseService<InvoiceResult>
     Task<ErrorOr<DownloadDocumentResult>> GenerateInvoicePdf(Guid id, CancellationToken cancellationToken);
     Task<string> GetNewInvoiceNumber(CancellationToken cancellationToken);
     Task<ErrorOr<bool>> UpdateIsPaid(SetIsPaidCommand request, CancellationToken cancellationToken);
+    Task<ErrorOr<IEnumerable<InvoiceNumbersResult>>> GetInvoiceNumbers(CancellationToken cancellationToken);
 }
