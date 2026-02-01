@@ -22,7 +22,7 @@ public class CourtCaseService : BaseService<CourtCase, CourtCaseResult, AddComma
     {
     }
 
-    public async Task<ErrorOr<IEnumerable<string>?>> GetCaseNumbers(CancellationToken cancellationToken)
+    public async Task<ErrorOr<IEnumerable<CourtCaseNumberResult>?>> GetCaseNumbers(CancellationToken cancellationToken)
     {
         var entity = await base.Get(cancellationToken);
 
@@ -31,7 +31,7 @@ public class CourtCaseService : BaseService<CourtCase, CourtCaseResult, AddComma
             return entity.Errors;
         }
 
-        var caseNumbers = entity.Value.Select(x => x.CaseNumber);
+        var caseNumbers = entity.Value.Select(x => new CourtCaseNumberResult(x.Id.ToString(), x.CaseNumber));
 
         return caseNumbers.ToErrorOr();
     }

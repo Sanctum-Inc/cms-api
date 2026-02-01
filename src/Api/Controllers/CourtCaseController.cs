@@ -41,13 +41,13 @@ public class CourtCaseController : ApiControllerBase
 
     // GET /api/CourtCase/case-numbers
     [HttpGet("case-numbers")]
-    [ProducesResponseType(typeof(IEnumerable<string>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(IEnumerable<CourtCaseNumberResponse>), StatusCodes.Status200OK)]
     [EndpointName("GetAllCaseNumbers")]
     public async Task<IActionResult> GetAllCaseNumbers()
     {
         var result = await _sender.Send(new GetCaseNumbersQuery());
 
-        return MatchAndMapOkResult<IEnumerable<string>, IEnumerable<string>>(result, _mapper);
+        return MatchAndMapOkResult<IEnumerable<CourtCaseNumberResult>, IEnumerable<CourtCaseNumberResponse>>(result, _mapper);
     }
 
     // GET /api/CourtCase/{id}

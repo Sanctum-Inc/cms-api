@@ -8,4 +8,4 @@ using ErrorOr;
 using MediatR;
 
 namespace Application.CourtCase.Queries.GetCaseNumbers;
-public record GetCaseNumbersQuery() : IRequest<ErrorOr<IEnumerable<string>?>>;
+public record GetCaseNumbersQuery() : IRequest<ErrorOr<IEnumerable<CourtCaseNumberResult>?>>;
