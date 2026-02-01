@@ -30,8 +30,8 @@ public class CourtCaseControllerTests : IntegrationTestBase
             Plaintiff: "John",
             Defendant: "Jane",
             Status: CourtCaseStatus.Draft,
-            Type: "Criminal",
-            Outcome: null
+            Type: CourtCaseTypes.Commercial,
+            Outcome: CourtCaseOutcomes.Liable
         );
 
         // Act
@@ -51,8 +51,8 @@ public class CourtCaseControllerTests : IntegrationTestBase
             Plaintiff: "",
             Defendant: "",
             Status: CourtCaseStatus.Draft,
-            Type: "Criminal",
-            Outcome: null
+            Type: CourtCaseTypes.Civil,
+            Outcome: CourtCaseOutcomes.Guilty
         );
 
         // Act

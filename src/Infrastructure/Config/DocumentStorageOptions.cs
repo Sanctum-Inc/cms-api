@@ -1,4 +1,4 @@
-﻿namespace Infrastructure.Config;
+namespace Infrastructure.Config;
 
 public class DocumentStorageOptions
 {
