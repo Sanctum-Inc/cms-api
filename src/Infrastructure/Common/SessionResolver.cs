@@ -30,7 +30,7 @@ public class SessionResolver : ISessionResolver
     }
 
     public string? UserId => GetClaim(ClaimTypes.NameIdentifier) ?? GetClaim("custom:user_id");
-    public string? FirmId => GetClaim(ClaimTypes.NameIdentifier) ?? GetClaim("custom:firm_id");
+    public string? FirmId => GetClaim(ClaimTypes.UserData) ?? GetClaim("custom:firm_id");
 
     public string? UserEmail => GetClaim(ClaimTypes.Email) ?? GetClaim("email");
 

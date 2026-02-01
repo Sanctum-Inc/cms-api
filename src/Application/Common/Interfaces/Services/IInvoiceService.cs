@@ -23,6 +23,6 @@ public interface IInvoiceService : IBaseService<InvoiceResult>
     /// This method is typically used to allow users to download or view a finalized invoice document.
     /// </remarks>
     Task<ErrorOr<DownloadDocumentResult>> GenerateInvoicePdf(Guid id, CancellationToken cancellationToken);
-
+    Task<string> GetNewInvoiceNumber(CancellationToken cancellationToken);
     Task<ErrorOr<bool>> UpdateIsPaid(SetIsPaidCommand request, CancellationToken cancellationToken);
 }

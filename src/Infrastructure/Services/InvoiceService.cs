@@ -95,6 +95,13 @@ public class InvoiceService : BaseService<Invoice, InvoiceResult, AddCommand, Up
         .ToErrorOr();
     }
 
+    public async Task<string> GetNewInvoiceNumber(CancellationToken cancellationToken)
+    {
+        var result = await _invoiceRepository.GetNewInvoiceNumber(cancellationToken);
+
+        return result;
+    }
+
     public async Task<ErrorOr<bool>> UpdateIsPaid(SetIsPaidCommand request, CancellationToken cancellationToken)
     {
         var entity = await _invoiceRepository.GetByIdAndUserIdAsync( request.Id, cancellationToken );

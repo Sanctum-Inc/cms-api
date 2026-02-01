@@ -30,4 +30,15 @@ public class InvoiceRepository : BaseRepository<Domain.Invoices.Invoice>, IInvoi
                  cancellationToken)
              ;
     }
+
+    public async Task<string> GetNewInvoiceNumber(CancellationToken cancellationToken)
+    {
+        var result = await _dbSet
+            .OrderByDescending(x => x.InvoiceNumber)
+             .FirstOrDefaultAsync(x =>
+                     EF.Property<Guid>(x, "UserId") == new Guid(_sessionResolver.UserId!),
+                 cancellationToken);
+
+        return result?.InvoiceNumber ?? "INV-001";
+    }
 }
