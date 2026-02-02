@@ -1,3 +1,5 @@
+using Domain.CourtCaseDates;
+using Domain.CourtCases;
 using ErrorOr;
 using MediatR;
 
@@ -7,5 +9,5 @@ public record AddCommand(
     string Title,
     string Subtitle,
     Guid CaseId,
-    string Type
+    CourtCaseDateTypes Type
 ) : IRequest<ErrorOr<Guid>>;

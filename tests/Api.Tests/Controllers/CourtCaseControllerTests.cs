@@ -45,8 +45,8 @@ public class CourtCaseControllerTests
             Plaintiff = "John Doe",
             Defendant = "Jane Smith",
             Status = CourtCaseStatus.Draft,
-            Type = "Civil",
-            Outcome = null
+            Type = CourtCaseTypes.Family,
+            Outcome = CourtCaseOutcomes.NotGuilty
         }
     };
 
@@ -96,8 +96,8 @@ public class CourtCaseControllerTests
             "John Doe",
             "Jane Smith",
             CourtCaseStatus.Draft,
-            "Civil",
-            null
+            CourtCaseTypes.Family,
+            CourtCaseOutcomes.NotGuilty
         );
 
         var command = new AddCommand(
@@ -133,8 +133,8 @@ public class CourtCaseControllerTests
             "John Doe",
             "Jane Smith",
             CourtCaseStatus.Draft,
-            "Civil",
-            null
+            CourtCaseTypes.Family,
+            CourtCaseOutcomes.NotLiable
         );
 
         var command = new AddCommand(
@@ -176,8 +176,8 @@ public class CourtCaseControllerTests
             "John Doe",
             "Jane Smith",
             CourtCaseStatus.Draft,
-            "Civil",
-            null
+            CourtCaseTypes.Family,
+            CourtCaseOutcomes.Settled
         );
 
         var command = new UpdateCommand(
@@ -209,7 +209,7 @@ public class CourtCaseControllerTests
     {
         // Arrange
         var id = Guid.NewGuid();
-        var request = new UpdateCourtCaseRequest("CASE-404", "Pretoria", "A", "B", CourtCaseStatus.Draft, "Civil", null);
+        var request = new UpdateCourtCaseRequest("CASE-404", "Pretoria", "A", "B", CourtCaseStatus.Draft, CourtCaseTypes.Family, CourtCaseOutcomes.Guilty);
         var mappedCommand = new UpdateCommand(Guid.NewGuid(), request.CaseNumber, request.Location, request.Plaintiff, request.Defendant, request.Status, request.Type, request.Outcome);
         var error = Error.NotFound("CourtCase.NotFound", "Court case not found");
 

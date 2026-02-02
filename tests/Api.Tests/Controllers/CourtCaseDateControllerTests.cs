@@ -7,6 +7,8 @@ using Application.CourtCaseDates.Queries.Get;
 using Application.CourtCaseDates.Queries.GetById;
 using Contracts.CourtCaseDates.Requests;
 using Contracts.CourtCaseDates.Responses;
+using Domain.CourtCaseDates;
+using Domain.CourtCases;
 using ErrorOr;
 using FluentAssertions;
 using MapsterMapper;
@@ -34,7 +36,7 @@ public class CourtCaseDateControllerTests
     {
         // Arrange
         var id = Guid.NewGuid();
-        var expected = new List<CourtCaseDateResult> { new CourtCaseDateResult(id, "2014/0101", "title", "type", "case123", id, "divorce", "plaintiff", "defendent") };
+        var expected = new List<CourtCaseDateResult> { new CourtCaseDateResult(id, "2014/0101", "title", "case123", id, CourtCaseTypes.Administrative, "plaintiff", "defendent") };
         var expectedResponse = new List<CourtCaseDatesResponse> { new CourtCaseDatesResponse(id, "2014/0101", "title", "type", "case123", id, "divorce", "plaintiff", "defendent") };
 
         _mockSender
@@ -61,7 +63,7 @@ public class CourtCaseDateControllerTests
     {
         // Arrange
         var id = Guid.NewGuid();
-        var resultModel = new CourtCaseDateResult(id, "2014/0101", "title", "type", "case123", id, "divorce", "plaintiff", "defendent");
+        var resultModel = new CourtCaseDateResult(id, "2014/0101", "title", "case123", id, CourtCaseTypes.Administrative, "plaintiff", "defendent");
         var responseModel = new CourtCaseDatesResponse(id, "2014/0101", "title", "type", "case123", id, "divorce", "plaintiff", "defendent");
 
         _mockSender
@@ -83,7 +85,7 @@ public class CourtCaseDateControllerTests
     public async Task Create_Should_ReturnCreated_WhenSuccessful()
     {
         // Arrange
-        var request = new AddCourtCaseDateRequest("2025-10-31", "Hearing", Guid.NewGuid(), "Type");
+        var request = new AddCourtCaseDateRequest("2025-10-31", "Hearing", Guid.NewGuid(), CourtCaseDateTypes.DEADLINE);
         var command = new AddCommand(request.Date, request.Title, "subtitle", request.CaseId, request.Type);
 
         _mockMapper.Setup(m => m.Map<AddCommand>(request)).Returns(command);
@@ -103,7 +105,7 @@ public class CourtCaseDateControllerTests
     public async Task Create_Should_ReturnBadRequest_OnValidationError()
     {
         // Arrange
-        var request = new AddCourtCaseDateRequest("", "", Guid.Empty, "");
+        var request = new AddCourtCaseDateRequest("", "", Guid.Empty, CourtCaseDateTypes.COURTDAY);
         var command = new AddCommand(request.Date, request.Title, "subtitle", request.CaseId, request.Type);
         var error = Error.Validation("CourtCaseDate.Invalid", "Invalid create request");
 

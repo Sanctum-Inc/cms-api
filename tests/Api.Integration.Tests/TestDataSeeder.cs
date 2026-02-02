@@ -44,8 +44,8 @@ public static class TestDataSeeder
                 Plaintiff = "John Doe",
                 Defendant = "State of South Africa",
                 Status = CourtCaseStatus.Draft,
-                Type = "Criminal",
-                Outcome = "Pending",
+                Type = CourtCaseTypes.Family,
+                Outcome = CourtCaseOutcomes.None,
                 UserId = userId,
                 Created = DateTime.UtcNow,
                 IsPaid = false,
@@ -63,7 +63,7 @@ public static class TestDataSeeder
                 Case = courtCase,
                 Created = DateTime.UtcNow,
                 UserId = userId,
-                Type = courtCase.Type,
+                Type = CourtCaseDateTypes.FILING,
             };
 
             await db.CourtCaseDates.AddAsync(courtCaseDate);
@@ -116,7 +116,7 @@ public static class TestDataSeeder
             Plaintiff = "John",
             Defendant = "Jane",
             Status = CourtCaseStatus.Draft,
-            Type = "Criminal",
+            Type = CourtCaseTypes.Family,
             UserId = userId,
             IsPaid = false,
         };

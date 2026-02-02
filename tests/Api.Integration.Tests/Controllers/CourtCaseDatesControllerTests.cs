@@ -2,6 +2,7 @@ using System.Net;
 using System.Net.Http.Json;
 using Contracts.CourtCaseDates.Requests;
 using Contracts.CourtCaseDates.Responses;
+using Domain.CourtCaseDates;
 using FluentAssertions;
 
 namespace Api.Integration.Tests.Controllers;
@@ -28,7 +29,7 @@ public class CourtCaseDatesControllerTests : IntegrationTestBase
             Date: "2025-10-31",
             Title: "Hearing",
             CaseId: new Guid("9ae37995-fb0f-4f86-8f9f-30068950df4c"),
-            Type: ""
+            Type: CourtCaseDateTypes.HEARING
         );
 
         // Act
@@ -46,7 +47,7 @@ public class CourtCaseDatesControllerTests : IntegrationTestBase
             Date: "",
             Title: "",
             CaseId: Guid.Empty,
-            Type: ""
+            Type: CourtCaseDateTypes.HEARING
         );
 
         // Act

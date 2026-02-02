@@ -64,7 +64,10 @@ public class InvoiceItemIntegrationTests : IntegrationTestBase
             Name: "Drafting of Affidavit",
             Hours: 3,
             CostPerHour: 950,
-            CaseId: ExistingCourtCaseId
+            CaseId: ExistingCourtCaseId,
+            ClientName: "",
+            Refference: "",
+            Date: "2016/01/01"
         );
 
         // Act
