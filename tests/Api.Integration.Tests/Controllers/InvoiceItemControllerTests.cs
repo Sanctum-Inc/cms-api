@@ -1,14 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Net.Http.Json;
-using System.Threading.Tasks;
-using Api.Integration.Tests.Controllers;
 using Contracts.InvoiceItem.Requests;
 using Contracts.InvoiceItem.Responses;
 using FluentAssertions;
-using Xunit;
 
 namespace Api.Integration.Tests.Controllers;
 
@@ -60,10 +54,10 @@ public class InvoiceItemIntegrationTests : IntegrationTestBase
     {
         // Arrange
         var request = new AddInvoiceItemRequest(
-            InvoiceId: ExistingInvoiceId.ToString(),
-            Name: "Drafting of Affidavit",
-            Hours: 3,
-            CostPerHour: 950,
+            ExistingInvoiceId.ToString(),
+            "Drafting of Affidavit",
+            3,
+            950,
             CaseId: ExistingCourtCaseId,
             ClientName: "",
             Refference: "",
@@ -87,11 +81,11 @@ public class InvoiceItemIntegrationTests : IntegrationTestBase
     {
         // Arrange
         var request = new UpdateInvoiceItemRequest(
-            InvoiceId: ExistingInvoiceId,
-            Name: "Consultation Fee (Updated)",
-            Hours: 4,
-            CostPerHour: 1550,
-            CaseId: ExistingCourtCaseId
+            ExistingInvoiceId,
+            "Consultation Fee (Updated)",
+            4,
+            1550,
+            ExistingCourtCaseId
         );
 
         // Act

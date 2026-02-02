@@ -4,9 +4,11 @@ using ErrorOr;
 using MediatR;
 
 namespace Application.Invoice.Queries.GetById;
+
 public class GetByIdCommandHandler : IRequestHandler<GetByIdCommand, ErrorOr<InvoiceResult>>
 {
     private readonly IInvoiceService _invoiceService;
+
     public GetByIdCommandHandler(IInvoiceService invoiceService)
     {
         _invoiceService = invoiceService;

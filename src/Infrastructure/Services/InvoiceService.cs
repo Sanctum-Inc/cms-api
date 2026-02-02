@@ -1,5 +1,3 @@
-using System.Linq;
-using System.Threading;
 using Application.Common.Interfaces.Repositories;
 using Application.Common.Interfaces.Services;
 using Application.Common.Interfaces.Session;
@@ -7,22 +5,17 @@ using Application.Common.Models;
 using Application.Invoice.Commands.Add;
 using Application.Invoice.Commands.SetIsPaid;
 using Application.Invoice.Commands.Update;
-using Domain.InvoiceItems;
 using Domain.Invoices;
 using ErrorOr;
-using Infrastructure.Persistence.Repositories;
-using Infrastructure.Services.Base;
 using MapsterMapper;
-using MediatR;
-using Microsoft.AspNetCore.Http.Timeouts;
-using Microsoft.EntityFrameworkCore;
 using QuestPDF.Fluent;
 
 namespace Infrastructure.Services;
+
 public class InvoiceService : BaseService<Invoice, InvoiceResult, AddCommand, UpdateCommand>, IInvoiceService
 {
-    private readonly IInvoiceRepository _invoiceRepository;
     private readonly IFirmRepository _firmRepository;
+    private readonly IInvoiceRepository _invoiceRepository;
 
     public InvoiceService(
         IInvoiceRepository invoiceRepository,
@@ -39,12 +32,16 @@ public class InvoiceService : BaseService<Invoice, InvoiceResult, AddCommand, Up
         var invoice = await _invoiceRepository.GetByIdAndUserIdAsync(id, cancellationToken);
 
         if (invoice == null)
+        {
             return Error.NotFound("Invoice.NotFound", "Invoice with given Id was not found.");
+        }
 
         var firm = await _firmRepository.GetLatest(cancellationToken);
 
         if (firm == null)
+        {
             return Error.NotFound("Firm.NotFound", "Firm details not found.");
+        }
 
         var document = new PdfService(invoice, firm);
         var pdfBytes = document.GeneratePdf();
@@ -91,8 +88,8 @@ public class InvoiceService : BaseService<Invoice, InvoiceResult, AddCommand, Up
                         x.Hours * x.CostPerHour
                     );
                 }))
-        )
-        .ToErrorOr();
+            )
+            .ToErrorOr();
     }
 
     public async Task<ErrorOr<IEnumerable<InvoiceNumbersResult>>> GetInvoiceNumbers(CancellationToken cancellationToken)
@@ -117,10 +114,12 @@ public class InvoiceService : BaseService<Invoice, InvoiceResult, AddCommand, Up
 
     public async Task<ErrorOr<bool>> UpdateIsPaid(SetIsPaidCommand request, CancellationToken cancellationToken)
     {
-        var entity = await _invoiceRepository.GetByIdAndUserIdAsync( request.Id, cancellationToken );
+        var entity = await _invoiceRepository.GetByIdAndUserIdAsync(request.Id, cancellationToken);
 
-        if ( entity == null )
+        if (entity == null)
+        {
             return Error.NotFound("Entity.NotFound", "Entity with given Id was not found.");
+        }
 
         entity.Status = request.isPaid;
 
@@ -138,9 +137,11 @@ public class InvoiceService : BaseService<Invoice, InvoiceResult, AddCommand, Up
     protected override ErrorOr<Invoice> MapFromAddCommand(AddCommand command, string? userId = null)
     {
         if (string.IsNullOrEmpty(userId))
+        {
             return Error.Unauthorized(description: "User is not authenticated.");
+        }
 
-        return new Invoice()
+        return new Invoice
         {
             Id = Guid.NewGuid(),
             InvoiceNumber = command.InvoiceNumber,
@@ -153,7 +154,7 @@ public class InvoiceService : BaseService<Invoice, InvoiceResult, AddCommand, Up
             Bank = command.Bank,
             BranchCode = command.BranchCode,
             IsDeleted = false,
-            CaseId = command.CaseId,
+            CaseId = command.CaseId
         };
     }
 

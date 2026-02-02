@@ -4,6 +4,7 @@ using ErrorOr;
 using MediatR;
 
 namespace Application.CourtCaseDates.Queries.Get;
+
 public class GetCommandHandler : IRequestHandler<GetCommand, ErrorOr<IEnumerable<CourtCaseDateResult>>>
 {
     private readonly ICourtCaseDatesService _courtCaseDatesService;
@@ -13,7 +14,8 @@ public class GetCommandHandler : IRequestHandler<GetCommand, ErrorOr<IEnumerable
         _courtCaseDatesService = courtCaseDatesService;
     }
 
-    public async Task<ErrorOr<IEnumerable<CourtCaseDateResult>>> Handle(GetCommand request, CancellationToken cancellationToken)
+    public async Task<ErrorOr<IEnumerable<CourtCaseDateResult>>> Handle(GetCommand request,
+        CancellationToken cancellationToken)
     {
         var result = await _courtCaseDatesService.Get(cancellationToken);
 

@@ -2,16 +2,15 @@ using System.Reflection;
 using Application.Common.Interfaces.Persistence;
 using Domain.Common;
 using Domain.CourtCaseDates;
+using Domain.CourtCases;
 using Domain.Documents;
+using Domain.Firms;
 using Domain.InvoiceItems;
 using Domain.Invoices;
 using Domain.Lawyers;
 using Domain.Users;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
-using System.Linq;
-using Domain.Firms;
-using Domain.CourtCases;
 
 namespace Infrastructure.Persistence;
 
@@ -22,14 +21,15 @@ public class ApplicationDBContext : DbContext, IApplicationDBContext
     {
     }
 
+    public DbSet<Invoice> Invoices => Set<Invoice>();
+    public DbSet<Firm> Firms => Set<Firm>();
+
     public DbSet<User> Users => Set<User>();
     public DbSet<CourtCase> CourtCases => Set<CourtCase>();
     public DbSet<Document> Documents => Set<Document>();
-    public DbSet<Invoice> Invoices => Set<Invoice>();
     public DbSet<InvoiceItem> InvoiceItems => Set<InvoiceItem>();
     public DbSet<Lawyer> Lawyers => Set<Lawyer>();
     public DbSet<CourtCaseDate> CourtCaseDates => Set<CourtCaseDate>();
-    public DbSet<Firm> Firms => Set<Firm>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

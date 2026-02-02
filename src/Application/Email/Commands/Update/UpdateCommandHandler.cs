@@ -3,6 +3,7 @@ using ErrorOr;
 using MediatR;
 
 namespace Application.Email.Commands.Update;
+
 public class UpdateCommandHandler : IRequestHandler<UpdateCommand, ErrorOr<bool>>
 {
     private readonly IEmailService _emailService;

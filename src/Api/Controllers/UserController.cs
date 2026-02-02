@@ -10,13 +10,12 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers;
 
-
 [ApiController]
 [Route("api/[controller]")]
 public class UserController : ApiControllerBase
 {
-    private readonly ISender _sender;
     private readonly IMapper _mapper;
+    private readonly ISender _sender;
 
     public UserController(ISender sender, IMapper mapper)
     {
@@ -49,7 +48,7 @@ public class UserController : ApiControllerBase
 
         var result = await _sender.Send(command);
 
-        return MatchAndMapNoContentResult<bool>(result, _mapper);
+        return MatchAndMapNoContentResult(result, _mapper);
     }
 
     [HttpGet("{id}")]

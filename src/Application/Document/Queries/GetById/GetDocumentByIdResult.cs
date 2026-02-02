@@ -1,4 +1,5 @@
 ﻿namespace Application.Document.Queries.GetById;
+
 public record GetDocumentByIdResult(
     Guid Id,
     string Name,

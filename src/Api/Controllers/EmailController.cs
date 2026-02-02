@@ -5,7 +5,6 @@ using Application.Email.Queries.Get;
 using Application.Email.Queries.GetById;
 using Contracts.Email.Requests;
 using Contracts.Email.Response;
-using Contracts.Firm.Responses;
 using Domain.Emails;
 using MapsterMapper;
 using MediatR;
@@ -14,14 +13,14 @@ using Microsoft.AspNetCore.Mvc;
 namespace Api.Controllers;
 
 /// <summary>
-/// Manages email sending operations.
+///     Manages email sending operations.
 /// </summary>
 [ApiController]
 [Route("api/[controller]")]
 public class EmailController : ApiControllerBase
 {
-    private readonly ISender _sender;
     private readonly IMapper _mapper;
+    private readonly ISender _sender;
 
     public EmailController(IMapper mapper, ISender sender)
     {
@@ -30,7 +29,7 @@ public class EmailController : ApiControllerBase
     }
 
     // GET /api/Email
-    [HttpGet()]
+    [HttpGet]
     [ProducesResponseType(typeof(IEnumerable<EmailResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [EndpointName("GetEmails")]
@@ -58,7 +57,7 @@ public class EmailController : ApiControllerBase
     }
 
     // POST /api/Email
-    [HttpPost()]
+    [HttpPost]
     [ProducesResponseType(typeof(IEnumerable<EmailResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [EndpointName("CreateEmail")]

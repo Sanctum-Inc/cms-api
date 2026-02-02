@@ -1,4 +1,5 @@
 namespace Application.Common.Interfaces.Session;
+
 public interface ISessionResolver
 {
     string? UserId { get; }

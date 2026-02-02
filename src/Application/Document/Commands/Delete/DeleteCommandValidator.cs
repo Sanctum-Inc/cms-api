@@ -1,6 +1,7 @@
 ﻿using FluentValidation;
 
 namespace Application.Document.Commands.Delete;
+
 public class DeleteCommandValidator : AbstractValidator<DeleteCommand>
 {
     public DeleteCommandValidator()
@@ -10,4 +11,3 @@ public class DeleteCommandValidator : AbstractValidator<DeleteCommand>
             .NotNull().WithMessage("A case Id must be provided.");
     }
 }
-

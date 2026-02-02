@@ -6,12 +6,12 @@ using Application.CourtCaseDates.Commands.Add;
 using Application.CourtCaseDates.Commands.Update;
 using Domain.CourtCaseDates;
 using ErrorOr;
-using Infrastructure.Services.Base;
 using MapsterMapper;
 
 namespace Infrastructure.Services;
 
-public class CourtCaseDatesService : BaseService<CourtCaseDate, CourtCaseDateResult, AddCommand, UpdateCommand>, ICourtCaseDatesService
+public class CourtCaseDatesService : BaseService<CourtCaseDate, CourtCaseDateResult, AddCommand, UpdateCommand>,
+    ICourtCaseDatesService
 {
     public readonly ICourtCaseDateRepository _courtCaseDateRepository;
 
@@ -23,6 +23,22 @@ public class CourtCaseDatesService : BaseService<CourtCaseDate, CourtCaseDateRes
         _courtCaseDateRepository = courtCaseDateRepository;
     }
 
+    public override async Task<ErrorOr<IEnumerable<CourtCaseDateResult>>> Get(CancellationToken cancellationToken)
+    {
+        var result = await _courtCaseDateRepository.GetAll(cancellationToken);
+
+        return result.Select(x => new CourtCaseDateResult(
+            x.Id,
+            x.Date,
+            x.Title,
+            x.Case.CaseNumber,
+            x.CaseId,
+            x.Case.Type,
+            Defendent: x.Case.Defendant,
+            Platiniff: x.Case.Plaintiff)
+        ).ToErrorOr(); // ToDo: change this to subtitle and add it to database and frontend
+    }
+
     protected override Guid GetIdFromUpdateCommand(UpdateCommand command)
     {
         return command.Id;
@@ -31,7 +47,9 @@ public class CourtCaseDatesService : BaseService<CourtCaseDate, CourtCaseDateRes
     protected override ErrorOr<CourtCaseDate> MapFromAddCommand(AddCommand command, string? userId = null)
     {
         if (string.IsNullOrEmpty(userId))
+        {
             return Error.Unauthorized(description: "User is not authenticated.");
+        }
 
         return new CourtCaseDate
         {
@@ -41,7 +59,7 @@ public class CourtCaseDatesService : BaseService<CourtCaseDate, CourtCaseDateRes
             CaseId = command.CaseId,
             Type = command.Type,
             Case = null!,
-            UserId = new Guid(userId),
+            UserId = new Guid(userId)
         };
     }
 
@@ -50,22 +68,5 @@ public class CourtCaseDatesService : BaseService<CourtCaseDate, CourtCaseDateRes
         entity.Date = command.Date;
         entity.Title = command.Title;
         entity.CaseId = command.CaseId;
-    }
-
-    public override async Task<ErrorOr<IEnumerable<CourtCaseDateResult>>> Get(CancellationToken cancellationToken)
-    {
-        var result = await _courtCaseDateRepository.GetAll(cancellationToken);
-
-        return result.Select(x => new CourtCaseDateResult(
-
-            Id: x.Id,
-            Date: x.Date,
-            Title: x.Title,
-            CaseNumber: x.Case.CaseNumber,
-            CaseId: x.CaseId,
-            CaseType: x.Case.Type,
-            Defendent: x.Case.Defendant,
-            Platiniff: x.Case.Plaintiff)
-        ).ToErrorOr(); // ToDo: change this to subtitle and add it to database and frontend
     }
 }

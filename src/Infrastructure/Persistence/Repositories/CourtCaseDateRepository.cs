@@ -5,9 +5,11 @@ using Domain.CourtCaseDates;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Persistence.Repositories;
+
 public class CourtCaseDateRepository : BaseRepository<CourtCaseDate>, ICourtCaseDateRepository
 {
-    public CourtCaseDateRepository(IApplicationDBContext context, ISessionResolver sessionResolver) : base(context, sessionResolver)
+    public CourtCaseDateRepository(IApplicationDBContext context, ISessionResolver sessionResolver) : base(context,
+        sessionResolver)
     {
     }
 
@@ -15,8 +17,7 @@ public class CourtCaseDateRepository : BaseRepository<CourtCaseDate>, ICourtCase
     {
         return await _dbSet
             .Include(x => x.Case)
-            .Where(x => EF.Property<Guid>(x, "UserId") == new Guid(_sessionResolver.UserId!)).
-            ToListAsync(cancellationToken);
-
+            .Where(x => EF.Property<Guid>(x, "UserId") == new Guid(_sessionResolver.UserId!))
+            .ToListAsync(cancellationToken);
     }
 }

@@ -3,15 +3,16 @@ using ErrorOr;
 using MediatR;
 
 namespace Application.Invoice.Commands.Update;
+
 public record UpdateCommand(
-       Guid Id,
-       string InvoiceNumber,
-       DateTime InvoiceDate,
-       string ClientName,
-       string Reference,
-       string AccountName,
-       string Bank,
-       string BranchCode,
-       string AccountNumber,
-       InvoiceStatus Status
-   ) : IRequest<ErrorOr<bool>>;
+    Guid Id,
+    string InvoiceNumber,
+    DateTime InvoiceDate,
+    string ClientName,
+    string Reference,
+    string AccountName,
+    string Bank,
+    string BranchCode,
+    string AccountNumber,
+    InvoiceStatus Status
+) : IRequest<ErrorOr<bool>>;

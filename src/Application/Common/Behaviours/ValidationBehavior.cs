@@ -1,8 +1,10 @@
+using System.Reflection;
+using ErrorOr;
 using FluentValidation;
 using MediatR;
-using ErrorOr;
 
 namespace Application.Common.Behaviours;
+
 public class ValidationBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
     where TRequest : IRequest<TResponse>
 {
@@ -43,15 +45,15 @@ public class ValidationBehavior<TRequest, TResponse> : IPipelineBehavior<TReques
                 // Convert validation failures to ErrorOr errors
                 var errors = failures
                     .Select(failure => Error.Validation(
-                        code: failure.PropertyName,
-                        description: failure.ErrorMessage))
+                        failure.PropertyName,
+                        failure.ErrorMessage))
                     .ToList();
 
                 // Use reflection to call the implicit conversion from List<Error> to ErrorOr<T>
                 var errorOrType = typeof(ErrorOr<>).MakeGenericType(responseType.GetGenericArguments()[0]);
                 var implicitOperator = errorOrType.GetMethod(
                     "op_Implicit",
-                    System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static,
+                    BindingFlags.Public | BindingFlags.Static,
                     null,
                     new[] { typeof(List<Error>) },
                     null);

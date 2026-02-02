@@ -5,12 +5,13 @@ using ErrorOr;
 using MediatR;
 
 namespace Application.InvoiceItem.Commands.Add;
+
 public class AddCommandHandler : IRequestHandler<AddCommand, ErrorOr<Guid>>
 {
-    private readonly IInvoiceItemService _invoiceItemService;
     private readonly IFirmService _firmService;
-    private readonly ISessionResolver _sessionResolver;
+    private readonly IInvoiceItemService _invoiceItemService;
     private readonly IInvoiceService _invoiceService;
+    private readonly ISessionResolver _sessionResolver;
 
     public AddCommandHandler(
         IInvoiceItemService invoiceItemService,
@@ -54,9 +55,9 @@ public class AddCommandHandler : IRequestHandler<AddCommand, ErrorOr<Guid>>
         var invoiceNumber = await _invoiceService.GetNewInvoiceNumber(cancellationToken);
 
         var number = int.Parse(invoiceNumber.Split('-')[1]);
-        var newInvoiceNumber = $"INV-{(number + 1):000}";
+        var newInvoiceNumber = $"INV-{number + 1:000}";
 
-        var command = new Application.Invoice.Commands.Add.AddCommand(
+        var command = new Invoice.Commands.Add.AddCommand(
             newInvoiceNumber,
             DateTime.UtcNow,
             request.ClientName,

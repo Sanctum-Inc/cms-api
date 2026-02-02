@@ -1,6 +1,7 @@
 using FluentValidation;
 
 namespace Application.Email.Commands.Add;
+
 public class AddCommandValidator : AbstractValidator<AddCommand>
 {
     public AddCommandValidator()
@@ -16,6 +17,5 @@ public class AddCommandValidator : AbstractValidator<AddCommand>
         RuleFor(x => x.Body)
             .NotNull()
             .NotEmpty();
-
     }
 }

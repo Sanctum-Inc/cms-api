@@ -1,6 +1,3 @@
-using Application.Common.Interfaces.Persistence;
-using Domain.CourtCaseDates;
-using Domain.Users;
 using Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 
@@ -16,10 +13,9 @@ public static class MigrationConfiguration
             {
                 var db = scope.ServiceProvider.GetRequiredService<ApplicationDBContext>();
                 db.Database.Migrate();
-
             }
-
         }
+
         return app;
     }
 }

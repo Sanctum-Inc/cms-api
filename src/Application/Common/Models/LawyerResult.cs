@@ -1,4 +1,5 @@
 namespace Application.Common.Models;
+
 public class LawyerResult
 {
     public Guid Id { get; set; }

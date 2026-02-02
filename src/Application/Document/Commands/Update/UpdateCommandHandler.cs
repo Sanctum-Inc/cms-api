@@ -3,9 +3,11 @@ using ErrorOr;
 using MediatR;
 
 namespace Application.Document.Commands.Update;
+
 public class UpdateCommandHandler : IRequestHandler<UpdateCommand, ErrorOr<bool>>
 {
     private readonly IDocumentService _documentService;
+
     public UpdateCommandHandler(IDocumentService documentService)
     {
         _documentService = documentService;

@@ -17,7 +17,9 @@ public class CourtCaseDatesControllerTests : IntegrationTestBase
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
-        var content = await response.Content.ReadFromJsonAsync(typeof(IEnumerable<CourtCaseDatesResponse>)) as IEnumerable<CourtCaseDatesResponse>;
+        var content =
+            await response.Content.ReadFromJsonAsync(typeof(IEnumerable<CourtCaseDatesResponse>)) as
+                IEnumerable<CourtCaseDatesResponse>;
         content.Should().NotBeNull();
     }
 
@@ -26,10 +28,10 @@ public class CourtCaseDatesControllerTests : IntegrationTestBase
     {
         // Arrange
         var request = new AddCourtCaseDateRequest(
-            Date: "2025-10-31",
-            Title: "Hearing",
-            CaseId: new Guid("9ae37995-fb0f-4f86-8f9f-30068950df4c"),
-            Type: CourtCaseDateTypes.HEARING
+            "2025-10-31",
+            "Hearing",
+            new Guid("9ae37995-fb0f-4f86-8f9f-30068950df4c"),
+            CourtCaseDateTypes.HEARING
         );
 
         // Act
@@ -44,10 +46,10 @@ public class CourtCaseDatesControllerTests : IntegrationTestBase
     {
         // Arrange
         var request = new AddCourtCaseDateRequest(
-            Date: "",
-            Title: "",
-            CaseId: Guid.Empty,
-            Type: CourtCaseDateTypes.HEARING
+            "",
+            "",
+            Guid.Empty,
+            CourtCaseDateTypes.HEARING
         );
 
         // Act
@@ -70,4 +72,3 @@ public class CourtCaseDatesControllerTests : IntegrationTestBase
         response.StatusCode.Should().Be(HttpStatusCode.NotFound);
     }
 }
-

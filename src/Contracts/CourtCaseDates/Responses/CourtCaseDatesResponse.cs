@@ -1,6 +1,5 @@
-using Contracts.CourtCases.Responses;
-
 namespace Contracts.CourtCaseDates.Responses;
+
 public record CourtCaseDatesResponse(
     Guid Id,
     string Date,

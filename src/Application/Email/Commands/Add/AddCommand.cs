@@ -2,6 +2,7 @@ using ErrorOr;
 using MediatR;
 
 namespace Application.Email.Commands.Add;
+
 public record AddCommand(
     // Recipients
     IReadOnlyCollection<string> To,

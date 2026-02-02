@@ -1,12 +1,10 @@
 using System.ComponentModel.DataAnnotations;
-using Application.Common.Models;
 using Application.Document.Commands.Add;
 using Application.Document.Commands.Delete;
 using Application.Document.Commands.Update;
 using Application.Document.Queries.Download;
 using Application.Document.Queries.Get;
 using Application.Document.Queries.GetById;
-using Contracts.CourtCases.Responses;
 using Contracts.Documents.Requests;
 using Contracts.Documents.Responses;
 using MapsterMapper;
@@ -16,14 +14,14 @@ using Microsoft.AspNetCore.Mvc;
 namespace Api.Controllers;
 
 /// <summary>
-/// Manages document upload, retrieval, update, and deletion.
+///     Manages document upload, retrieval, update, and deletion.
 /// </summary>
 [ApiController]
 [Route("api/[controller]")]
 public class DocumentController : ApiControllerBase
 {
-    private readonly ISender _sender;
     private readonly IMapper _mapper;
+    private readonly ISender _sender;
 
     public DocumentController(IMapper mapper, ISender sender)
     {
@@ -32,17 +30,16 @@ public class DocumentController : ApiControllerBase
     }
 
     /// <summary>
-    /// Uploads a new document with a specific name.
+    ///     Uploads a new document with a specific name.
     /// </summary>
     /// <param name="file">The file to upload.</param>
     /// <param name="name">The name to assign to the uploaded document.</param>
     /// <remarks>
-    /// Sample request:
-    ///
-    /// POST /api/document
-    /// FormData:
-    /// file: myfile.pdf
-    /// name: "Project Proposal"
+    ///     Sample request:
+    ///     POST /api/document
+    ///     FormData:
+    ///     file: myfile.pdf
+    ///     name: "Project Proposal"
     /// </remarks>
     /// <returns>Information about the created document.</returns>
     [HttpPost("upload")]
@@ -51,18 +48,18 @@ public class DocumentController : ApiControllerBase
     [EndpointName("UploadDocument")]
     public async Task<IActionResult> Upload(
         [FromForm] IFormFile file,
-        [FromForm][Required] string name,
-        [FromForm][Required] string caseId)
+        [FromForm] [Required] string name,
+        [FromForm] [Required] string caseId)
     {
         var command = new AddCommand(file, name, new Guid(caseId));
 
         var result = await _sender.Send(command);
 
-        return MatchAndMapCreatedResult<Guid>(result, _mapper);
+        return MatchAndMapCreatedResult(result, _mapper);
     }
 
     /// <summary>
-    /// Downloads the file content of a specific document.
+    ///     Downloads the file content of a specific document.
     /// </summary>
     /// <param name="id">The document ID.</param>
     /// <returns>The file stream of the document.</returns>
@@ -70,18 +67,20 @@ public class DocumentController : ApiControllerBase
     [ProducesResponseType(typeof(FileStreamResult), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [EndpointName("DownloadDocument")]
-    public async Task<IActionResult> Download([FromRoute][Required] string id)
+    public async Task<IActionResult> Download([FromRoute] [Required] string id)
     {
         var command = new DownloadCommand(new Guid(id));
         var result = await _sender.Send(command);
 
         if (result.IsError)
         {
-            return Problem(detail: string.Join(", ", result.Errors.Select(e => e.Description)));
+            return Problem(string.Join(", ", result.Errors.Select(e => e.Description)));
         }
 
         if (result.Value == null)
+        {
             return NotFound();
+        }
 
         return File(result.Value.Stream, result.Value.ContentType, result.Value.FileName);
     }
@@ -108,7 +107,6 @@ public class DocumentController : ApiControllerBase
         var result = await _sender.Send(new GetByIdCommand(id));
 
         return MatchAndMapOkResult<DocumentResult, DocumentResponse>(result, _mapper);
-
     }
 
     // PUT /api/CourtCase/{id}
@@ -122,7 +120,7 @@ public class DocumentController : ApiControllerBase
 
         var updated = await _sender.Send(command);
 
-        return MatchAndMapNoContentResult<bool>(updated, _mapper);
+        return MatchAndMapNoContentResult(updated, _mapper);
     }
 
     // DELETE /api/CourtCase/{id}
@@ -136,6 +134,6 @@ public class DocumentController : ApiControllerBase
 
         var success = await _sender.Send(command);
 
-        return MatchAndMapNoContentResult<bool>(success, _mapper);
+        return MatchAndMapNoContentResult(success, _mapper);
     }
 }

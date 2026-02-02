@@ -1,8 +1,8 @@
 using Domain.Emails;
 
 namespace Contracts.Email.Response;
-public record EmailResponse
-(
+
+public record EmailResponse(
     // Recipients
     string ToAddresses,
     string? CcAddresses,

@@ -1,6 +1,7 @@
 using Domain.CourtCases;
 
 namespace Application.Common.Models;
+
 public record CourtCaseDateResult(
     Guid Id,
     string Date,

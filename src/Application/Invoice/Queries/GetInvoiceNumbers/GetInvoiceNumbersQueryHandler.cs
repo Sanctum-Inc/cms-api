@@ -4,7 +4,9 @@ using ErrorOr;
 using MediatR;
 
 namespace Application.Invoice.Queries.GetInvoiceNumbers;
-public class GetInvoiceNumbersQueryHandler : IRequestHandler<GetInvoiceNumbersQuery, ErrorOr<IEnumerable<InvoiceNumbersResult>>>
+
+public class
+    GetInvoiceNumbersQueryHandler : IRequestHandler<GetInvoiceNumbersQuery, ErrorOr<IEnumerable<InvoiceNumbersResult>>>
 {
     private readonly IInvoiceService _invoiceService;
 
@@ -13,7 +15,8 @@ public class GetInvoiceNumbersQueryHandler : IRequestHandler<GetInvoiceNumbersQu
         _invoiceService = invoiceService;
     }
 
-    public async Task<ErrorOr<IEnumerable<InvoiceNumbersResult>>> Handle(GetInvoiceNumbersQuery request, CancellationToken cancellationToken)
+    public async Task<ErrorOr<IEnumerable<InvoiceNumbersResult>>> Handle(GetInvoiceNumbersQuery request,
+        CancellationToken cancellationToken)
     {
         var result = await _invoiceService.GetInvoiceNumbers(cancellationToken);
 

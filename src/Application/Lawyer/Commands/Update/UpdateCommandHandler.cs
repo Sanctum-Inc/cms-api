@@ -1,12 +1,13 @@
 using Application.Common.Interfaces.Services;
-using Domain.Lawyers;
 using ErrorOr;
 using MediatR;
 
 namespace Application.Lawyer.Commands.Update;
+
 public class UpdateCommandHandler : IRequestHandler<UpdateCommand, ErrorOr<bool>>
 {
     private readonly ILawyerService _lawyerService;
+
     public UpdateCommandHandler(ILawyerService lawyerService)
     {
         _lawyerService = lawyerService;

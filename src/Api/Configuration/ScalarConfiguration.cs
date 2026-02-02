@@ -4,7 +4,8 @@ namespace Api.Configuration;
 
 public static class ScalarConfiguration
 {
-    public static void ConfigureServices(IEndpointRouteBuilder endpoints) // Change parameter type to IEndpointRouteBuilder
+    public static void
+        ConfigureServices(IEndpointRouteBuilder endpoints) // Change parameter type to IEndpointRouteBuilder
     {
         endpoints.MapScalarApiReference(options =>
         {

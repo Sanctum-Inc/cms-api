@@ -4,6 +4,7 @@ using ErrorOr;
 using MediatR;
 
 namespace Application.Lawyer.Queries.GetById;
+
 public class GetByIdCommandHandler : IRequestHandler<GetByIdCommand, ErrorOr<LawyerResult?>>
 {
     private readonly ILawyerService _lawyerService;
@@ -12,6 +13,7 @@ public class GetByIdCommandHandler : IRequestHandler<GetByIdCommand, ErrorOr<Law
     {
         _lawyerService = lawyerService;
     }
+
     public async Task<ErrorOr<LawyerResult?>> Handle(GetByIdCommand request, CancellationToken cancellationToken)
     {
         var result = await _lawyerService.GetById(request.Id, cancellationToken);

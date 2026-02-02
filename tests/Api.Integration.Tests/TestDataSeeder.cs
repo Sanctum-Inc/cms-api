@@ -30,7 +30,6 @@ public static class TestDataSeeder
 
     private static async Task SeedCourtCaseDates(ApplicationDBContext db, Guid userId)
     {
-
         // 2️⃣ Create a CourtCase for that user
         var caseId = Guid.Parse("9ae37995-fb0f-4f86-8f9f-30068950df4c");
 
@@ -48,7 +47,7 @@ public static class TestDataSeeder
                 Outcome = CourtCaseOutcomes.None,
                 UserId = userId,
                 Created = DateTime.UtcNow,
-                IsPaid = false,
+                IsPaid = false
             };
 
             await db.CourtCases.AddAsync(courtCase);
@@ -63,7 +62,7 @@ public static class TestDataSeeder
                 Case = courtCase,
                 Created = DateTime.UtcNow,
                 UserId = userId,
-                Type = CourtCaseDateTypes.FILING,
+                Type = CourtCaseDateTypes.FILING
             };
 
             await db.CourtCaseDates.AddAsync(courtCaseDate);
@@ -118,7 +117,7 @@ public static class TestDataSeeder
             Status = CourtCaseStatus.Draft,
             Type = CourtCaseTypes.Family,
             UserId = userId,
-            IsPaid = false,
+            IsPaid = false
         };
         db.CourtCases.Add(courtCase);
         await db.SaveChangesAsync();
@@ -198,7 +197,7 @@ public static class TestDataSeeder
     {
         var lawyers = new List<Lawyer>
         {
-            new Lawyer
+            new()
             {
                 Id = new Guid("1a2b3c4d-5e6f-7a8b-9c0d-1e2f3a4b5c6d"),
                 Email = "james.wilson@lawfirm.com",
@@ -210,7 +209,7 @@ public static class TestDataSeeder
                 CreatedBy = userId,
                 Created = DateTime.UtcNow
             },
-            new Lawyer
+            new()
             {
                 Id = new Guid("2b3c4d5e-6f7a-8b9c-0d1e-2f3a4b5c6d7e"),
                 Email = "sarah.johnson@lawfirm.com",
@@ -222,7 +221,7 @@ public static class TestDataSeeder
                 CreatedBy = userId,
                 Created = DateTime.UtcNow
             },
-            new Lawyer
+            new()
             {
                 Id = new Guid("3c4d5e6f-7a8b-9c0d-1e2f-3a4b5c6d7e8f"),
                 Email = "michael.brown@lawfirm.com",
@@ -234,7 +233,7 @@ public static class TestDataSeeder
                 CreatedBy = userId,
                 Created = DateTime.UtcNow
             },
-            new Lawyer
+            new()
             {
                 Id = new Guid("4d5e6f7a-8b9c-0d1e-2f3a-4b5c6d7e8f9a"),
                 Email = "emily.davis@lawfirm.com",

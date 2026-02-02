@@ -1,14 +1,11 @@
 using Contracts.CourtCaseDates.Responses;
 using Contracts.Documents.Responses;
 using Contracts.Invoice.Responses;
-using Contracts.InvoiceItem.Responses;
 using Contracts.Lawyer.Responses;
 using Domain.CourtCases;
-using Domain.Documents;
-using Domain.InvoiceItems;
-using Domain.Invoices;
 
 namespace Contracts.CourtCases.Responses;
+
 public class CourtCasesResponse
 {
     public required Guid Id { get; set; }

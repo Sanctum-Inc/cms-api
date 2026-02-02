@@ -2,6 +2,7 @@ using ErrorOr;
 using MediatR;
 
 namespace Application.InvoiceItem.Commands.Add;
+
 public class AddCommand : IRequest<ErrorOr<Guid>>
 {
     public required string InvoiceId { get; set; }
@@ -12,4 +13,4 @@ public class AddCommand : IRequest<ErrorOr<Guid>>
     public required Guid CaseId { get; set; }
     public required string ClientName { get; set; }
     public required string Reference { get; set; }
-};
+}

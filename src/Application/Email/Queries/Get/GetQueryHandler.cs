@@ -4,6 +4,7 @@ using ErrorOr;
 using MediatR;
 
 namespace Application.Email.Queries.Get;
+
 public class GetQueryHandler : IRequestHandler<GetQuery, ErrorOr<IEnumerable<EmailResult>>>
 {
     private readonly IEmailService _emailService;

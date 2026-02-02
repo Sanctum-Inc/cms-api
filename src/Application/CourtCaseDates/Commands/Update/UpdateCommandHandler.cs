@@ -3,6 +3,7 @@ using ErrorOr;
 using MediatR;
 
 namespace Application.CourtCaseDates.Commands.Update;
+
 public class UpdateCommandHandler : IRequestHandler<UpdateCommand, ErrorOr<bool>>
 {
     private readonly ICourtCaseDatesService _courtCaseDatesService;

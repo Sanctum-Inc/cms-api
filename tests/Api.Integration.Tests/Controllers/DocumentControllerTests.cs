@@ -1,13 +1,8 @@
-using System;
-using System.IO;
 using System.Net;
-using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
-using System.Threading.Tasks;
 using Contracts.Documents.Responses;
 using FluentAssertions;
-using Microsoft.AspNetCore.Http;
-using Xunit;
 
 namespace Api.Integration.Tests.Controllers;
 
@@ -50,7 +45,7 @@ public class DocumentControllerTests : IntegrationTestBase
         using var content = new MultipartFormDataContent();
 
         var fileContent = new StreamContent(fileStream);
-        fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/pdf");
+        fileContent.Headers.ContentType = new MediaTypeHeaderValue("application/pdf");
 
         content.Add(fileContent, "file", "testdoc.pdf");
         content.Add(new StringContent("Test Document"), "name");

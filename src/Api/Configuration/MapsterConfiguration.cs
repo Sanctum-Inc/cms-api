@@ -15,8 +15,8 @@ public static class MapsterConfiguration
 
         // Optional: Additional settings for better mapping behavior
         config.Default
-            .PreserveReference(true)     // Helps with circular references
-            .MapToConstructor(false)     // Use property setters instead of constructors
+            .PreserveReference(true) // Helps with circular references
+            .MapToConstructor(false) // Use property setters instead of constructors
             .ShallowCopyForSameType(false); // Don't shallow copy, actually map properties
 
         // Scan for IRegister implementations

@@ -1,7 +1,7 @@
-using Application.Common.Models;
 using Domain.Invoices;
 
 namespace Application.Common.Models;
+
 public record InvoiceResult(
     Guid Id,
     string InvoiceNumber,

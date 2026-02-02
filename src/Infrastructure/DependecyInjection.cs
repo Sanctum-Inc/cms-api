@@ -12,7 +12,8 @@ using Microsoft.Extensions.DependencyInjection;
 using test;
 
 namespace Infrastructure;
-public static partial class DependecyInjection
+
+public static class DependecyInjection
 {
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {

@@ -1,6 +1,7 @@
 ﻿using FluentValidation;
 
 namespace Application.Lawyer.Commands.Update;
+
 public class UpdateCommandValidator : AbstractValidator<UpdateCommand>
 {
     public UpdateCommandValidator()

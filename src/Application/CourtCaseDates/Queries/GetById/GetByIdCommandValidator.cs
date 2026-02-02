@@ -1,6 +1,7 @@
 using FluentValidation;
 
 namespace Application.CourtCaseDates.Queries.GetById;
+
 public class GetByIdCommandValidator : AbstractValidator<GetByIdCommand>
 {
     public GetByIdCommandValidator()

@@ -1,10 +1,9 @@
 using Domain.CourtCaseDates;
 using Domain.CourtCases;
-using Domain.InvoiceItems;
-using Domain.Invoices;
 using Domain.Users;
 
 namespace Application.Common.Models;
+
 public class CourtCaseResult
 {
     public Guid Id { get; set; }

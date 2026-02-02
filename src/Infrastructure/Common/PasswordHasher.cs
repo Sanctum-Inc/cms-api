@@ -1,10 +1,11 @@
 using System.Security.Cryptography;
 
 namespace Infrastructure.Common;
+
 public static class PasswordHasher
 {
     private const int _saltSize = 16; // 128 bit
-    private const int _keySize = 32;  // 256 bit
+    private const int _keySize = 32; // 256 bit
     private const int _iterations = 10000;
 
     public static (string hash, string salt) HashPassword(string password)

@@ -4,9 +4,11 @@ using ErrorOr;
 using MediatR;
 
 namespace Application.Document.Queries.GetById;
+
 public class GetByIdCommandHandler : IRequestHandler<GetByIdCommand, ErrorOr<DocumentResult?>>
 {
     private readonly IDocumentService _documentService;
+
     public GetByIdCommandHandler(IDocumentService documentService)
     {
         _documentService = documentService;

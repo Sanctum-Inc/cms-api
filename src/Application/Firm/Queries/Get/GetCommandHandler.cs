@@ -5,6 +5,7 @@ using ErrorOr;
 using MediatR;
 
 namespace Application.Firm.Queries.Get;
+
 public class GetCommandHandler : IRequestHandler<GetCommand, ErrorOr<FirmResult>>
 {
     private readonly IFirmService _firmService;

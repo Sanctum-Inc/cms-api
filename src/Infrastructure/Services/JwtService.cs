@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 
 namespace test;
+
 public class JwtService : IJwtService
 {
     private readonly IConfiguration _config;
@@ -34,13 +35,13 @@ public class JwtService : IJwtService
             new Claim(ClaimTypes.Role, role),
             new Claim(ClaimTypes.Email, email),
             new Claim("custom:user_id", id),
-            new Claim("custom:firm_id", firmId),
+            new Claim("custom:firm_id", firmId)
         };
 
         var token = new JwtSecurityToken(
-            issuer: jwtSettings["Issuer"],
-            audience: jwtSettings["Audience"],
-            claims: claims,
+            jwtSettings["Issuer"],
+            jwtSettings["Audience"],
+            claims,
             expires: DateTime.UtcNow.AddMinutes(Convert.ToDouble(jwtSettings["ExpireMinutes"])),
             signingCredentials: creds
         );

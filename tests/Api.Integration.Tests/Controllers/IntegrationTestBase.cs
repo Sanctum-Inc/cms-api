@@ -1,9 +1,4 @@
-using System.Net.Http;
 using System.Net.Http.Headers;
-using Api.Integration.Tests;
-using Infrastructure.Persistence;
-using Microsoft.Extensions.DependencyInjection;
-using Xunit;
 
 namespace Api.Integration.Tests.Controllers;
 
@@ -11,11 +6,6 @@ public abstract class IntegrationTestBase : IAsyncLifetime
 {
     protected CustomWebApplicationFactory<Program> _factory;
     protected HttpClient _client { get; private set; }
-
-    protected IntegrationTestBase()
-    {
-        // Don't create factory here
-    }
 
     public async Task InitializeAsync()
     {

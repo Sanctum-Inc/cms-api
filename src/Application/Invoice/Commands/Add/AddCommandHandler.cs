@@ -3,9 +3,11 @@ using ErrorOr;
 using MediatR;
 
 namespace Application.Invoice.Commands.Add;
+
 public class AddCommandHandler : IRequestHandler<AddCommand, ErrorOr<Guid>>
 {
     private readonly IInvoiceService _invoiceService;
+
     public AddCommandHandler(IInvoiceService invoiceService)
     {
         _invoiceService = invoiceService;

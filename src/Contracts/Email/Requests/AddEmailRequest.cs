@@ -1,7 +1,6 @@
 namespace Contracts.Email.Requests;
 
-public record AddEmailRequest
-(
+public record AddEmailRequest(
     // Recipients
     IReadOnlyCollection<string> To,
     IReadOnlyCollection<string>? Cc,

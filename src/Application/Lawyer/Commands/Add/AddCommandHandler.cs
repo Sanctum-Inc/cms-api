@@ -3,6 +3,7 @@ using ErrorOr;
 using MediatR;
 
 namespace Application.Lawyer.Commands.Add;
+
 public class AddCommandHandler : IRequestHandler<AddCommand, ErrorOr<Guid>>
 {
     private readonly ILawyerService _lawyerService;

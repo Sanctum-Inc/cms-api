@@ -4,12 +4,9 @@ using Application.Common.Interfaces.Session;
 using Application.Common.Models;
 using Application.CourtCase.Commands.Add;
 using Application.CourtCase.Commands.Update;
-using Application.CourtCase.Queries.Get;
 using Domain.CourtCases;
 using ErrorOr;
-using Infrastructure.Services.Base;
 using MapsterMapper;
-using MediatR;
 
 namespace Infrastructure.Services;
 
@@ -44,9 +41,11 @@ public class CourtCaseService : BaseService<CourtCase, CourtCaseResult, AddComma
     protected override ErrorOr<CourtCase> MapFromAddCommand(AddCommand command, string? userId = null)
     {
         if (string.IsNullOrEmpty(userId))
+        {
             return Error.Unauthorized(description: "User is not authenticated.");
+        }
 
-        return new Domain.CourtCases.CourtCase
+        return new CourtCase
         {
             Id = Guid.NewGuid(),
             CaseNumber = command.CaseNumber,
@@ -57,7 +56,7 @@ public class CourtCaseService : BaseService<CourtCase, CourtCaseResult, AddComma
             Type = command.Type,
             Outcome = command.Outcome,
             UserId = Guid.Parse(userId),
-            IsPaid = false,
+            IsPaid = false
         };
     }
 

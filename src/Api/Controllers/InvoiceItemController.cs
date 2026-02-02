@@ -4,7 +4,6 @@ using Application.InvoiceItem.Commands.Delete;
 using Application.InvoiceItem.Commands.Update;
 using Application.InvoiceItem.Queries.Get;
 using Application.InvoiceItem.Queries.GetById;
-using Contracts.CourtCases.Responses;
 using Contracts.InvoiceItem.Requests;
 using Contracts.InvoiceItem.Responses;
 using MapsterMapper;
@@ -12,12 +11,13 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers;
+
 [ApiController]
 [Route("api/[controller]")]
 public class InvoiceItemController : ApiControllerBase
 {
-    private readonly ISender _sender;
     private readonly IMapper _mapper;
+    private readonly ISender _sender;
 
     public InvoiceItemController(ISender sender, IMapper mapper)
     {
@@ -59,7 +59,7 @@ public class InvoiceItemController : ApiControllerBase
 
         var created = await _sender.Send(command);
 
-        return MatchAndMapCreatedResult<Guid>(created, _mapper);
+        return MatchAndMapCreatedResult(created, _mapper);
     }
 
     // PUT /api/CourtCase/{id}
@@ -73,7 +73,7 @@ public class InvoiceItemController : ApiControllerBase
 
         var updated = await _sender.Send(command);
 
-        return MatchAndMapNoContentResult<bool>(updated, _mapper);
+        return MatchAndMapNoContentResult(updated, _mapper);
     }
 
     // DELETE /api/CourtCase/{id}
@@ -87,6 +87,6 @@ public class InvoiceItemController : ApiControllerBase
 
         var success = await _sender.Send(command);
 
-        return MatchAndMapNoContentResult<bool>(success, _mapper);
+        return MatchAndMapNoContentResult(success, _mapper);
     }
 }

@@ -1,4 +1,5 @@
 namespace Contracts.Firm.Responses;
+
 public record FirmResponse(
     Guid Id,
     string Name,

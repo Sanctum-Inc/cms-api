@@ -3,6 +3,7 @@ using ErrorOr;
 using MediatR;
 
 namespace Application.CourtCaseDates.Commands.Delete;
+
 public class DeleteCommandHandler : IRequestHandler<DeleteCommand, ErrorOr<bool>>
 {
     private readonly ICourtCaseDatesService _courtCaseDatesService;

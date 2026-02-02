@@ -1,4 +1,5 @@
 namespace Contracts.InvoiceItem.Requests;
+
 public record UpdateInvoiceItemRequest(
     Guid InvoiceId,
     string Name,

@@ -1,4 +1,5 @@
 namespace Domain.Common;
+
 public class AuditableEntity
 {
     public Guid Id { get; set; }

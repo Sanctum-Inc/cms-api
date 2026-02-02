@@ -3,6 +3,7 @@ using ErrorOr;
 using MediatR;
 
 namespace Application.Lawyer.Commands.Add;
+
 public record AddCommand(
     string Email,
     string Name,

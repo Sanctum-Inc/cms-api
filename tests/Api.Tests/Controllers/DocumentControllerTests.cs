@@ -21,9 +21,9 @@ namespace Api.Tests.Controllers;
 
 public class DocumentControllerTests
 {
-    private readonly Mock<ISender> _mediatorMock;
-    private readonly Mock<IMapper> _mapperMock;
     private readonly DocumentController _controller;
+    private readonly Mock<IMapper> _mapperMock;
+    private readonly Mock<ISender> _mediatorMock;
 
     public DocumentControllerTests()
     {
@@ -60,7 +60,7 @@ public class DocumentControllerTests
         // Arrange
         var id = Guid.NewGuid();
         var request = new UpdateDocumentRequest("Updated");
-        var command = new UpdateCommand(id ,request.FileName);
+        var command = new UpdateCommand(id, request.FileName);
 
         _mapperMock
             .Setup(m => m.Map<UpdateCommand>(It.IsAny<UpdateDocumentRequest>()))
@@ -85,7 +85,7 @@ public class DocumentControllerTests
         // Arrange
         var documents = new List<DocumentResult>
         {
-            new DocumentResult(
+            new(
                 Guid.NewGuid(),
                 "Doc1",
                 "file.pdf",
@@ -96,7 +96,9 @@ public class DocumentControllerTests
                 Guid.NewGuid())
         };
 
-        IEnumerable<DocumentResponse> documentsResponse = [ new DocumentResponse(
+        IEnumerable<DocumentResponse> documentsResponse =
+        [
+            new(
                 Guid.NewGuid(),
                 "Doc1",
                 "file.pdf",

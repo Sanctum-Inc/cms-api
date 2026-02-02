@@ -1,6 +1,5 @@
-using Domain.InvoiceItems;
-
 namespace Application.Users.Queries;
+
 public class UserResult
 {
     public required Guid Id { get; set; }

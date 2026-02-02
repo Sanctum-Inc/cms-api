@@ -6,25 +6,25 @@ using Application.Lawyer.Commands.Add;
 using Application.Lawyer.Commands.Update;
 using Domain.Lawyers;
 using ErrorOr;
-using Infrastructure.Services.Base;
 using MapsterMapper;
-using MediatR;
 
 namespace Infrastructure.Services;
+
 public class LawyerService : BaseService<Lawyer, LawyerResult, AddCommand, UpdateCommand>, ILawyerService
 {
-
     public LawyerService(
         ILawyerRepository lawyerRepository,
         ISessionResolver sessionResolver,
-        IMapper mapper): base(lawyerRepository, mapper, sessionResolver)
+        IMapper mapper) : base(lawyerRepository, mapper, sessionResolver)
     {
     }
 
     protected override ErrorOr<Lawyer> MapFromAddCommand(AddCommand command, string? userId = null)
     {
         if (string.IsNullOrEmpty(userId))
+        {
             return Error.Unauthorized(description: "User is not authenticated.");
+        }
 
         return new Lawyer
         {
@@ -34,7 +34,7 @@ public class LawyerService : BaseService<Lawyer, LawyerResult, AddCommand, Updat
             Specialty = command.Specialty,
             MobileNumber = command.MobileNumber,
             Email = command.Email,
-            CreatedByUserId = Guid.Parse(userId),
+            CreatedByUserId = Guid.Parse(userId)
         };
     }
 

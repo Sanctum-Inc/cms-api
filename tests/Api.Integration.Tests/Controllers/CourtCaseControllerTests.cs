@@ -6,6 +6,7 @@ using Domain.CourtCases;
 using FluentAssertions;
 
 namespace Api.Integration.Tests.Controllers;
+
 public class CourtCaseControllerTests : IntegrationTestBase
 {
     [Fact]
@@ -16,7 +17,9 @@ public class CourtCaseControllerTests : IntegrationTestBase
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
-        var content = await response.Content.ReadFromJsonAsync(typeof(IEnumerable<CourtCasesResponse>)) as IEnumerable<CourtCasesResponse>;
+        var content =
+            await response.Content.ReadFromJsonAsync(typeof(IEnumerable<CourtCasesResponse>)) as
+                IEnumerable<CourtCasesResponse>;
         content.Should().NotBeNull();
     }
 
@@ -25,13 +28,13 @@ public class CourtCaseControllerTests : IntegrationTestBase
     {
         // Arrange
         var request = new AddCourtCaseRequest(
-            CaseNumber: "CASE-INT-002",
-            Location: "Johannesburg",
-            Plaintiff: "John",
-            Defendant: "Jane",
-            Status: CourtCaseStatus.Draft,
-            Type: CourtCaseTypes.Commercial,
-            Outcome: CourtCaseOutcomes.Liable
+            "CASE-INT-002",
+            "Johannesburg",
+            "John",
+            "Jane",
+            CourtCaseStatus.Draft,
+            CourtCaseTypes.Commercial,
+            CourtCaseOutcomes.Liable
         );
 
         // Act
@@ -46,13 +49,13 @@ public class CourtCaseControllerTests : IntegrationTestBase
     {
         // Arrange
         var request = new AddCourtCaseRequest(
-            CaseNumber: "",
-            Location: "",
-            Plaintiff: "",
-            Defendant: "",
-            Status: CourtCaseStatus.Draft,
-            Type: CourtCaseTypes.Civil,
-            Outcome: CourtCaseOutcomes.Guilty
+            "",
+            "",
+            "",
+            "",
+            CourtCaseStatus.Draft,
+            CourtCaseTypes.Civil,
+            CourtCaseOutcomes.Guilty
         );
 
         // Act

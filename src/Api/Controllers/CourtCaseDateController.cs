@@ -1,4 +1,3 @@
-
 using Application.Common.Models;
 using Application.CourtCaseDates.Commands.Add;
 using Application.CourtCaseDates.Commands.Delete;
@@ -7,7 +6,6 @@ using Application.CourtCaseDates.Queries.Get;
 using Application.CourtCaseDates.Queries.GetById;
 using Contracts.CourtCaseDates.Requests;
 using Contracts.CourtCaseDates.Responses;
-using Contracts.CourtCases.Responses;
 using MapsterMapper;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -20,8 +18,8 @@ namespace Api.Controllers;
 [Authorize]
 public class CourtCaseDateController : ApiControllerBase
 {
-    private readonly ISender _sender;
     private readonly IMapper _mapper;
+    private readonly ISender _sender;
 
     public CourtCaseDateController(IMapper mapper, ISender sender)
     {
@@ -37,7 +35,8 @@ public class CourtCaseDateController : ApiControllerBase
     {
         var result = await _sender.Send(new GetCommand());
 
-        return MatchAndMapOkResult<IEnumerable<CourtCaseDateResult>, IEnumerable<CourtCaseDatesResponse>>(result, _mapper);
+        return MatchAndMapOkResult<IEnumerable<CourtCaseDateResult>, IEnumerable<CourtCaseDatesResponse>>(result,
+            _mapper);
     }
 
     // GET /api/CourtCase/{id}
@@ -63,7 +62,7 @@ public class CourtCaseDateController : ApiControllerBase
 
         var created = await _sender.Send(command);
 
-        return MatchAndMapCreatedResult<Guid>(created, _mapper);
+        return MatchAndMapCreatedResult(created, _mapper);
     }
 
     // PUT /api/CourtCase/{id}
@@ -77,7 +76,7 @@ public class CourtCaseDateController : ApiControllerBase
 
         var updated = await _sender.Send(command);
 
-        return MatchAndMapNoContentResult<bool>(updated, _mapper);
+        return MatchAndMapNoContentResult(updated, _mapper);
     }
 
     // DELETE /api/CourtCase/{id}
@@ -91,6 +90,6 @@ public class CourtCaseDateController : ApiControllerBase
 
         var success = await _sender.Send(command);
 
-        return MatchAndMapNoContentResult<bool>(success, _mapper);
+        return MatchAndMapNoContentResult(success, _mapper);
     }
 }

@@ -1,6 +1,7 @@
 using FluentValidation;
 
 namespace Application.CourtCase.Commands.Update;
+
 public class UpdateCommandValidator : AbstractValidator<UpdateCommand>
 {
     public UpdateCommandValidator()
@@ -39,9 +40,5 @@ public class UpdateCommandValidator : AbstractValidator<UpdateCommand>
         RuleFor(x => x.Outcome)
             .NotEmpty().WithMessage("Outcome is required.")
             .NotNull().WithMessage("Outcome must not be null");
-
-
-
-
     }
 }

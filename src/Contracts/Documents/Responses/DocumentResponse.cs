@@ -1,4 +1,5 @@
 namespace Contracts.Documents.Responses;
+
 public record DocumentResponse(
     Guid Id,
     string Name,

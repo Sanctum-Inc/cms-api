@@ -20,9 +20,9 @@ namespace Api.Tests.Controllers;
 
 public class CourtCaseDateControllerTests
 {
-    private readonly Mock<ISender> _mockSender;
-    private readonly Mock<IMapper> _mockMapper;
     private readonly CourtCaseDateController _controller;
+    private readonly Mock<IMapper> _mockMapper;
+    private readonly Mock<ISender> _mockSender;
 
     public CourtCaseDateControllerTests()
     {
@@ -36,8 +36,10 @@ public class CourtCaseDateControllerTests
     {
         // Arrange
         var id = Guid.NewGuid();
-        var expected = new List<CourtCaseDateResult> { new CourtCaseDateResult(id, "2014/0101", "title", "case123", id, CourtCaseTypes.Administrative, "plaintiff", "defendent") };
-        var expectedResponse = new List<CourtCaseDatesResponse> { new CourtCaseDatesResponse(id, "2014/0101", "title", "type", "case123", id, "divorce", "plaintiff", "defendent") };
+        var expected = new List<CourtCaseDateResult>
+            { new(id, "2014/0101", "title", "case123", id, CourtCaseTypes.Administrative, "plaintiff", "defendent") };
+        var expectedResponse = new List<CourtCaseDatesResponse>
+            { new(id, "2014/0101", "title", "type", "case123", id, "divorce", "plaintiff", "defendent") };
 
         _mockSender
             .Setup(s => s.Send(It.IsAny<GetCommand>(), It.IsAny<CancellationToken>()))
@@ -55,7 +57,8 @@ public class CourtCaseDateControllerTests
         ok.Value.Should().BeEquivalentTo(expectedResponse);
 
         _mockSender.Verify(s => s.Send(It.IsAny<GetCommand>(), It.IsAny<CancellationToken>()), Times.Once);
-        _mockMapper.Verify(m => m.Map<IEnumerable<CourtCaseDatesResponse>>(It.IsAny<IEnumerable<CourtCaseDateResult>>()), Times.Once);
+        _mockMapper.Verify(
+            m => m.Map<IEnumerable<CourtCaseDatesResponse>>(It.IsAny<IEnumerable<CourtCaseDateResult>>()), Times.Once);
     }
 
     [Fact]
@@ -63,8 +66,10 @@ public class CourtCaseDateControllerTests
     {
         // Arrange
         var id = Guid.NewGuid();
-        var resultModel = new CourtCaseDateResult(id, "2014/0101", "title", "case123", id, CourtCaseTypes.Administrative, "plaintiff", "defendent");
-        var responseModel = new CourtCaseDatesResponse(id, "2014/0101", "title", "type", "case123", id, "divorce", "plaintiff", "defendent");
+        var resultModel = new CourtCaseDateResult(id, "2014/0101", "title", "case123", id,
+            CourtCaseTypes.Administrative, "plaintiff", "defendent");
+        var responseModel = new CourtCaseDatesResponse(id, "2014/0101", "title", "type", "case123", id, "divorce",
+            "plaintiff", "defendent");
 
         _mockSender
             .Setup(s => s.Send(It.Is<GetByIdCommand>(c => c.Id == id), It.IsAny<CancellationToken>()))
@@ -126,7 +131,7 @@ public class CourtCaseDateControllerTests
         // Arrange
         var routeId = Guid.NewGuid();
         var request = new UpdateCourtCaseDateRequest("2024/01/01", "title", routeId);
-        var command = new UpdateCommand(routeId, "2025-11-01","title", Guid.NewGuid());
+        var command = new UpdateCommand(routeId, "2025-11-01", "title", Guid.NewGuid());
 
         _mockMapper.Setup(m => m.Map<UpdateCommand>(request))
             .Returns(command with { Id = Guid.NewGuid() });
@@ -138,7 +143,8 @@ public class CourtCaseDateControllerTests
 
         // Assert
         result.Should().BeOfType<NoContentResult>();
-        _mockSender.Verify(s => s.Send(It.Is<UpdateCommand>(c => c.Id == routeId), It.IsAny<CancellationToken>()), Times.Once);
+        _mockSender.Verify(s => s.Send(It.Is<UpdateCommand>(c => c.Id == routeId), It.IsAny<CancellationToken>()),
+            Times.Once);
     }
 
     [Fact]
@@ -173,7 +179,8 @@ public class CourtCaseDateControllerTests
 
         // Assert
         result.Should().BeOfType<NoContentResult>();
-        _mockSender.Verify(s => s.Send(It.Is<DeleteCommand>(c => c.Id == id), It.IsAny<CancellationToken>()), Times.Once);
+        _mockSender.Verify(s => s.Send(It.Is<DeleteCommand>(c => c.Id == id), It.IsAny<CancellationToken>()),
+            Times.Once);
     }
 
     [Fact]
@@ -192,5 +199,3 @@ public class CourtCaseDateControllerTests
         result.Should().BeOfType<ObjectResult>().Which.StatusCode.Should().Be(404);
     }
 }
-
-

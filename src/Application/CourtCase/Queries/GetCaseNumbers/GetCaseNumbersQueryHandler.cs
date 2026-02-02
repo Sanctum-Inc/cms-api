@@ -4,7 +4,9 @@ using ErrorOr;
 using MediatR;
 
 namespace Application.CourtCase.Queries.GetCaseNumbers;
-public class GetCaseNumbersQueryHandler : IRequestHandler<GetCaseNumbersQuery, ErrorOr<IEnumerable<CourtCaseNumberResult>?>>
+
+public class
+    GetCaseNumbersQueryHandler : IRequestHandler<GetCaseNumbersQuery, ErrorOr<IEnumerable<CourtCaseNumberResult>?>>
 {
     private readonly ICourtCaseService _courtCaseService;
 
@@ -13,7 +15,8 @@ public class GetCaseNumbersQueryHandler : IRequestHandler<GetCaseNumbersQuery, E
         _courtCaseService = courtCaseService;
     }
 
-    public Task<ErrorOr<IEnumerable<CourtCaseNumberResult>?>> Handle(GetCaseNumbersQuery request, CancellationToken cancellationToken)
+    public Task<ErrorOr<IEnumerable<CourtCaseNumberResult>?>> Handle(GetCaseNumbersQuery request,
+        CancellationToken cancellationToken)
     {
         var result = _courtCaseService.GetCaseNumbers(cancellationToken);
 

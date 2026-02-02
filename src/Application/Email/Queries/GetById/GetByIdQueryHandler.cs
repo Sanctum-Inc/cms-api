@@ -1,10 +1,10 @@
 using Application.Common.Interfaces.Services;
 using Application.Common.Models;
-using Application.Email.Queries.Get;
 using ErrorOr;
 using MediatR;
 
 namespace Application.Email.Queries.GetById;
+
 public class GetByIdQueryHandler : IRequestHandler<GetByIdQuery, ErrorOr<EmailResult>>
 {
     private readonly IEmailService _emailService;

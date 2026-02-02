@@ -1,4 +1,5 @@
 namespace Contracts.Firm.Requests;
+
 public record AddFirmRequest(
     string Name,
     string Address,

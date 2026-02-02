@@ -1,5 +1,4 @@
 using Domain.CourtCaseDates;
-using Domain.InvoiceItems;
 using Domain.Users;
 using Microsoft.EntityFrameworkCore;
 

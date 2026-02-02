@@ -2,7 +2,6 @@ using System.Net;
 using System.Net.Http.Json;
 using Contracts.Email.Requests;
 using Contracts.Email.Response;
-using Domain.Emails;
 using FluentAssertions;
 
 namespace Api.Integration.Tests.Controllers;
@@ -29,13 +28,13 @@ public class EmailControllerTests : IntegrationTestBase
     {
         // Arrange
         var request = new AddEmailRequest(
-            To: new[] { "test@example.com" },
-            Cc: null,
-            Bcc: null,
-            Subject: "Integration Test Email",
-            Body: "This is a test email body",
-            IsHtml: false,
-            AttachmentIds: null
+            new[] { "test@example.com" },
+            null,
+            null,
+            "Integration Test Email",
+            "This is a test email body",
+            false,
+            null
         );
 
         // Act
@@ -50,13 +49,13 @@ public class EmailControllerTests : IntegrationTestBase
     {
         // Arrange
         var request = new AddEmailRequest(
-            To: Array.Empty<string>(), // invalid
-            Cc: null,
-            Bcc: null,
-            Subject: "",
-            Body: "",
-            IsHtml: false,
-            AttachmentIds: null
+            Array.Empty<string>(), // invalid
+            null,
+            null,
+            "",
+            "",
+            false,
+            null
         );
 
         // Act

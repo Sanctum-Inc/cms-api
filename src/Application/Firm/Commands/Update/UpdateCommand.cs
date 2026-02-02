@@ -2,6 +2,7 @@ using ErrorOr;
 using MediatR;
 
 namespace Application.Firm.Commands.Update;
+
 public record UpdateCommand(
     Guid Id,
     string Name,
@@ -17,4 +18,3 @@ public record UpdateCommand(
     string BranchCode,
     string AccountNumber
 ) : IRequest<ErrorOr<bool>>;
-

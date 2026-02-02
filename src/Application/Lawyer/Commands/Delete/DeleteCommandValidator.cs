@@ -1,6 +1,7 @@
 ﻿using FluentValidation;
 
 namespace Application.Lawyer.Commands.Delete;
+
 public class DeleteCommandValidator : AbstractValidator<DeleteCommand>
 {
     public DeleteCommandValidator()

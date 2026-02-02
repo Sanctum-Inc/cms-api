@@ -1,6 +1,7 @@
 ﻿using FluentValidation;
 
 namespace Application.Users.Queries;
+
 public class GetQueryValidator : AbstractValidator<GetQuery>
 {
     public GetQueryValidator()

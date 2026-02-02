@@ -1,4 +1,5 @@
 namespace Domain.Lawyers;
+
 public enum Speciality
 {
     Criminal = 0,

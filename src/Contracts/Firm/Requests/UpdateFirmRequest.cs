@@ -1,10 +1,5 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace Contracts.Firm.Requests;
+
 public record UpdateFirmRequest(
     string Name,
     string Address,

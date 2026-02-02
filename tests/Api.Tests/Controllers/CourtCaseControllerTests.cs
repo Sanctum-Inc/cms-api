@@ -18,9 +18,9 @@ namespace Api.Tests.Controllers;
 
 public class CourtCaseControllerTests
 {
-    private readonly Mock<ISender> _mockSender;
-    private readonly Mock<IMapper> _mockMapper;
     private readonly CourtCaseController _controller;
+    private readonly Mock<IMapper> _mockMapper;
+    private readonly Mock<ISender> _mockSender;
 
     public CourtCaseControllerTests()
     {
@@ -36,21 +36,21 @@ public class CourtCaseControllerTests
     {
         // Arrange
         var expectedCases = new List<CourtCaseResult>
-    {
-        new CourtCaseResult
         {
-            Id = Guid.NewGuid(),
-            CaseNumber = "CASE-2024-001",
-            Location = "Johannesburg High Court",
-            Plaintiff = "John Doe",
-            Defendant = "Jane Smith",
-            Status = CourtCaseStatus.Draft,
-            Type = CourtCaseTypes.Family,
-            Outcome = CourtCaseOutcomes.NotGuilty
-        }
-    };
+            new()
+            {
+                Id = Guid.NewGuid(),
+                CaseNumber = "CASE-2024-001",
+                Location = "Johannesburg High Court",
+                Plaintiff = "John Doe",
+                Defendant = "Jane Smith",
+                Status = CourtCaseStatus.Draft,
+                Type = CourtCaseTypes.Family,
+                Outcome = CourtCaseOutcomes.NotGuilty
+            }
+        };
 
-        var expectedResponse = expectedCases.Select(c => new CourtCasesResponse()
+        var expectedResponse = expectedCases.Select(c => new CourtCasesResponse
         {
             CaseNumber = c.CaseNumber,
             Location = c.Location,
@@ -59,7 +59,7 @@ public class CourtCaseControllerTests
             Status = c.Status,
             Type = c.Type,
             Outcome = c.Outcome,
-            Id = c.Id,
+            Id = c.Id
         });
 
         _mockSender
@@ -78,9 +78,9 @@ public class CourtCaseControllerTests
         ok.Value.Should().BeEquivalentTo(expectedResponse);
 
         _mockSender.Verify(s => s.Send(It.IsAny<GetQuery>(), It.IsAny<CancellationToken>()), Times.Once);
-        _mockMapper.Verify(m => m.Map<IEnumerable<CourtCasesResponse>>(It.IsAny<IEnumerable<CourtCaseResult>>()), Times.Once);
+        _mockMapper.Verify(m => m.Map<IEnumerable<CourtCasesResponse>>(It.IsAny<IEnumerable<CourtCaseResult>>()),
+            Times.Once);
     }
-
 
     #endregion
 
@@ -201,7 +201,8 @@ public class CourtCaseControllerTests
 
         // Assert
         result.Should().BeOfType<NoContentResult>();
-        _mockSender.Verify(s => s.Send(It.Is<UpdateCommand>(c => c.Id == routeId), It.IsAny<CancellationToken>()), Times.Once);
+        _mockSender.Verify(s => s.Send(It.Is<UpdateCommand>(c => c.Id == routeId), It.IsAny<CancellationToken>()),
+            Times.Once);
     }
 
     [Fact]
@@ -209,8 +210,10 @@ public class CourtCaseControllerTests
     {
         // Arrange
         var id = Guid.NewGuid();
-        var request = new UpdateCourtCaseRequest("CASE-404", "Pretoria", "A", "B", CourtCaseStatus.Draft, CourtCaseTypes.Family, CourtCaseOutcomes.Guilty);
-        var mappedCommand = new UpdateCommand(Guid.NewGuid(), request.CaseNumber, request.Location, request.Plaintiff, request.Defendant, request.Status, request.Type, request.Outcome);
+        var request = new UpdateCourtCaseRequest("CASE-404", "Pretoria", "A", "B", CourtCaseStatus.Draft,
+            CourtCaseTypes.Family, CourtCaseOutcomes.Guilty);
+        var mappedCommand = new UpdateCommand(Guid.NewGuid(), request.CaseNumber, request.Location, request.Plaintiff,
+            request.Defendant, request.Status, request.Type, request.Outcome);
         var error = Error.NotFound("CourtCase.NotFound", "Court case not found");
 
         _mockMapper.Setup(m => m.Map<UpdateCommand>(request)).Returns(mappedCommand);
@@ -240,7 +243,8 @@ public class CourtCaseControllerTests
 
         // Assert
         result.Should().BeOfType<NoContentResult>();
-        _mockSender.Verify(s => s.Send(It.Is<DeleteCommand>(c => c.Id == id), It.IsAny<CancellationToken>()), Times.Once);
+        _mockSender.Verify(s => s.Send(It.Is<DeleteCommand>(c => c.Id == id), It.IsAny<CancellationToken>()),
+            Times.Once);
     }
 
     [Fact]

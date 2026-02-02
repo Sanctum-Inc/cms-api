@@ -1,24 +1,22 @@
+using System.Globalization;
 using Application.Common.Interfaces.Repositories;
 using Application.Common.Interfaces.Services;
 using Application.Common.Interfaces.Session;
 using Application.Common.Models;
 using Application.InvoiceItem.Commands.Add;
 using Application.InvoiceItem.Commands.Update;
-using Domain.CourtCases;
 using Domain.InvoiceItems;
-using Domain.Users;
 using ErrorOr;
-using Infrastructure.Services.Base;
 using MapsterMapper;
-using MediatR;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace Infrastructure.Services;
-public class InvoiceItemService : BaseService<InvoiceItem, InvoiceItemResult, AddCommand, UpdateCommand>, IInvoiceItemService
+
+public class InvoiceItemService : BaseService<InvoiceItem, InvoiceItemResult, AddCommand, UpdateCommand>,
+    IInvoiceItemService
 {
-    private readonly ISessionResolver _sessionResolver;
-    private readonly IInvoiceItemRepository _repository;
     private readonly ICourtCaseService _courtCaseService;
+    private readonly IInvoiceItemRepository _repository;
+    private readonly ISessionResolver _sessionResolver;
 
     public InvoiceItemService(
         IInvoiceItemRepository repository,
@@ -39,11 +37,13 @@ public class InvoiceItemService : BaseService<InvoiceItem, InvoiceItemResult, Ad
     protected override ErrorOr<InvoiceItem> MapFromAddCommand(AddCommand command, string? userId = null)
     {
         if (string.IsNullOrEmpty(userId))
+        {
             return Error.Unauthorized(description: "User is not authenticated.");
+        }
 
-        var culture = System.Globalization.CultureInfo.InvariantCulture;
+        var culture = CultureInfo.InvariantCulture;
 
-        return new InvoiceItem()
+        return new InvoiceItem
         {
             InvoiceId = new Guid(command.InvoiceId),
             Name = command.Name,
@@ -51,7 +51,7 @@ public class InvoiceItemService : BaseService<InvoiceItem, InvoiceItemResult, Ad
             CostPerHour = command.CostPerHour,
             DateOfService = DateTime.Parse(command.Date, culture),
             Id = Guid.NewGuid(),
-            UserId = new Guid(userId),
+            UserId = new Guid(userId)
         };
     }
 

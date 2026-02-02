@@ -3,6 +3,7 @@ using ErrorOr;
 using MediatR;
 
 namespace Application.Users.Commands.Register;
+
 public class RegisterCommandHandler : IRequestHandler<RegisterCommand, ErrorOr<bool>>
 {
     private readonly IUserService _userService;

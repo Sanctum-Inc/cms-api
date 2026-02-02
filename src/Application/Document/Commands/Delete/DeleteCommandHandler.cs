@@ -3,9 +3,11 @@ using ErrorOr;
 using MediatR;
 
 namespace Application.Document.Commands.Delete;
+
 public class DeleteCommandHandler : IRequestHandler<DeleteCommand, ErrorOr<bool>>
 {
     private readonly IDocumentService _documentService;
+
     public DeleteCommandHandler(IDocumentService documentService)
     {
         _documentService = documentService;

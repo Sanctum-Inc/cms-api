@@ -4,4 +4,4 @@ using MediatR;
 
 namespace Application.CourtCase.Queries.Get;
 
-public record GetQuery() : IRequest<ErrorOr<IEnumerable<CourtCaseResult>>>;
+public record GetQuery : IRequest<ErrorOr<IEnumerable<CourtCaseResult>>>;

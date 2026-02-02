@@ -7,22 +7,18 @@ using Domain.Lawyers;
 using Domain.Users;
 
 namespace Domain.CourtCases;
+
 public class CourtCase : AuditableEntity
 {
-    [Required]
-    public required string CaseNumber { get; set; }
+    [Required] public required string CaseNumber { get; set; }
 
-    [Required]
-    public required string Location { get; set; }
+    [Required] public required string Location { get; set; }
 
-    [Required]
-    public required string Plaintiff { get; set; }
+    [Required] public required string Plaintiff { get; set; }
 
-    [Required]
-    public required string Defendant { get; set; }
+    [Required] public required string Defendant { get; set; }
 
-    [Required]
-    public required CourtCaseStatus Status { get; set; }
+    [Required] public required CourtCaseStatus Status { get; set; }
 
     public required CourtCaseTypes Type { get; set; }
 
@@ -31,8 +27,8 @@ public class CourtCase : AuditableEntity
     public required bool IsPaid { get; set; }
 
     // Foreign Keys
-    [Required]
-    public required Guid UserId { get; set; }
+    [Required] public required Guid UserId { get; set; }
+
     public User? User { get; set; }
 
     // Relations

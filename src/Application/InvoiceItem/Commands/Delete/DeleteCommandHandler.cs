@@ -3,6 +3,7 @@ using ErrorOr;
 using MediatR;
 
 namespace Application.InvoiceItem.Commands.Delete;
+
 public class DeleteCommandHandler : IRequestHandler<DeleteCommand, ErrorOr<bool>>
 {
     private readonly IInvoiceItemService _invoiceItemService;

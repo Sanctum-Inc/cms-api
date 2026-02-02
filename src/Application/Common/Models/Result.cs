@@ -4,8 +4,6 @@ public class Result<T>
 {
     private readonly T? _data;
     private readonly List<string> _errors;
-    public bool IsSuccess { get; }
-    public bool IsFailure => !IsSuccess;
 
     private Result(T data)
     {
@@ -20,9 +18,21 @@ public class Result<T>
         _errors = errors ?? new List<string>();
     }
 
-    public static Result<T> Success(T data) => new Result<T>(data);
-    public static Result<T> Failure(List<string> errors) => new Result<T>(errors);
+    public bool IsSuccess { get; }
+    public bool IsFailure => !IsSuccess;
+
+    public static Result<T> Success(T data)
+    {
+        return new Result<T>(data);
+    }
+
+    public static Result<T> Failure(List<string> errors)
+    {
+        return new Result<T>(errors);
+    }
 
     public TResult Match<TResult>(Func<T, TResult> onSuccess, Func<List<string>, TResult> onFailure)
-        => IsSuccess ? onSuccess(_data!) : onFailure(_errors);
+    {
+        return IsSuccess ? onSuccess(_data!) : onFailure(_errors);
+    }
 }

@@ -16,8 +16,8 @@ namespace Api.Controllers;
 [ProducesErrorResponseType(typeof(ProblemDetails))]
 public class FirmController : ApiControllerBase
 {
-    private readonly ISender _sender;
     private readonly IMapper _mapper;
+    private readonly ISender _sender;
 
     public FirmController(IMapper mapper, ISender sender)
     {
@@ -26,7 +26,7 @@ public class FirmController : ApiControllerBase
     }
 
     // GET /api/Firm/{id}
-    [HttpGet()]
+    [HttpGet]
     [ProducesResponseType(typeof(FirmResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [EndpointName("GetFirmById")]
@@ -50,7 +50,7 @@ public class FirmController : ApiControllerBase
 
         var created = await _sender.Send(command);
 
-        return MatchAndMapCreatedResult<Guid>(created, _mapper);
+        return MatchAndMapCreatedResult(created, _mapper);
     }
 
     // PUT /api/Firm/{id}
@@ -64,7 +64,7 @@ public class FirmController : ApiControllerBase
 
         var updated = await _sender.Send(command);
 
-        return MatchAndMapNoContentResult<bool>(updated, _mapper);
+        return MatchAndMapNoContentResult(updated, _mapper);
     }
 
     // DELETE /api/Firm/{id}
@@ -78,6 +78,6 @@ public class FirmController : ApiControllerBase
 
         var deleted = await _sender.Send(command);
 
-        return MatchAndMapNoContentResult<bool>(deleted, _mapper);
+        return MatchAndMapNoContentResult(deleted, _mapper);
     }
 }

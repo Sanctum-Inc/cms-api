@@ -4,13 +4,12 @@ using Application.Common.Interfaces.Session;
 using Application.Common.Models;
 using Application.Firm.Commands.Add;
 using Application.Firm.Commands.Update;
-using Domain.CourtCaseDates;
 using Domain.Firms;
 using ErrorOr;
-using Infrastructure.Services.Base;
 using MapsterMapper;
 
 namespace Infrastructure.Services;
+
 public class FirmService : BaseService<Firm, FirmResult, AddCommand, UpdateCommand>, IFirmService
 {
     public readonly IFirmRepository _firmRepository;
@@ -23,6 +22,33 @@ public class FirmService : BaseService<Firm, FirmResult, AddCommand, UpdateComma
         _firmRepository = firmRepository;
     }
 
+    public override async Task<ErrorOr<FirmResult>> GetById(Guid id, CancellationToken cancellationToken)
+    {
+        var result = await _firmRepository.GetByIdAsync(id, cancellationToken);
+
+        if (result is null)
+        {
+            return Error.NotFound("Firm.NotFound", "Firm with given Id was not found.");
+        }
+
+        return new FirmResult
+        {
+            Id = result.Id,
+            AccountName = result.AccountName,
+            Address = result.Address,
+            AccountNumber = result.AccountNumber,
+            AdvocateAdmissionDate = result.AdvocateAdmissionDate.ToString(),
+            AttorneyAdmissionDate = result.AttorneyAdmissionDate.ToString(),
+            Bank = result.Bank,
+            BranchCode = result.BranchCode,
+            Email = result.Email,
+            Fax = result.Fax,
+            Mobile = result.Mobile,
+            Name = result.Name,
+            Telephone = result.Telephone
+        };
+    }
+
     protected override Guid GetIdFromUpdateCommand(UpdateCommand command)
     {
         return command.Id;
@@ -31,7 +57,7 @@ public class FirmService : BaseService<Firm, FirmResult, AddCommand, UpdateComma
 
     protected override ErrorOr<Firm> MapFromAddCommand(AddCommand command, string? userId = null)
     {
-        var firm = new Firm()
+        var firm = new Firm
         {
             Id = Guid.NewGuid(),
             Name = command.Name,
@@ -53,43 +79,17 @@ public class FirmService : BaseService<Firm, FirmResult, AddCommand, UpdateComma
 
     protected override void MapFromUpdateCommand(Firm entity, UpdateCommand command)
     {
-            entity.Name = command.Name;
-            entity.Address = command.Address;
-            entity.Telephone = command.Telephone;
-            entity.Fax = command.Fax;
-            entity.Mobile = command.Mobile;
-            entity.Email = command.Email;
-            entity.AttorneyAdmissionDate = DateTime.Parse(command.AttorneyAdmissionDate);
-            entity.AdvocateAdmissionDate = DateTime.Parse(command.AdvocateAdmissionDate);
-            entity.AccountName = command.AccountName;
-            entity.Bank = command.Bank;
-            entity.BranchCode = command.BranchCode;
-            entity.AccountNumber = command.AccountNumber;
+        entity.Name = command.Name;
+        entity.Address = command.Address;
+        entity.Telephone = command.Telephone;
+        entity.Fax = command.Fax;
+        entity.Mobile = command.Mobile;
+        entity.Email = command.Email;
+        entity.AttorneyAdmissionDate = DateTime.Parse(command.AttorneyAdmissionDate);
+        entity.AdvocateAdmissionDate = DateTime.Parse(command.AdvocateAdmissionDate);
+        entity.AccountName = command.AccountName;
+        entity.Bank = command.Bank;
+        entity.BranchCode = command.BranchCode;
+        entity.AccountNumber = command.AccountNumber;
     }
-
-    public override async Task<ErrorOr<FirmResult>> GetById(Guid id, CancellationToken cancellationToken)
-    {
-        var result = await _firmRepository.GetByIdAsync(id, cancellationToken);
-
-        if (result is null)
-            return Error.NotFound("Firm.NotFound", "Firm with given Id was not found.");
-
-        return new FirmResult()
-        {
-            Id = result.Id,
-            AccountName = result.AccountName,
-            Address = result.Address,
-            AccountNumber = result.AccountNumber,
-            AdvocateAdmissionDate = result.AdvocateAdmissionDate.ToString(),
-            AttorneyAdmissionDate = result.AttorneyAdmissionDate.ToString(),
-            Bank = result.Bank,
-            BranchCode = result.BranchCode,
-            Email = result.Email,
-            Fax = result.Fax,
-            Mobile = result.Mobile,
-            Name = result.Name,
-            Telephone = result.Telephone,
-        };
-    }
-
 }

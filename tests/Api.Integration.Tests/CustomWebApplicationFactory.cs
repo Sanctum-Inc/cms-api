@@ -1,12 +1,7 @@
 // Tests/CustomWebApplicationFactory.cs
+
 using Api.Integration.Tests.Mocks;
 using Application.Common.Interfaces.Session;
-using Domain.CourtCases;
-using Domain.Documents;
-using Domain.InvoiceItems;
-using Domain.Invoices;
-using Domain.Lawyers;
-using Domain.Users;
 using Infrastructure.Config;
 using Infrastructure.Persistence;
 using Microsoft.AspNetCore.Authentication;
@@ -29,32 +24,32 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
         builder.ConfigureServices(services =>
         {
             // Remove existing DbContext registration
-            var descriptor = services.SingleOrDefault(
-                d => d.ServiceType == typeof(DbContextOptions<ApplicationDBContext>));
+            var descriptor =
+                services.SingleOrDefault(d => d.ServiceType == typeof(DbContextOptions<ApplicationDBContext>));
             if (descriptor != null)
+            {
                 services.Remove(descriptor);
+            }
 
             // 🔹 Add DbContext with unique in-memory database name per test
-            services.AddDbContext<ApplicationDBContext>(options =>
-            {
-                options.UseInMemoryDatabase(_databaseName);
-            });
+            services.AddDbContext<ApplicationDBContext>(options => { options.UseInMemoryDatabase(_databaseName); });
 
             // Remove real authentication handlers if needed
-            var authDescriptor = services.SingleOrDefault(
-                d => d.ServiceType == typeof(IAuthenticationSchemeProvider));
+            var authDescriptor = services.SingleOrDefault(d => d.ServiceType == typeof(IAuthenticationSchemeProvider));
             if (authDescriptor != null)
+            {
                 services.Remove(authDescriptor);
+            }
 
             // Add test authentication with default scheme
             services.AddAuthentication(options =>
-            {
-                options.DefaultAuthenticateScheme = TestAuthHandler.SchemeName;
-                options.DefaultChallengeScheme = TestAuthHandler.SchemeName;
-                options.DefaultScheme = TestAuthHandler.SchemeName;
-            })
-            .AddScheme<AuthenticationSchemeOptions, TestAuthHandler>(
-                TestAuthHandler.SchemeName, options => { });
+                {
+                    options.DefaultAuthenticateScheme = TestAuthHandler.SchemeName;
+                    options.DefaultChallengeScheme = TestAuthHandler.SchemeName;
+                    options.DefaultScheme = TestAuthHandler.SchemeName;
+                })
+                .AddScheme<AuthenticationSchemeOptions, TestAuthHandler>(
+                    TestAuthHandler.SchemeName, options => { });
 
             // Add authorization
             services.AddAuthorizationBuilder()
@@ -62,10 +57,11 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
                     policy.RequireAssertion(_ => true));
 
             // Replace ISessionResolver with mock
-            var sessionDescriptor = services.SingleOrDefault(
-                d => d.ServiceType == typeof(ISessionResolver));
+            var sessionDescriptor = services.SingleOrDefault(d => d.ServiceType == typeof(ISessionResolver));
             if (sessionDescriptor != null)
+            {
                 services.Remove(sessionDescriptor);
+            }
 
             services.AddScoped<ISessionResolver, SessionResolverMock>();
 

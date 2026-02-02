@@ -21,7 +21,10 @@ public class SessionResolver : ISessionResolver
         get
         {
             var authHeader = _httpContextAccessor.HttpContext?.Request.Headers.Authorization.FirstOrDefault();
-            if (string.IsNullOrWhiteSpace(authHeader)) return null;
+            if (string.IsNullOrWhiteSpace(authHeader))
+            {
+                return null;
+            }
 
             // Typically "Bearer <token>"
             var parts = authHeader.Split(' ');

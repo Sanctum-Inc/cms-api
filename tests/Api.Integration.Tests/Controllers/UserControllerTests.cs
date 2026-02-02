@@ -1,4 +1,5 @@
 // Tests/UserControllerTests.cs
+
 using System.Net;
 using System.Net.Http.Json;
 using Contracts.User.Requests;
@@ -9,9 +10,8 @@ namespace Api.Integration.Tests.Controllers;
 
 public class UserControllerTests : IntegrationTestBase
 {
-
     [Fact]
-     public async Task GetUser_Should_Return_Seeded_User()
+    public async Task GetUser_Should_Return_Seeded_User()
     {
         // Arrange
         var id = "6ec0df63-8960-46ec-9163-2de98e04d5e9";

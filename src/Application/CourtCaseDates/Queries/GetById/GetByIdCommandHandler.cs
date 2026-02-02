@@ -4,6 +4,7 @@ using ErrorOr;
 using MediatR;
 
 namespace Application.CourtCaseDates.Queries.GetById;
+
 public class GetByIdCommandHandler : IRequestHandler<GetByIdCommand, ErrorOr<CourtCaseDateResult>>
 {
     private readonly ICourtCaseDatesService _courtCaseDatesService;

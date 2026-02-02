@@ -1,4 +1,7 @@
+using Domain.CourtCaseDates;
+
 namespace Application.Common.Interfaces.Repositories;
-public interface ICourtCaseDateRepository : IBaseRepository<Domain.CourtCaseDates.CourtCaseDate>
+
+public interface ICourtCaseDateRepository : IBaseRepository<CourtCaseDate>
 {
 }

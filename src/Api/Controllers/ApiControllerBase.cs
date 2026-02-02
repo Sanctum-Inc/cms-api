@@ -1,19 +1,12 @@
-using Application.CourtCase.Queries.Get;
 using ErrorOr;
 using MapsterMapper;
-using MediatR;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers;
 
 [ApiController]
-public abstract class ApiControllerBase: ControllerBase
+public abstract class ApiControllerBase : ControllerBase
 {
-    protected ApiControllerBase()
-    {
-    }
-
     protected IActionResult MatchAndMapOkResult<TSource, TDestination>(
         ErrorOr<TSource> result,
         IMapper mapper
@@ -33,17 +26,18 @@ public abstract class ApiControllerBase: ControllerBase
         return result.Match<IActionResult>(
             data => NoContent(),
             errors => Problem(errors)
-            );
+        );
     }
+
     protected IActionResult MatchAndMapCreatedResult<TSource>(
         ErrorOr<TSource> result,
         IMapper mapper
     )
     {
         return result.Match<IActionResult>(
-            data => Created("",data),
+            data => Created("", data),
             errors => Problem(errors)
-            );
+        );
     }
 
     private ObjectResult Problem(List<Error> errors)
@@ -63,7 +57,7 @@ public abstract class ApiControllerBase: ControllerBase
         var problemDetails = new ProblemDetails
         {
             Status = statusCode,
-            Title = firstError.Description,  // Could customize more here
+            Title = firstError.Description, // Could customize more here
             Detail = "See errors property for details.",
             Instance = HttpContext.Request.Path
         };
@@ -71,7 +65,7 @@ public abstract class ApiControllerBase: ControllerBase
         // Add all error descriptions as a list under "errors" property
         problemDetails.Extensions["errors"] = errors.Select(e => new
         {
-            code = e.Code,          // If your Error has a code
+            code = e.Code, // If your Error has a code
             description = e.Description
         });
 
@@ -84,5 +78,4 @@ public abstract class ApiControllerBase: ControllerBase
             ContentTypes = { "application/problem+json" }
         };
     }
-
 }

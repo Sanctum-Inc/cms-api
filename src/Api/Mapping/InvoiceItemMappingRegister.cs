@@ -1,9 +1,17 @@
-using Mapster;
-using Domain.InvoiceItems;
-using Contracts.InvoiceItem.Responses;
-using Contracts.InvoiceItem.Requests;
 using Contracts.CourtCases.Responses;
-using Application.Common.Models;
+using Contracts.Documents.Responses;
+using Contracts.Invoice.Responses;
+using Contracts.InvoiceItem.Requests;
+using Contracts.InvoiceItem.Responses;
+using Contracts.Lawyer.Responses;
+using Contracts.User.Responses;
+using Domain.CourtCases;
+using Domain.Documents;
+using Domain.InvoiceItems;
+using Domain.Invoices;
+using Domain.Lawyers;
+using Domain.Users;
+using Mapster;
 
 namespace Api.Mappings;
 
@@ -14,8 +22,8 @@ public class InvoiceItemMappingRegister : IRegister
     {
         // Entity -> Response
         config.NewConfig<InvoiceItem, InvoiceItemResponse>()
-            .IgnoreNullValues(false)  // ✅ Preserve null values
-            .TwoWays();  // Also creates Response -> Entity mapping
+            .IgnoreNullValues(false) // ✅ Preserve null values
+            .TwoWays(); // Also creates Response -> Entity mapping
 
         // Request -> Entity
         config.NewConfig<AddInvoiceItemRequest, InvoiceItem>()
@@ -35,10 +43,9 @@ public class InvoiceMappingRegister : IRegister
 {
     public void Register(TypeAdapterConfig config)
     {
-        config.NewConfig<Domain.Invoices.Invoice, Contracts.Invoice.Responses.InvoiceResponse>()
+        config.NewConfig<Invoice, InvoiceResponse>()
             .IgnoreNullValues(false)
             .TwoWays();
-
     }
 }
 
@@ -46,7 +53,7 @@ public class CourtCaseMappingRegister : IRegister
 {
     public void Register(TypeAdapterConfig config)
     {
-        config.NewConfig<Domain.CourtCases.CourtCase, Contracts.CourtCases.Responses.CourtCasesResponse>()
+        config.NewConfig<CourtCase, CourtCasesResponse>()
             .IgnoreNullValues(false)
             .TwoWays();
     }
@@ -56,7 +63,7 @@ public class LawyerMappingRegister : IRegister
 {
     public void Register(TypeAdapterConfig config)
     {
-        config.NewConfig<Domain.Lawyers.Lawyer, Contracts.Lawyer.Responses.LawyerResponse>()
+        config.NewConfig<Lawyer, LawyerResponse>()
             .IgnoreNullValues(false)
             .TwoWays();
     }
@@ -66,7 +73,7 @@ public class DocumentMappingRegister : IRegister
 {
     public void Register(TypeAdapterConfig config)
     {
-        config.NewConfig<Domain.Documents.Document, Contracts.Documents.Responses.DocumentResponse>()
+        config.NewConfig<Document, DocumentResponse>()
             .IgnoreNullValues(false)
             .TwoWays();
     }
@@ -76,7 +83,7 @@ public class UserMappingRegister : IRegister
 {
     public void Register(TypeAdapterConfig config)
     {
-        config.NewConfig<Domain.Users.User, Contracts.User.Responses.UserResponse>()
+        config.NewConfig<User, UserResponse>()
             .IgnoreNullValues(false)
             .TwoWays();
     }

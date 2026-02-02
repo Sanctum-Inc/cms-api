@@ -1,4 +1,3 @@
-using System.ComponentModel.DataAnnotations;
 using Application.Common.Models;
 using Application.Invoice.Commands.Add;
 using Application.Invoice.Commands.Delete;
@@ -8,12 +7,8 @@ using Application.Invoice.Commands.Update;
 using Application.Invoice.Queries.Get;
 using Application.Invoice.Queries.GetById;
 using Application.Invoice.Queries.GetInvoiceNumbers;
-using Contracts.CourtCases.Responses;
-using Contracts.Documents.Responses;
 using Contracts.Invoice.Requests;
 using Contracts.Invoice.Responses;
-using Contracts.InvoiceItem.Requests;
-using Contracts.InvoiceItem.Responses;
 using MapsterMapper;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -21,14 +16,14 @@ using Microsoft.AspNetCore.Mvc;
 namespace Api.Controllers;
 
 /// <summary>
-/// Handles operations related to invoices.
+///     Handles operations related to invoices.
 /// </summary>
 [ApiController]
 [Route("api/[controller]")]
 public class InvoiceController : ApiControllerBase
 {
-    private readonly ISender _sender;
     private readonly IMapper _mapper;
+    private readonly ISender _sender;
 
     public InvoiceController(ISender sender, IMapper mapper)
     {
@@ -55,7 +50,8 @@ public class InvoiceController : ApiControllerBase
     {
         var result = await _sender.Send(new GetInvoiceNumbersQuery());
 
-        return MatchAndMapOkResult<IEnumerable<InvoiceNumbersResult>, IEnumerable<InvoiceNumberResponse>>(result, _mapper);
+        return MatchAndMapOkResult<IEnumerable<InvoiceNumbersResult>, IEnumerable<InvoiceNumberResponse>>(result,
+            _mapper);
     }
 
     // GET /api/Invoice/{id}
@@ -68,7 +64,6 @@ public class InvoiceController : ApiControllerBase
         var result = await _sender.Send(new GetByIdCommand(id));
 
         return MatchAndMapOkResult<InvoiceResult, InvoiceResponse>(result, _mapper);
-
     }
 
     // Fix for the CS1503 error in the GeneratePDF method
@@ -90,7 +85,7 @@ public class InvoiceController : ApiControllerBase
         return result.Match<IActionResult>(
             data => File(data.Stream, data.ContentType, data.FileName),
             errors => Problem(
-                detail: string.Join(", ", errors.Select(e => e.Description)),
+                string.Join(", ", errors.Select(e => e.Description)),
                 statusCode: StatusCodes.Status404NotFound)
         );
     }
@@ -107,7 +102,7 @@ public class InvoiceController : ApiControllerBase
 
         var created = await _sender.Send(command);
 
-        return MatchAndMapCreatedResult<Guid>(created, _mapper);
+        return MatchAndMapCreatedResult(created, _mapper);
     }
 
     // PUT /api/Invoice/{id}
@@ -121,7 +116,7 @@ public class InvoiceController : ApiControllerBase
 
         var updated = await _sender.Send(command);
 
-        return MatchAndMapNoContentResult<bool>(updated, _mapper);
+        return MatchAndMapNoContentResult(updated, _mapper);
     }
 
     // PUT /api/Invoice/{id}
@@ -135,7 +130,7 @@ public class InvoiceController : ApiControllerBase
 
         var updated = await _sender.Send(command);
 
-        return MatchAndMapNoContentResult<bool>(updated, _mapper);
+        return MatchAndMapNoContentResult(updated, _mapper);
     }
 
     // DELETE /api/Invoice/{id}
@@ -149,7 +144,6 @@ public class InvoiceController : ApiControllerBase
 
         var success = await _sender.Send(command);
 
-        return MatchAndMapNoContentResult<bool>(success, _mapper);
+        return MatchAndMapNoContentResult(success, _mapper);
     }
-
 }

@@ -3,6 +3,7 @@ using ErrorOr;
 using MediatR;
 
 namespace Application.Email.Commands.Add;
+
 public class AddCommandHandler : IRequestHandler<AddCommand, ErrorOr<Guid>>
 {
     private readonly IEmailService _emailService;

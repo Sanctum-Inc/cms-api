@@ -1,14 +1,15 @@
-namespace Infrastructure.Services;
 using Domain.Firms;
 using Domain.Invoices;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 
+namespace Infrastructure.Services;
+
 public class PdfService : IDocument
 {
-    private readonly Invoice _invoice;
     private readonly Firm _firm;
+    private readonly Invoice _invoice;
 
     public PdfService(Invoice invoice, Firm firm)
     {
@@ -16,7 +17,10 @@ public class PdfService : IDocument
         _firm = firm;
     }
 
-    public DocumentMetadata GetMetadata() => DocumentMetadata.Default;
+    public DocumentMetadata GetMetadata()
+    {
+        return DocumentMetadata.Default;
+    }
 
     public void Compose(IDocumentContainer container)
     {
@@ -76,10 +80,7 @@ public class PdfService : IDocument
                     {
                         table.Cell().Border(1).Padding(5).Text(item.Created.ToString("yyyy/MM/dd")).FontSize(10);
 
-                        table.Cell().Border(1).Padding(5).Column(col =>
-                        {
-                            col.Item().Text(item.Name).FontSize(10);
-                        });
+                        table.Cell().Border(1).Padding(5).Column(col => { col.Item().Text(item.Name).FontSize(10); });
 
                         table.Cell().Border(1).Padding(5).Column(col =>
                         {

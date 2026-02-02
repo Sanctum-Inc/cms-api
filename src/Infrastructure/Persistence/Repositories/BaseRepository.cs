@@ -25,7 +25,8 @@ public class BaseRepository<T> : IBaseRepository<T> where T : class
         return await _dbSet.FindAsync([id], cancellationToken);
     }
 
-    public virtual async Task<IEnumerable<T>> FindAsync(Expression<Func<T, bool>> predicate, CancellationToken cancellationToken = default)
+    public virtual async Task<IEnumerable<T>> FindAsync(Expression<Func<T, bool>> predicate,
+        CancellationToken cancellationToken = default)
     {
         return await _dbSet.Where(predicate).ToListAsync(cancellationToken);
     }
@@ -83,10 +84,12 @@ public class BaseRepository<T> : IBaseRepository<T> where T : class
             // hard delete fallback
             _dbSet.Remove(entity);
         }
+
         return Task.CompletedTask;
     }
 
-    public virtual async Task<bool> ExistsAsync(Expression<Func<T, bool>> predicate, CancellationToken cancellationToken = default)
+    public virtual async Task<bool> ExistsAsync(Expression<Func<T, bool>> predicate,
+        CancellationToken cancellationToken = default)
     {
         return await _dbSet.AnyAsync(predicate, cancellationToken);
     }
@@ -107,6 +110,7 @@ public class BaseRepository<T> : IBaseRepository<T> where T : class
 
     public virtual async Task<IEnumerable<T>> GetAll(CancellationToken cancellationToken = default)
     {
-        return await _dbSet.Where(x => EF.Property<Guid>(x, "UserId") == new Guid(_sessionResolver.UserId!)).ToListAsync(cancellationToken);
+        return await _dbSet.Where(x => EF.Property<Guid>(x, "UserId") == new Guid(_sessionResolver.UserId!))
+            .ToListAsync(cancellationToken);
     }
 }

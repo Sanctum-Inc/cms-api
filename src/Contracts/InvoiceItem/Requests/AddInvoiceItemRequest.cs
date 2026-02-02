@@ -1,4 +1,5 @@
 namespace Contracts.InvoiceItem.Requests;
+
 public record AddInvoiceItemRequest(
     string InvoiceId,
     string Name,

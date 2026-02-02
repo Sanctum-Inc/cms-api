@@ -10,12 +10,13 @@ using Infrastructure.Common;
 using MapsterMapper;
 
 namespace Infrastructure.Services;
+
 public class UserService : IUserService
 {
-    private readonly IUserRepository _userRepository;
     private readonly IJwtService _jwtService;
     private readonly IMapper _mapper;
     private readonly ISessionResolver _sessionResolver;
+    private readonly IUserRepository _userRepository;
 
     public UserService(
         IUserRepository userRepository,
@@ -42,22 +43,29 @@ public class UserService : IUserService
         }
 
         if (user == null)
+        {
             return Error.Validation("User.NotFound", "User not found.");
+        }
 
         return _mapper.Map<UserResult>(user);
     }
 
-    public async Task<ErrorOr<AuthenticationResult>> Login(string username, string password, CancellationToken cancellationToken)
+    public async Task<ErrorOr<AuthenticationResult>> Login(string username, string password,
+        CancellationToken cancellationToken)
     {
         // 1. Find user by email
         var user = await _userRepository.GetByEmail(username, cancellationToken);
         if (user == null)
+        {
             return Error.Unauthorized("Authentication.Unauthorized", "Username or password is incorrect");
+        }
 
         // 2. Verify password
         var isMatch = PasswordHasher.VerifyPassword(password, user.PasswordHash, user.PasswordSalt);
         if (!isMatch)
+        {
             return Error.Unauthorized("Authentication.Unauthorized", "Username or password is incorrect");
+        }
 
         // 3. Set token expiration
         var expiration = DateTime.UtcNow.AddMinutes(30);

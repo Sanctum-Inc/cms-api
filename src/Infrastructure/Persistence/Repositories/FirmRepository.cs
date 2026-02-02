@@ -5,9 +5,13 @@ using Domain.Firms;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Persistence.Repositories;
+
 public class FirmRepository : BaseRepository<Firm>, IFirmRepository
 {
-    public FirmRepository(IApplicationDBContext context, ISessionResolver sessionResolver) : base(context, sessionResolver) { }
+    public FirmRepository(IApplicationDBContext context, ISessionResolver sessionResolver) : base(context,
+        sessionResolver)
+    {
+    }
 
     public async Task<Firm?> GetLatest(CancellationToken cancellationToken)
     {

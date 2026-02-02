@@ -3,7 +3,6 @@ using System.Net.Http.Json;
 using Contracts.Lawyer.Requests;
 using Contracts.Lawyer.Responses;
 using FluentAssertions;
-using Xunit;
 
 namespace Api.Integration.Tests.Controllers;
 
@@ -66,11 +65,11 @@ public class LawyerIntegrationTests : IntegrationTestBase
     {
         // Arrange
         var newLawyer = new AddLawyerRequest(
-            Email: "test.lawyer@example.com",
-            Name: "John",
-            Surname: "Smith",
-            MobileNumber: "+27123456789",
-            Specialty: 0
+            "test.lawyer@example.com",
+            "John",
+            "Smith",
+            "+27123456789",
+            0
         );
 
         // Act
@@ -85,11 +84,11 @@ public class LawyerIntegrationTests : IntegrationTestBase
     {
         // Arrange - missing required fields
         var invalidLawyer = new AddLawyerRequest(
-            Email: "",
-            Name: "",
-            Surname: "",
-            MobileNumber: "",
-            Specialty: -1
+            "",
+            "",
+            "",
+            "",
+            -1
         );
 
         // Act
@@ -108,11 +107,11 @@ public class LawyerIntegrationTests : IntegrationTestBase
         var existingLawyer = lawyers![0];
 
         var updateRequest = new UpdateLawyerRequest(
-            Email: existingLawyer.Email,
-            Name: "UpdatedName",
-            Surname: "UpdatedSurname",
-            MobileNumber: existingLawyer.MobileNumber,
-            Specialty: 1
+            existingLawyer.Email,
+            "UpdatedName",
+            "UpdatedSurname",
+            existingLawyer.MobileNumber,
+            1
         );
 
         // Act
@@ -134,11 +133,11 @@ public class LawyerIntegrationTests : IntegrationTestBase
         // Arrange
         var invalidId = Guid.NewGuid();
         var updateRequest = new UpdateLawyerRequest(
-            Email: "test@example.com",
-            Name: "Test",
-            Surname: "User",
-            MobileNumber: "+27123456789",
-            Specialty: 1
+            "test@example.com",
+            "Test",
+            "User",
+            "+27123456789",
+            1
         );
 
         // Act
@@ -157,11 +156,11 @@ public class LawyerIntegrationTests : IntegrationTestBase
         var existingLawyer = lawyers![0];
 
         var invalidUpdateRequest = new UpdateLawyerRequest(
-            Email: "",
-            Name: "",
-            Surname: "",
-            MobileNumber: "",
-            Specialty: -1
+            "",
+            "",
+            "",
+            "",
+            -1
         );
 
         // Act
@@ -176,11 +175,11 @@ public class LawyerIntegrationTests : IntegrationTestBase
     {
         // Arrange - Create a lawyer to delete
         var newLawyer = new AddLawyerRequest(
-            Email: "delete.test@example.com",
-            Name: "Delete",
-            Surname: "Test",
-            MobileNumber: "+27987654321",
-            Specialty: 3
+            "delete.test@example.com",
+            "Delete",
+            "Test",
+            "+27987654321",
+            3
         );
         await _client.PostAsJsonAsync("/api/lawyer", newLawyer);
 
@@ -218,11 +217,11 @@ public class LawyerIntegrationTests : IntegrationTestBase
     {
         // Create
         var createRequest = new AddLawyerRequest(
-            Email: "workflow.test@example.com",
-            Name: "Workflow",
-            Surname: "Test",
-            MobileNumber: "+27111222333",
-            Specialty: 4
+            "workflow.test@example.com",
+            "Workflow",
+            "Test",
+            "+27111222333",
+            4
         );
         var createResponse = await _client.PostAsJsonAsync("/api/lawyer", createRequest);
         createResponse.StatusCode.Should().Be(HttpStatusCode.NoContent);
@@ -240,11 +239,11 @@ public class LawyerIntegrationTests : IntegrationTestBase
 
         // Update
         var updateRequest = new UpdateLawyerRequest(
-            Email: retrievedLawyer.Email,
-            Name: "UpdatedWorkflow",
-            Surname: "UpdatedTest",
-            MobileNumber: retrievedLawyer.MobileNumber,
-            Specialty: 5
+            retrievedLawyer.Email,
+            "UpdatedWorkflow",
+            "UpdatedTest",
+            retrievedLawyer.MobileNumber,
+            5
         );
         var updateResponse = await _client.PutAsJsonAsync($"/api/lawyer/{createdLawyer.Id}", updateRequest);
         updateResponse.StatusCode.Should().Be(HttpStatusCode.NoContent);

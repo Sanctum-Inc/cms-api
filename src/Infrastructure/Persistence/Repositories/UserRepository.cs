@@ -5,9 +5,13 @@ using Domain.Users;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Persistence.Repositories;
+
 public class UserRepository : BaseRepository<User>, IUserRepository
 {
-    public UserRepository(IApplicationDBContext context, ISessionResolver sessionResolver) : base(context, sessionResolver) { }
+    public UserRepository(IApplicationDBContext context, ISessionResolver sessionResolver) : base(context,
+        sessionResolver)
+    {
+    }
 
     public async Task<User?> GetByEmail(string email, CancellationToken cancellationToken)
     {

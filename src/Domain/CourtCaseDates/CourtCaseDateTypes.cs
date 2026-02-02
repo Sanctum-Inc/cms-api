@@ -1,4 +1,5 @@
 namespace Domain.CourtCaseDates;
+
 public enum CourtCaseDateTypes
 {
     DEADLINE,

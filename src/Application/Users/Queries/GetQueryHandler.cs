@@ -3,6 +3,7 @@ using ErrorOr;
 using MediatR;
 
 namespace Application.Users.Queries;
+
 public class GetQueryHandler : IRequestHandler<GetQuery, ErrorOr<UserResult>>
 {
     private readonly IUserService _userService;

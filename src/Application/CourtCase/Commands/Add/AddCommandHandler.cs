@@ -3,6 +3,7 @@ using ErrorOr;
 using MediatR;
 
 namespace Application.CourtCase.Commands.Add;
+
 public class AddCommandHandler : IRequestHandler<AddCommand, ErrorOr<Guid>>
 {
     private readonly ICourtCaseService _courtCaseService;
@@ -14,7 +15,7 @@ public class AddCommandHandler : IRequestHandler<AddCommand, ErrorOr<Guid>>
 
     public async Task<ErrorOr<Guid>> Handle(AddCommand request, CancellationToken cancellationToken)
     {
-        ErrorOr<Guid> result = await _courtCaseService.Add(request, cancellationToken);
+        var result = await _courtCaseService.Add(request, cancellationToken);
 
         return result;
     }
