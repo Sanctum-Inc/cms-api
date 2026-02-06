@@ -1,3 +1,4 @@
+using Domain.CourtCaseDates;
 using ErrorOr;
 using MediatR;
 
@@ -7,5 +8,9 @@ public record UpdateCommand(
     Guid Id,
     string Date,
     string Title,
+    string Description,
+    bool IsComplete,
+    bool IsCancelled,
+    CourtCaseDateTypes Type,
     Guid CaseId
 ) : IRequest<ErrorOr<bool>>;

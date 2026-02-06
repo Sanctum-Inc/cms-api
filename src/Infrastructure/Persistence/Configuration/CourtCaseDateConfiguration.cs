@@ -20,9 +20,17 @@ public class CourtCaseDateConfiguration : BaseConfiguration<CourtCaseDate>
             .IsRequired()
             .HasMaxLength(200);
 
+        builder.Property(d => d.Description)
+            .IsRequired()
+            .HasMaxLength(200);
+
         builder.Property(d => d.Type)
             .IsRequired()
             .HasMaxLength(100);
+
+        builder.Property(d => d.IsComplete)
+            .IsRequired()
+            .HasDefaultValue(false);
 
         // CRITICAL: Configure relationships AFTER base configuration
 

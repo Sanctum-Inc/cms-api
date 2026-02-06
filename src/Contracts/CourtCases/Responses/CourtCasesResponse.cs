@@ -18,7 +18,7 @@ public class CourtCasesResponse
     public CourtCaseOutcomes Outcome { get; set; }
     public DateTime Created { get; set; }
     public DateTime LastModified { get; set; }
-    public List<CourtCaseDatesResponse> CourtCaseDates { get; set; } = [];
+    public List<CourtCaseDateResponse> CourtCaseDates { get; set; } = [];
     public List<DocumentResponse> Documents { get; set; } = [];
     public List<InvoiceResponse> Invoices { get; set; } = [];
     public List<LawyerResponse> Lawyers { get; set; } = [];

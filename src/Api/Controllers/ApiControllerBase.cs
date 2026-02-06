@@ -8,12 +8,15 @@ namespace Api.Controllers;
 public abstract class ApiControllerBase : ControllerBase
 {
     protected IActionResult MatchAndMapOkResult<TSource, TDestination>(
-        ErrorOr<TSource> result,
+        ErrorOr<TSource>? result,
         IMapper mapper
     )
     {
-        return result.Match(
-            data => Ok(mapper.Map<TDestination>(data!)),
+        if (result is null)
+            return NotFound();
+
+        return result?.Match(
+            data => Ok(mapper.Map<TDestination>(data)),
             errors => Problem(errors)
         );
     }

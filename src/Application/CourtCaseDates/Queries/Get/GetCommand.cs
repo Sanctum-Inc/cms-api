@@ -4,6 +4,6 @@ using MediatR;
 
 namespace Application.CourtCaseDates.Queries.Get;
 
-public class GetCommand : IRequest<ErrorOr<IEnumerable<CourtCaseDateResult>>>
+public class GetCommand : IRequest<ErrorOr<CourtCaseDateResult>?>
 {
 }

@@ -7,7 +7,7 @@ namespace Application.CourtCaseDates.Commands.Add;
 public record AddCommand(
     string Date,
     string Title,
-    string Subtitle,
+    string Description,
     Guid CaseId,
     CourtCaseDateTypes Type
 ) : IRequest<ErrorOr<Guid>>;

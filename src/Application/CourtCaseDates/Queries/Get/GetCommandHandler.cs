@@ -5,7 +5,7 @@ using MediatR;
 
 namespace Application.CourtCaseDates.Queries.Get;
 
-public class GetCommandHandler : IRequestHandler<GetCommand, ErrorOr<IEnumerable<CourtCaseDateResult>>>
+public class GetCommandHandler : IRequestHandler<GetCommand, ErrorOr<CourtCaseDateResult>?>
 {
     private readonly ICourtCaseDatesService _courtCaseDatesService;
 
@@ -14,10 +14,10 @@ public class GetCommandHandler : IRequestHandler<GetCommand, ErrorOr<IEnumerable
         _courtCaseDatesService = courtCaseDatesService;
     }
 
-    public async Task<ErrorOr<IEnumerable<CourtCaseDateResult>>> Handle(GetCommand request,
+    public async Task<ErrorOr<CourtCaseDateResult>?> Handle(GetCommand request,
         CancellationToken cancellationToken)
     {
-        var result = await _courtCaseDatesService.Get(cancellationToken);
+        var result = await _courtCaseDatesService.GetCourtCaseDateInformation(cancellationToken);
 
         return result;
     }

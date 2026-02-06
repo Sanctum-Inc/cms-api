@@ -1,17 +1,16 @@
 using Domain.CourtCaseDates;
-using Domain.CourtCases;
 
-namespace Application.Common.Models;
+namespace Contracts.CourtCaseDates.Responses;
 
-public record CourtCaseDateResult(
+public record CourtCaseDateResponse(
     int OverdueItems,
     int CompletionRate,
     int UpcomingEvents,
     float ChangeFromLastMonth,
-    CourtCaseDateItem? DeadlineCase,
-    IEnumerable<CourtCaseDateItem> CourtCaseDateItems);
+    CourtCaseDateItemResponse DeadlineCase,
+    IEnumerable<CourtCaseDateItemResponse> CourtCaseDateItems);
 
-public record CourtCaseDateItem(
+public record CourtCaseDateItemResponse(
     Guid Id,
     string Date,
     string Title,
