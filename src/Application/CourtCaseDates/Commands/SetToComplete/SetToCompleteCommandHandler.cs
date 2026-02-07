@@ -1,10 +1,11 @@
 using Application.Common.Interfaces.Services;
+using Application.CourtCaseDates.Commands.SetToCancelled;
 using ErrorOr;
 using MediatR;
 
-namespace Application.CourtCaseDates.Commands.SetToCancelled;
+namespace Application.CourtCaseDates.Commands.SetToComplete;
 
-public class SetToCompleteCommandHandler : IRequestHandler<SetToCancelledCommand, ErrorOr<bool>>
+public class SetToCompleteCommandHandler : IRequestHandler<SetToCompleteCommand, ErrorOr<bool>>
 {
     private readonly ICourtCaseDatesService _courtCaseDatesService;
 
@@ -13,7 +14,7 @@ public class SetToCompleteCommandHandler : IRequestHandler<SetToCancelledCommand
         _courtCaseDatesService = courtCaseDatesService;
     }
 
-    public async Task<ErrorOr<bool>> Handle(SetToCancelledCommand request, CancellationToken cancellationToken)
+    public async Task<ErrorOr<bool>> Handle(SetToCompleteCommand request, CancellationToken cancellationToken)
     {
         var result = await _courtCaseDatesService.SetToComplete(request.Id, cancellationToken);
 

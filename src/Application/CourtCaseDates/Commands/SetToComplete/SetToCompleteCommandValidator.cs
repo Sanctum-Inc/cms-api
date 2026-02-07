@@ -1,8 +1,9 @@
+using Application.CourtCaseDates.Commands.SetToCancelled;
 using FluentValidation;
 
-namespace Application.CourtCaseDates.Commands.SetToCancelled;
+namespace Application.CourtCaseDates.Commands.SetToComplete;
 
-public class SetToCompleteCommandValidator : AbstractValidator<SetToCancelledCommand>
+public class SetToCompleteCommandValidator : AbstractValidator<SetToCompleteCommand>
 {
     public  SetToCompleteCommandValidator()
     {

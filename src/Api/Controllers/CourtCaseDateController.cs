@@ -2,6 +2,7 @@ using Application.Common.Models;
 using Application.CourtCaseDates.Commands.Add;
 using Application.CourtCaseDates.Commands.Delete;
 using Application.CourtCaseDates.Commands.SetToCancelled;
+using Application.CourtCaseDates.Commands.SetToComplete;
 using Application.CourtCaseDates.Commands.Update;
 using Application.CourtCaseDates.Queries.Get;
 using Application.CourtCaseDates.Queries.GetById;

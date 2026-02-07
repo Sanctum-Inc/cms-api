@@ -62,5 +62,6 @@ public static class DependecyInjection
         services.AddScoped<ICourtCaseDatesService, CourtCaseDatesService>();
         services.AddScoped<IFirmService, FirmService>();
         services.AddScoped<IEmailService, EmailService>();
+        services.AddScoped<IDashboardService, DashboardService>();
     }
 }
