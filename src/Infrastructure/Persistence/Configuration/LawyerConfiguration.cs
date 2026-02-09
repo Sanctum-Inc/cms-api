@@ -41,7 +41,7 @@ public class LawyerConfiguration : BaseConfiguration<Lawyer>
         builder
             .HasOne(l => l.CreatedByUser)
             .WithMany(u => u.Lawyers)
-            .HasForeignKey(l => l.CreatedByUserId)
+            .HasForeignKey(l => l.UserId)
             .OnDelete(DeleteBehavior.NoAction);
     }
 }

@@ -12,11 +12,14 @@ namespace Infrastructure.Services;
 
 public class EmailService : BaseService<Email, EmailResult, AddCommand, UpdateCommand>, IEmailService
 {
+    private readonly ISessionResolver _sessionResolver;
+
     public EmailService(
-        IEmailRepository _emailRepository,
         IMapper mapper,
-        ISessionResolver sessionResolver) : base(_emailRepository, mapper, sessionResolver)
+        IEmailRepository emailRepository,
+        ISessionResolver sessionResolver) : base(emailRepository, mapper, sessionResolver)
     {
+        _sessionResolver = sessionResolver;
     }
 
     protected override Guid GetIdFromUpdateCommand(UpdateCommand command)
@@ -26,6 +29,11 @@ public class EmailService : BaseService<Email, EmailResult, AddCommand, UpdateCo
 
     protected override ErrorOr<Email> MapFromAddCommand(AddCommand command, string? userId = null)
     {
+        if (string.IsNullOrEmpty(_sessionResolver.UserId))
+        {
+            return Error.Unauthorized("User.NotFound", "User not found.");
+        }
+
         var email = new Email
         {
             Id = Guid.NewGuid(),
@@ -39,7 +47,8 @@ public class EmailService : BaseService<Email, EmailResult, AddCommand, UpdateCo
             BccAddresses = command.Bcc != null ? string.Join(";", command.Bcc) : null,
             CcAddresses = command.Cc != null ? string.Join(";", command.Cc) : null,
             ErrorMessage = null,
-            SentAt = null
+            SentAt = null,
+            UserId = new Guid(_sessionResolver.UserId)
         };
 
         return email;

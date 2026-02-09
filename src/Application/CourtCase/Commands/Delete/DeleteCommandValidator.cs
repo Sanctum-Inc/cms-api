@@ -1,5 +1,14 @@
-﻿namespace Application.CourtCase.Commands.Delete;
+﻿using FluentValidation;
 
-public class DeleteCommandValidator
+namespace Application.CourtCase.Commands.Delete;
+
+public class DeleteCommandValidator : AbstractValidator<DeleteCommand>
 {
+    public DeleteCommandValidator()
+    {
+        RuleFor(command => command.Id)
+            .NotEmpty()
+            .NotNull();
+
+    }
 }

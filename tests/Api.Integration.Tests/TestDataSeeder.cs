@@ -1,6 +1,7 @@
 using Domain.CourtCaseDates;
 using Domain.CourtCases;
 using Domain.Documents;
+using Domain.Firms;
 using Domain.InvoiceItems;
 using Domain.Invoices;
 using Domain.Lawyers;
@@ -14,11 +15,11 @@ public static class TestDataSeeder
 {
     public static async Task SeedDatabaseAsync(ApplicationDBContext db)
     {
-        // Clear existing data
         await ClearDatabaseAsync(db);
 
-        // Seed all entities
-        var user = await SeedUsersAsync(db);
+        var firm = await SeedFirmAsync(db);   // ✅ FIRST
+        var user = await SeedUsersAsync(db, firm.Id);
+
         var courtCase = await SeedCourtCasesAsync(db, user.Id);
         await SeedInvoicesAsync(db, user.Id, courtCase.Id);
         await SeedDocumentsAsync(db, user.Id, courtCase.Id);
@@ -28,65 +29,81 @@ public static class TestDataSeeder
         await db.SaveChangesAsync();
     }
 
-    private static async Task SeedCourtCaseDates(ApplicationDBContext db, Guid userId)
+
+    private static async Task<Firm> SeedFirmAsync(ApplicationDBContext db)
     {
-        // 2️⃣ Create a CourtCase for that user
-        var caseId = Guid.Parse("9ae37995-fb0f-4f86-8f9f-30068950df4c");
+        var firmId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa");
 
-        if (!await db.CourtCases.AnyAsync(c => c.Id == caseId))
+        if (await db.Firms.AnyAsync(f => f.Id == firmId))
+            return await db.Firms.FirstAsync(f => f.Id == firmId);
+
+        var firm = new Firm
         {
-            var courtCase = new CourtCase
-            {
-                Id = caseId,
-                CaseNumber = "CC-2025-001",
-                Location = "Johannesburg High Court",
-                Plaintiff = "John Doe",
-                Defendant = "State of South Africa",
-                Status = CourtCaseStatus.Draft,
-                Type = CourtCaseTypes.Family,
-                Outcome = CourtCaseOutcomes.None,
-                UserId = userId,
-                Created = DateTime.UtcNow,
-                IsPaid = false
-            };
+            Id = firmId,
+            Name = "Test Law Firm",
+            Address = "123 Legal Street, Johannesburg",
+            Telephone = "011-555-1234",
+            Fax = "011-555-4321",
+            Mobile = "+27820000000",
+            Email = "info@testlawfirm.co.za",
 
-            await db.CourtCases.AddAsync(courtCase);
+            AttorneyAdmissionDate = new DateTime(2010, 1, 1),
+            AdvocateAdmissionDate = new DateTime(2012, 1, 1),
 
-            // 3️⃣ Add at least one CourtCaseDate linked to that case
-            var courtCaseDate = new CourtCaseDate
-            {
-                Id = Guid.NewGuid(),
-                Date = "2025-10-31",
-                Title = "Initial Hearing",
-                CaseId = courtCase.Id,
-                Case = courtCase,
-                Created = DateTime.UtcNow,
-                UserId = userId,
-                Type = CourtCaseDateTypes.FILING
-            };
+            AccountName = "Test Law Firm Trust",
+            Bank = "ABSA",
+            BranchCode = "632005",
+            AccountNumber = "1234567890",
 
-            await db.CourtCaseDates.AddAsync(courtCaseDate);
-        }
+            Created = DateTime.UtcNow
+        };
 
-        // 4️⃣ Save all seeded entities
+        db.Firms.Add(firm);
         await db.SaveChangesAsync();
+
+        return firm;
     }
 
+
+    private static async Task SeedCourtCaseDates(ApplicationDBContext db, Guid userId)
+    {
+        var caseId = Guid.Parse("9ae37995-fb0f-4f86-8f9f-30068950df4c");
+
+        var courtCaseDate = new CourtCaseDate
+        {
+            Id = Guid.NewGuid(),
+            Date = "2025-10-31",
+            Title = "Initial Hearing",
+            CaseId = caseId,
+            Created = DateTime.UtcNow,
+            UserId = userId,
+            Type = CourtCaseDateTypes.Mediation,
+            Description = "Description of Hearing",
+            IsCanceled = false,
+            IsComplete = false,
+            CreatedBy = userId,
+        };
+
+        await db.CourtCaseDates.AddAsync(courtCaseDate);
+        await db.SaveChangesAsync();
+    }
 
     private static async Task ClearDatabaseAsync(ApplicationDBContext db)
     {
         db.InvoiceItems.RemoveRange(db.InvoiceItems);
         db.Invoices.RemoveRange(db.Invoices);
+        db.CourtCaseDates.RemoveRange(db.CourtCaseDates);
         db.CourtCases.RemoveRange(db.CourtCases);
         db.Lawyers.RemoveRange(db.Lawyers);
         db.Users.RemoveRange(db.Users);
         db.Documents.RemoveRange(db.Documents);
-        db.CourtCaseDates.RemoveRange(db.CourtCaseDates);
 
         await db.SaveChangesAsync();
     }
 
-    private static async Task<User> SeedUsersAsync(ApplicationDBContext db)
+    private static async Task<User> SeedUsersAsync(
+        ApplicationDBContext db,
+        Guid firmId)
     {
         var user = new User
         {
@@ -97,9 +114,10 @@ public static class TestDataSeeder
             MobileNumber = "+27812198232",
             PasswordHash = "BFqr1L1tvZ2mmThXw9i13LtCaHa/caTOr/uBMuQ6d/k=",
             PasswordSalt = "qxAHZlcWRdQdB4+Nb+RpTg==",
-            FirmId = Guid.NewGuid(),
+            FirmId = firmId, // ✅ FIXED
             Role = UserRole.FirmUser
         };
+
         db.Users.Add(user);
         await db.SaveChangesAsync();
         return user;
@@ -204,7 +222,7 @@ public static class TestDataSeeder
                 Name = "James",
                 Surname = "Wilson",
                 MobileNumber = "+27821234567",
-                CreatedByUserId = userId,
+                UserId = userId,
                 Specialty = Speciality.Corporate,
                 CreatedBy = userId,
                 Created = DateTime.UtcNow
@@ -216,7 +234,7 @@ public static class TestDataSeeder
                 Name = "Sarah",
                 Surname = "Johnson",
                 MobileNumber = "+27829876543",
-                CreatedByUserId = userId,
+                UserId = userId,
                 Specialty = Speciality.Corporate,
                 CreatedBy = userId,
                 Created = DateTime.UtcNow
@@ -228,7 +246,7 @@ public static class TestDataSeeder
                 Name = "Michael",
                 Surname = "Brown",
                 MobileNumber = "+27835551234",
-                CreatedByUserId = userId,
+                UserId = userId,
                 Specialty = Speciality.Environmental,
                 CreatedBy = userId,
                 Created = DateTime.UtcNow
@@ -240,7 +258,7 @@ public static class TestDataSeeder
                 Name = "Emily",
                 Surname = "Davis",
                 MobileNumber = "+27847778888",
-                CreatedByUserId = userId,
+                UserId = userId,
                 Specialty = Speciality.RealEstate,
                 CreatedBy = userId,
                 Created = DateTime.UtcNow

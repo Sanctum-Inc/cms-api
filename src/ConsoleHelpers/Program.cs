@@ -199,7 +199,7 @@ namespace ConsoleHelpers
                 .RuleFor(l => l.MobileNumber, f => f.Phone.PhoneNumber("+27 ## ### ####"))
                 .RuleFor(l => l.FirmName, f => f.Company.CompanyName() + " Law Firm")
                 .RuleFor(l => l.Specialty, f => f.PickRandom<Speciality>())
-                .RuleFor(l => l.CreatedByUserId, f => f.PickRandom(users).Id)
+                .RuleFor(l => l.UserId, f => f.PickRandom(users).Id)
                 .RuleFor(l => l.Created, _ => DateTime.UtcNow)
                 .RuleFor(l => l.IsDeleted, _ => false);
 

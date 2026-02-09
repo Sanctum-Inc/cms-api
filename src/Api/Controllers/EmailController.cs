@@ -33,7 +33,7 @@ public class EmailController : ApiControllerBase
     [ProducesResponseType(typeof(IEnumerable<EmailResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [EndpointName("GetEmails")]
-    public async Task<IActionResult> Get([FromRoute] string id)
+    public async Task<IActionResult> Get()
     {
         var query = new GetQuery();
 
@@ -58,7 +58,7 @@ public class EmailController : ApiControllerBase
 
     // POST /api/Email
     [HttpPost]
-    [ProducesResponseType(typeof(IEnumerable<EmailResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [EndpointName("CreateEmail")]
     public async Task<IActionResult> Create(AddEmailRequest addEmailRequest)
@@ -67,7 +67,7 @@ public class EmailController : ApiControllerBase
 
         var result = await _sender.Send(query);
 
-        return MatchAndMapOkResult<Guid, Guid>(result, _mapper);
+        return MatchAndMapCreatedResult(result, _mapper);
     }
 
     // PUT /api/Email/{id}

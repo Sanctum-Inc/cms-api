@@ -27,5 +27,6 @@ public class Email : AuditableEntity
     public DateTime? SentAt { get; set; }
 
     // 🔗 User linkage
-    public User User { get; set; } = default!;
+    public required Guid UserId { get; set; }
+    public User? User { get; set; }
 }

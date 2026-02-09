@@ -21,14 +21,14 @@ public abstract class ApiControllerBase : ControllerBase
         );
     }
 
-    protected IActionResult MatchAndMapNoContentResult<TSource>(
+    public IActionResult MatchAndMapNoContentResult<TSource>(
         ErrorOr<TSource> result,
         IMapper mapper
     )
     {
         return result.Match<IActionResult>(
             data => NoContent(),
-            errors => Problem(errors)
+            Problem
         );
     }
 
@@ -45,6 +45,15 @@ public abstract class ApiControllerBase : ControllerBase
 
     private ObjectResult Problem(List<Error> errors)
     {
+        if (errors == null || errors.Count == 0)
+        {
+            // Defensive fallback
+            return new ObjectResult("An unknown error occurred")
+            {
+                StatusCode = StatusCodes.Status500InternalServerError
+            };
+        }
+
         var firstError = errors[0];
 
         var statusCode = firstError.Type switch
@@ -60,10 +69,11 @@ public abstract class ApiControllerBase : ControllerBase
         var problemDetails = new ProblemDetails
         {
             Status = statusCode,
-            Title = firstError.Description, // Could customize more here
+            Title = firstError.Description,
             Detail = "See errors property for details.",
-            Instance = HttpContext.Request.Path
+            Instance = HttpContext?.Request?.Path.Value ?? ""
         };
+
 
         // Add all error descriptions as a list under "errors" property
         problemDetails.Extensions["errors"] = errors.Select(e => new
@@ -73,7 +83,7 @@ public abstract class ApiControllerBase : ControllerBase
         });
 
         // Optionally add traceId for tracking
-        problemDetails.Extensions["traceId"] = HttpContext.TraceIdentifier;
+        problemDetails.Extensions["traceId"] = HttpContext?.TraceIdentifier ?? "";
 
         return new ObjectResult(problemDetails)
         {

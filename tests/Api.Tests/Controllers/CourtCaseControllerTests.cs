@@ -252,16 +252,21 @@ public class CourtCaseControllerTests
     {
         // Arrange
         var id = Guid.NewGuid();
-        var error = Error.NotFound("CourtCase.NotFound", "Court case not found");
+
+        var errorResult = ErrorOr<bool>.From([
+            Error.NotFound("CourtCase.NotFound", "Court case not found")]);
+
         _mockSender.Setup(s => s.Send(It.IsAny<DeleteCommand>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(error);
+            .ReturnsAsync(errorResult);
 
         // Act
         var result = await _controller.Delete(id);
 
         // Assert
-        result.Should().BeOfType<ObjectResult>().Which.StatusCode.Should().Be(404);
+        result.Should().BeOfType<ObjectResult>()
+            .Which.StatusCode.Should().Be(404);
     }
+
 
     #endregion
 }

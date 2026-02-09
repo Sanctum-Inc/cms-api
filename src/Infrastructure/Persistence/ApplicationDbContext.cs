@@ -104,7 +104,7 @@ public class ApplicationDBContext : DbContext, IApplicationDBContext
         modelBuilder.Entity<Lawyer>()
             .HasOne(l => l.CreatedByUser)
             .WithMany(u => u.Lawyers)
-            .HasForeignKey(l => l.CreatedByUserId)
+            .HasForeignKey(l => l.UserId)
             .OnDelete(DeleteBehavior.NoAction);
     }
 

@@ -21,7 +21,7 @@ public class Lawyer : AuditableEntity
     public required Speciality Specialty { get; set; }
 
     // Created by user (for tracking purposes)
-    [Required] public required Guid CreatedByUserId { get; set; }
+    [Required] public required Guid UserId { get; set; }
 
     public User? CreatedByUser { get; set; }
 
