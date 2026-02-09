@@ -65,15 +65,15 @@ jobs:
                   ${{ runner.temp }}\scanner\dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
 
             -   name: Set Connection String Variable
-                    shell: powershell
-                    run: |
-                        if ("${{ github.ref }}" -eq "refs/heads/master") {
-                         echo "SELECTED_CONNECTION_STRING=${{ secrets.DB_CONNECTION_STRING_PROD }}" >> $env:GITHUB_ENV
-                         echo "TARGET_FILE=appsettings.json" >> $env:GITHUB_ENV
-                        } else {
-                         echo "SELECTED_CONNECTION_STRING=${{ secrets.DB_CONNECTION_STRING_DEV }}" >> $env:GITHUB_ENV
-                         echo "TARGET_FILE=appsettings.Staging.json" >> $env:GITHUB_ENV
-                        }
+                shell: powershell
+                run: |
+                    if ("${{ github.ref }}" -eq "refs/heads/master") {
+                      echo "SELECTED_CONNECTION_STRING=${{ secrets.DB_CONNECTION_STRING_PROD }}" >> $env:GITHUB_ENV
+                      echo "TARGET_FILE=appsettings.json" >> $env:GITHUB_ENV
+                    } else {
+                      echo "SELECTED_CONNECTION_STRING=${{ secrets.DB_CONNECTION_STRING_DEV }}" >> $env:GITHUB_ENV
+                      echo "TARGET_FILE=appsettings.Staging.json" >> $env:GITHUB_ENV
+                    }
 
             - name: App Settings Variable Substitution
               uses: microsoft/variable-substitution@v1
