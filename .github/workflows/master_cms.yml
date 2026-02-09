@@ -88,7 +88,7 @@ jobs:
               shell: powershell
               run: |
                   $publishPath = Join-Path $env:RUNNER_TEMP "myapp"
-                  # We publish as Release, but the file was already modified above
+                  # We publish as Release, but the file was already modified aboves
                   dotnet publish ./src/Api/Api.csproj -c Release -o $publishPath
 
             - name: Upload artifact for deployment job
