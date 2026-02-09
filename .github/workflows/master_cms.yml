@@ -95,8 +95,8 @@ jobs:
               uses: SamKirkland/FTP-Deploy-Action@v4.3.5
               with:
                   server: lexcase.co.za
-                  username: ${{ secrets.FTP_DEV_USERNAME }}
-                  password: ${{ secrets.FTP_DEV_PASSWORD }}
+                  username: ${{ secrets.FTP_USERNAME }}
+                  password: ${{ secrets.FTP_PASSWORD }}
                   local-dir: ./publish/
                   server-dir: /api-dev.lexcase.co.za/wwwroot/
 
@@ -119,7 +119,7 @@ jobs:
               uses: SamKirkland/FTP-Deploy-Action@v4.3.5
               with:
                   server: lexcase.co.za
-                  username: ${{ secrets.FTP_PROD_USERNAME }}
-                  password: ${{ secrets.FTP_PROD_PASSWORD }}
+                  username: ${{ secrets.FTP_USERNAME }}
+                  password: ${{ secrets.FTP_PASSWORD }}
                   local-dir: ./publish/
                   server-dir: /api.lexcase.co.za/wwwroot/
