@@ -69,7 +69,7 @@ jobs:
                 run: |
                     if ("${{ github.ref }}" -eq "refs/heads/master") {
                       echo "SELECTED_CONNECTION_STRING=${{ secrets.DB_CONNECTION_STRING_PROD }}" >> $env:GITHUB_ENV
-                      echo "TARGET_FILE=appsettings.json" >> $env:GITHUB_ENV
+                      echo "TARGET_FILE=appsettings.Production.json" >> $env:GITHUB_ENV
                     } else {
                       echo "SELECTED_CONNECTION_STRING=${{ secrets.DB_CONNECTION_STRING_DEV }}" >> $env:GITHUB_ENV
                       echo "TARGET_FILE=appsettings.Staging.json" >> $env:GITHUB_ENV
