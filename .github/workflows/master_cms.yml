@@ -64,11 +64,32 @@ jobs:
                   dotnet test --configuration Release --no-build --collect:"XPlat Code Coverage" --results-directory ./coverage -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover
                   ${{ runner.temp }}\scanner\dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
 
+            -   name: Set Connection String Variable
+                    shell: powershell
+                    run: |
+                        if ("${{ github.ref }}" -eq "refs/heads/master") {
+                         echo "SELECTED_CONNECTION_STRING=${{ secrets.DB_CONNECTION_STRING_PROD }}" >> $env:GITHUB_ENV
+                         echo "TARGET_FILE=appsettings.json" >> $env:GITHUB_ENV
+                        } else {
+                         echo "SELECTED_CONNECTION_STRING=${{ secrets.DB_CONNECTION_STRING_DEV }}" >> $env:GITHUB_ENV
+                         echo "TARGET_FILE=appsettings.Staging.json" >> $env:GITHUB_ENV
+                        }
+
+            - name: App Settings Variable Substitution
+              uses: microsoft/variable-substitution@v1
+              with:
+                  # This will now target the correct file based on the branch
+                  files: './src/Api/${{ env.TARGET_FILE }}'
+              env:
+                  # The key must match the JSON structure exactly
+                  ConnectionStrings.DefaultConnection: ${{ env.SELECTED_CONNECTION_STRING }}
+
             - name: dotnet publish
               shell: powershell
               run: |
                   $publishPath = Join-Path $env:RUNNER_TEMP "myapp"
-                  dotnet publish -c Release -o $publishPath
+                  # We publish as Release, but the file was already modified above
+                  dotnet publish ./src/Api/Api.csproj -c Release -o $publishPath
 
             - name: Upload artifact for deployment job
               uses: actions/upload-artifact@v4

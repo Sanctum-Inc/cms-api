@@ -11,14 +11,19 @@ using QuestPDF.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Configuration
-    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-    .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: true)
-    .AddEnvironmentVariables();
-
 builder.Services
     .AddInfrastructure(builder.Configuration)
     .AddApplication(builder.Configuration);
+
+var env = builder.Environment.EnvironmentName;
+var connString = builder.Configuration.GetConnectionString("DefaultConnection");
+
+Console.WriteLine($"Current Environment: {env}");
+Console.WriteLine($"Connection String Found: {!string.IsNullOrEmpty(connString)}");
+
+if (string.IsNullOrEmpty(connString)) {
+    throw new Exception($"Connection string is missing! Check appsettings.{env}.json");
+}
 
 builder.Services.AddPersistence(builder.Configuration, builder.Environment);
 builder.Services.AddMediatR(builder.Configuration);
