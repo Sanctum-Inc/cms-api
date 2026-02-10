@@ -115,25 +115,20 @@ jobs:
             -   name: Create app_offline.htm
                 shell: bash
                 run: |
-                    mkdir -p ./offline
-                    cat > ./offline/app_offline.htm << 'EOF'
+                    cat > ./app_offline.htm << 'EOF'
                     <html><body style='font-family:sans-serif;text-align:center;padding-top:10%'><h1>Site Under Maintenance</h1><p>We are currently updating the system. Please try again in a few minutes.</p></body></html>
                     EOF
 
-            -   name: Upload app_offline.htm FIRST (Take site offline)
-                uses: SamKirkland/FTP-Deploy-Action@v4.3.5
-                with:
-                    server: lexcase.co.za
-                    username: ${{ secrets.FTP_USERNAME }}
-                    password: ${{ secrets.FTP_PASSWORD }}
-                    local-dir: ./offline/
-                    server-dir: /api-dev.lexcase.co.za/wwwroot/
-
-            -   name: Wait for IIS to detect app_offline.htm
+            -   name: Upload app_offline.htm via FTP (not tracked by deploy action)
                 shell: bash
-                run: sleep 5
+                run: |
+                    curl -T ./app_offline.htm \
+                      --user "${{ secrets.FTP_USERNAME }}:${{ secrets.FTP_PASSWORD }}" \
+                      ftp://lexcase.co.za/api-dev.lexcase.co.za/wwwroot/app_offline.htm
+                    echo "Waiting for IIS to detect app_offline.htm and release locks..."
+                    sleep 10
 
-            -   name: FTP Deploy (Upload Application Files)
+            -   name: FTP Deploy Application Files
                 uses: SamKirkland/FTP-Deploy-Action@v4.3.5
                 with:
                     server: lexcase.co.za
@@ -141,14 +136,17 @@ jobs:
                     password: ${{ secrets.FTP_PASSWORD }}
                     local-dir: ./publish/
                     server-dir: /api-dev.lexcase.co.za/wwwroot/
+                    exclude: |
+                        **/.git*
+                        **/.git*/**
 
-            -   name: Remove app_offline.htm (Restart App)
+            -   name: Remove app_offline.htm (Bring site back online)
                 shell: bash
                 run: |
                     curl -v --user "${{ secrets.FTP_USERNAME }}:${{ secrets.FTP_PASSWORD }}" \
                       -Q "DELE /api-dev.lexcase.co.za/wwwroot/app_offline.htm" \
                       ftp://lexcase.co.za/ || {
-                        echo "Failed to delete app_offline.htm. You may need to delete it manually."
+                        echo "⚠️ Failed to delete app_offline.htm. Please delete it manually via SolidCP File Manager."
                         exit 1
                       }
 
