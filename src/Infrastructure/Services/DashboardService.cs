@@ -70,7 +70,8 @@ public class DashboardService : IDashboardService
                 $"{x.Date}",
                 $"{x.Case.CaseNumber}: {x.Case.Defendant} vs {x.Case.Plaintiff}",
                 x.Created.ToString("yyyy-MM-dd HH:mm:ss"),
-                x.Type));
+                x.Type,
+                x.CaseId));
 
 
         return new DashBoardResult(

@@ -20,4 +20,5 @@ public record UpcomingCourtCaseActivityResult(
     string CourtDateTitle,
     string CourtDateDescription,
     string Date,
-    CourtCaseDateTypes CourtDateType);
+    CourtCaseDateTypes CourtDateType,
+    Guid Id);
