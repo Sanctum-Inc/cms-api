@@ -11,6 +11,7 @@ public static class CorsConfiguration
                 policy.SetIsOriginAllowed(origin =>
                         origin == "https://lexcase.co.za" ||
                         origin == "https://www.lexcase.co.za" ||
+                        origin.StartsWith("http://localhost") ||
                         origin.StartsWith("https://sanctum-inc.github.io")
                     )
                     .AllowAnyHeader()
