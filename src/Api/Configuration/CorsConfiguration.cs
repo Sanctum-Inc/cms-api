@@ -8,8 +8,11 @@ public static class CorsConfiguration
         {
             options.AddPolicy("AllowUI", policy =>
             {
-                policy
-                    .SetIsOriginAllowed(_ => true) // allow ANY origin
+                policy.SetIsOriginAllowed(origin =>
+                        origin == "https://lexcase.co.za" ||
+                        origin == "https://www.lexcase.co.za" ||
+                        origin.StartsWith("https://sanctum-inc.github.io")
+                    )
                     .AllowAnyHeader()
                     .AllowAnyMethod()
                     .AllowCredentials();
