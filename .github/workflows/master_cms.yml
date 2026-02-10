@@ -106,20 +106,45 @@ jobs:
         if: github.ref == 'refs/heads/develop' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
 
         steps:
-            - name: Download artifact from build job
-              uses: actions/download-artifact@v4
-              with:
-                  name: .net-app
-                  path: ./publish
+            -   name: Download artifact from build job
+                uses: actions/download-artifact@v4
+                with:
+                    name: .net-app
+                    path: ./publish
 
-            - name: FTP Deploy to dev server
-              uses: SamKirkland/FTP-Deploy-Action@v4.3.5
-              with:
-                  server: lexcase.co.za
-                  username: ${{ secrets.FTP_USERNAME }}
-                  password: ${{ secrets.FTP_PASSWORD }}
-                  local-dir: ./publish/
-                  server-dir: /api-dev.lexcase.co.za/wwwroot/
+            -   name: Create app_offline.htm
+                shell: powershell
+                run: |
+                    # Creating the file in the publish folder so it's uploaded first
+                    $content = "<html><body style='font-family:sans-serif;text-align:center;padding-top:10%'><h1>Site Under Maintenance</h1><p>We are currently updating the system. Please try again in a few minutes.</p></body></html>"
+                    Set-Content -Path "./publish/app_offline.htm" -Value $content
+
+            -   name: FTP Deploy (Uploads App + app_offline)
+                uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+                with:
+                    server: lexcase.co.za
+                    username: ${{ secrets.FTP_USERNAME }}
+                    password: ${{ secrets.FTP_PASSWORD }}
+                    local-dir: ./publish/
+                    # Ensure this matches your server directory
+                    server-dir: /api-dev.lexcase.co.za/wwwroot/
+
+            -   name: Remove app_offline.htm (Restart App)
+                shell: powershell
+                run: |
+                    $ftpUrl = "ftp://lexcase.co.za/api-dev.lexcase.co.za/wwwroot/app_offline.htm"
+                    $ftpRequest = [System.Net.FtpWebRequest]::Create($ftpUrl)
+                    $ftpRequest.Method = [System.Net.WebRequestMethods+Ftp]::DeleteFile
+                    $ftpRequest.Credentials = New-Object System.Net.NetworkCredential("${{ secrets.FTP_USERNAME }}", "${{ secrets.FTP_PASSWORD }}")
+
+                    try {
+                        $response = $ftpRequest.GetResponse()
+                        Write-Host "Successfully deleted app_offline.htm. App is restarting."
+                        $response.Close()
+                    } catch {
+                        Write-Error "Failed to delete app_offline.htm. You may need to delete it manually via SolidCP."
+                        throw
+                    }
 
     deploy-prod:
         name: Deploy to Prod via FTP
