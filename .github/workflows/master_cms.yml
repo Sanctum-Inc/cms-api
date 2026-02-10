@@ -115,19 +115,31 @@ jobs:
             -   name: Create app_offline.htm
                 shell: bash
                 run: |
-                    # Creating the file in the publish folder so it's uploaded first
-                    cat > ./publish/app_offline.htm << 'EOF'
+                    mkdir -p ./offline
+                    cat > ./offline/app_offline.htm << 'EOF'
                     <html><body style='font-family:sans-serif;text-align:center;padding-top:10%'><h1>Site Under Maintenance</h1><p>We are currently updating the system. Please try again in a few minutes.</p></body></html>
                     EOF
 
-            -   name: FTP Deploy (Uploads App + app_offline)
+            -   name: Upload app_offline.htm FIRST (Take site offline)
+                uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+                with:
+                    server: lexcase.co.za
+                    username: ${{ secrets.FTP_USERNAME }}
+                    password: ${{ secrets.FTP_PASSWORD }}
+                    local-dir: ./offline/
+                    server-dir: /api-dev.lexcase.co.za/wwwroot/
+
+            -   name: Wait for IIS to detect app_offline.htm
+                shell: bash
+                run: sleep 5
+
+            -   name: FTP Deploy (Upload Application Files)
                 uses: SamKirkland/FTP-Deploy-Action@v4.3.5
                 with:
                     server: lexcase.co.za
                     username: ${{ secrets.FTP_USERNAME }}
                     password: ${{ secrets.FTP_PASSWORD }}
                     local-dir: ./publish/
-                    # Ensure this matches your server directory
                     server-dir: /api-dev.lexcase.co.za/wwwroot/
 
             -   name: Remove app_offline.htm (Restart App)
@@ -136,7 +148,7 @@ jobs:
                     curl -v --user "${{ secrets.FTP_USERNAME }}:${{ secrets.FTP_PASSWORD }}" \
                       -Q "DELE /api-dev.lexcase.co.za/wwwroot/app_offline.htm" \
                       ftp://lexcase.co.za/ || {
-                        echo "Failed to delete app_offline.htm. You may need to delete it manually via SolidCP."
+                        echo "Failed to delete app_offline.htm. You may need to delete it manually."
                         exit 1
                       }
 
