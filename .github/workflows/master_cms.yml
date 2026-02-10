@@ -116,7 +116,78 @@ jobs:
                 shell: bash
                 run: |
                     cat > ./app_offline.htm << 'EOF'
-                    <html><body style='font-family:sans-serif;text-align:center;padding-top:10%'><h1>Site Under Maintenance</h1><p>We are currently updating the system. Please try again in a few minutes.</p></body></html>
+                    <!DOCTYPE html>
+                    <html lang="en">
+                    <head>
+                        <meta charset="UTF-8">
+                        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                        <title>Be Right Back!</title>
+                        <style>
+                            * { margin: 0; padding: 0; box-sizing: border-box; }
+                            body {
+                                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                                min-height: 100vh;
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                                color: white;
+                            }
+                            .container {
+                                text-align: center;
+                                padding: 2rem;
+                                max-width: 600px;
+                            }
+                            .emoji {
+                                font-size: 5rem;
+                                animation: bounce 2s infinite;
+                                display: inline-block;
+                            }
+                            @keyframes bounce {
+                                0%, 100% { transform: translateY(0); }
+                                50% { transform: translateY(-20px); }
+                            }
+                            h1 {
+                                font-size: 2.5rem;
+                                margin: 1rem 0;
+                                font-weight: 700;
+                            }
+                            p {
+                                font-size: 1.2rem;
+                                margin: 1rem 0;
+                                opacity: 0.9;
+                                line-height: 1.6;
+                            }
+                            .subtitle {
+                                font-size: 1rem;
+                                opacity: 0.8;
+                                margin-top: 2rem;
+                                font-style: italic;
+                            }
+                            .spinner {
+                                margin: 2rem auto;
+                                width: 50px;
+                                height: 50px;
+                                border: 4px solid rgba(255,255,255,0.3);
+                                border-top-color: white;
+                                border-radius: 50%;
+                                animation: spin 1s linear infinite;
+                            }
+                            @keyframes spin {
+                                to { transform: rotate(360deg); }
+                            }
+                        </style>
+                    </head>
+                    <body>
+                        <div class="container">
+                            <div class="emoji">🔧</div>
+                            <h1>We'll Be Right Back!</h1>
+                            <p>Our hamsters are upgrading their wheels.<br>This should only take a moment.</p>
+                            <div class="spinner"></div>
+                            <p class="subtitle">Pro tip: This is a great time to grab a coffee ☕</p>
+                        </div>
+                    </body>
+                    </html>
                     EOF
 
             -   name: Upload app_offline.htm via FTP (not tracked by deploy action)
@@ -159,17 +230,117 @@ jobs:
         if: github.ref == 'refs/heads/master' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
 
         steps:
-            - name: Download artifact from build job
-              uses: actions/download-artifact@v4
-              with:
-                  name: .net-app
-                  path: ./publish
+            -   name: Download artifact from build job
+                uses: actions/download-artifact@v4
+                with:
+                    name: .net-app
+                    path: ./publish
 
-            - name: FTP Deploy to prod server
-              uses: SamKirkland/FTP-Deploy-Action@v4.3.5
-              with:
-                  server: lexcase.co.za
-                  username: ${{ secrets.FTP_USERNAME }}
-                  password: ${{ secrets.FTP_PASSWORD }}
-                  local-dir: ./publish/
-                  server-dir: /api.lexcase.co.za/wwwroot/
+            -   name: Create app_offline.htm
+                shell: bash
+                run: |
+                    cat > ./app_offline.htm << 'EOF'
+                    <!DOCTYPE html>
+                    <html lang="en">
+                    <head>
+                        <meta charset="UTF-8">
+                        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                        <title>Be Right Back!</title>
+                        <style>
+                            * { margin: 0; padding: 0; box-sizing: border-box; }
+                            body {
+                                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                                min-height: 100vh;
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                                color: white;
+                            }
+                            .container {
+                                text-align: center;
+                                padding: 2rem;
+                                max-width: 600px;
+                            }
+                            .emoji {
+                                font-size: 5rem;
+                                animation: bounce 2s infinite;
+                                display: inline-block;
+                            }
+                            @keyframes bounce {
+                                0%, 100% { transform: translateY(0); }
+                                50% { transform: translateY(-20px); }
+                            }
+                            h1 {
+                                font-size: 2.5rem;
+                                margin: 1rem 0;
+                                font-weight: 700;
+                            }
+                            p {
+                                font-size: 1.2rem;
+                                margin: 1rem 0;
+                                opacity: 0.9;
+                                line-height: 1.6;
+                            }
+                            .subtitle {
+                                font-size: 1rem;
+                                opacity: 0.8;
+                                margin-top: 2rem;
+                                font-style: italic;
+                            }
+                            .spinner {
+                                margin: 2rem auto;
+                                width: 50px;
+                                height: 50px;
+                                border: 4px solid rgba(255,255,255,0.3);
+                                border-top-color: white;
+                                border-radius: 50%;
+                                animation: spin 1s linear infinite;
+                            }
+                            @keyframes spin {
+                                to { transform: rotate(360deg); }
+                            }
+                        </style>
+                    </head>
+                    <body>
+                        <div class="container">
+                            <div class="emoji">🔧</div>
+                            <h1>We'll Be Right Back!</h1>
+                            <p>Our hamsters are upgrading their wheels.<br>This should only take a moment.</p>
+                            <div class="spinner"></div>
+                            <p class="subtitle">Pro tip: This is a great time to grab a coffee ☕</p>
+                        </div>
+                    </body>
+                    </html>
+                    EOF
+
+            -   name: Upload app_offline.htm via FTP (not tracked by deploy action)
+                shell: bash
+                run: |
+                    curl -T ./app_offline.htm \
+                      --user "${{ secrets.FTP_USERNAME }}:${{ secrets.FTP_PASSWORD }}" \
+                      ftp://lexcase.co.za/api.lexcase.co.za/wwwroot/app_offline.htm
+                    echo "Waiting for IIS to detect app_offline.htm and release locks..."
+                    sleep 10
+
+            -   name: FTP Deploy Application Files
+                uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+                with:
+                    server: lexcase.co.za
+                    username: ${{ secrets.FTP_USERNAME }}
+                    password: ${{ secrets.FTP_PASSWORD }}
+                    local-dir: ./publish/
+                    server-dir: /api.lexcase.co.za/wwwroot/
+                    exclude: |
+                        **/.git*
+                        **/.git*/**
+
+            -   name: Remove app_offline.htm (Bring site back online)
+                shell: bash
+                run: |
+                    curl -v --user "${{ secrets.FTP_USERNAME }}:${{ secrets.FTP_PASSWORD }}" \
+                      -Q "DELE /api.lexcase.co.za/wwwroot/app_offline.htm" \
+                      ftp://lexcase.co.za/ || {
+                        echo "⚠️ Failed to delete app_offline.htm. Please delete it manually via SolidCP File Manager."
+                        exit 1
+                      }
