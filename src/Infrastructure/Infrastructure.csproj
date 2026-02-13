@@ -8,27 +8,28 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="ErrorOr" Version="2.0.1"/>
-        <PackageReference Include="Mapster" Version="7.4.0"/>
-        <PackageReference Include="MediatR" Version="13.0.0"/>
-        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.10"/>
-        <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.3.0"/>
-        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.10"/>
+        <PackageReference Include="ErrorOr" Version="2.0.1" />
+        <PackageReference Include="mailkit" Version="4.14.1" />
+        <PackageReference Include="Mapster" Version="7.4.0" />
+        <PackageReference Include="MediatR" Version="13.0.0" />
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.10" />
+        <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.3.0" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.10" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.10">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.10"/>
-        <PackageReference Include="QuestPDF" Version="2025.7.3"/>
+        <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.10" />
+        <PackageReference Include="QuestPDF" Version="2025.7.3" />
     </ItemGroup>
 
     <ItemGroup>
-        <Folder Include="Persistence\Migrations\"/>
+        <Folder Include="Persistence\Migrations\" />
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Application\Application.csproj"/>
-        <ProjectReference Include="..\Domain\Domain.csproj"/>
+        <ProjectReference Include="..\Application\Application.csproj" />
+        <ProjectReference Include="..\Domain\Domain.csproj" />
     </ItemGroup>
 
 </Project>

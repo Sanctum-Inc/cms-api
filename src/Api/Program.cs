@@ -44,6 +44,8 @@ builder.Services.AddJwtAuthentication(builder.Configuration, builder.Environment
 
 builder.Services.AddCustomCors();
 
+builder.Services.AddHostedService<Worker.EmailWorker.EmailHandler>();
+
 var app = builder.Build();
 
 

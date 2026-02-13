@@ -25,6 +25,8 @@ public static class DependecyInjection
 
         AddDocumentStorage(services, configuration);
 
+        AddEmailOptions(services, configuration);
+
         return services;
     }
 
@@ -32,6 +34,12 @@ public static class DependecyInjection
     {
         services.Configure<DocumentStorageOptions>(
             configuration.GetSection(DocumentStorageOptions.SectionName));
+    }
+
+    private static void AddEmailOptions(IServiceCollection services, IConfiguration configuration)
+    {
+        services.Configure<DocumentStorageOptions>(
+            configuration.GetSection(EmailOptions.SectionName));
     }
 
     private static void AddPersistence(IServiceCollection services)
