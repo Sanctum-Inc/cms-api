@@ -43,7 +43,7 @@ public abstract class ApiControllerBase : ControllerBase
         );
     }
 
-    private ObjectResult Problem(List<Error> errors)
+    protected ObjectResult Problem(List<Error> errors)
     {
         if (errors == null || errors.Count == 0)
         {

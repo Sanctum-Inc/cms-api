@@ -1,16 +1,20 @@
 using Application.Common.Models;
 using Application.Invoice.Commands.Add;
+using Application.Invoice.Commands.CreatePdfLink;
 using Application.Invoice.Commands.Delete;
 using Application.Invoice.Commands.GeneratePdf;
 using Application.Invoice.Commands.SetIsPaid;
 using Application.Invoice.Commands.Update;
+using Application.Invoice.Commands.ViewPDF;
 using Application.Invoice.Queries.Get;
 using Application.Invoice.Queries.GetById;
 using Application.Invoice.Queries.GetInvoiceNumbers;
 using Contracts.Invoice.Requests;
 using Contracts.Invoice.Responses;
+using Contracts.InvoiceItem.Responses;
 using MapsterMapper;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers;
@@ -66,14 +70,10 @@ public class InvoiceController : ApiControllerBase
         return MatchAndMapOkResult<InvoiceResult, InvoiceResponse>(result, _mapper);
     }
 
-    // Fix for the CS1503 error in the GeneratePDF method
-    // The issue is that the second argument of the `Match` method expects a `Func<List<Error>, IActionResult>`
-    // but `result.Errors` is being passed directly, which is a `List<Error>`.
-
-    /// <summary>Generate PDF for invoice</summary>
+    /// <summary>Generate PDF for invoice to Download</summary>
     /// <param name="id">Invoice Id</param>
     /// <returns>PDF file</returns>
-    [HttpGet("pdf/{id}")]
+    [HttpGet("pdf/download/{id}")]
     [ProducesResponseType(typeof(FileContentResult), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [Produces("application/pdf")]
@@ -86,10 +86,49 @@ public class InvoiceController : ApiControllerBase
             data => File(data.Stream, data.ContentType, data.FileName),
             errors => Problem(
                 string.Join(", ", errors.Select(e => e.Description)),
-                statusCode: StatusCodes.Status404NotFound)
-        );
+                    statusCode: StatusCodes.Status404NotFound) );
     }
 
+    /// <summary>Generate PDF for invoice to View</summary>
+    /// <param name="id">Invoice Id</param>
+    /// <returns>PDF file</returns>
+    [HttpGet("pdf/{id}")]
+    [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [EndpointName("CreateLink")]
+    public async Task<IActionResult> CreateLink(Guid id)
+    {
+        var result = await _sender.Send(new CreatePdfLinkCommand(id));
+
+        return MatchAndMapOkResult<string, string>(result, _mapper);
+    }
+
+    [AllowAnonymous]
+    [HttpGet("pdf/view/{id}")]
+    [Produces("application/pdf")]
+    public async Task<IActionResult> ViewPdf(
+        Guid id,
+        [FromQuery] long expiry,
+        [FromQuery] string signature,
+        [FromQuery] Guid firmId)
+    {
+        var result = await _sender.Send(new ViewPdfCommand(id, expiry, signature, firmId));
+
+        return result.Match<IActionResult>(
+            pdf =>
+            {
+                Response.Headers.ContentDisposition =
+                    $"inline; filename=\"{pdf.FileName}\"";
+
+                return File(
+                    pdf.Stream,
+                    "application/pdf",
+                    enableRangeProcessing: true
+                );
+            },
+            errors => Problem(errors)
+        );
+    }
 
     // POST /api/Invoice
     [HttpPost]

@@ -53,7 +53,7 @@ public class CourtCaseMappingRegister : IRegister
 {
     public void Register(TypeAdapterConfig config)
     {
-        config.NewConfig<CourtCase, CourtCasesResponse>()
+        config.NewConfig<CourtCase, CourtCaseResponse>()
             .IgnoreNullValues(false)
             .TwoWays();
     }

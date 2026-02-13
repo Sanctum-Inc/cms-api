@@ -5,6 +5,7 @@ using Application.CourtCase.Commands.Update;
 using Application.CourtCase.Queries.Get;
 using Application.CourtCase.Queries.GetById;
 using Application.CourtCase.Queries.GetCaseNumbers;
+using Application.CourtCase.Queries.GetCourseCaseInformation;
 using Contracts.CourtCases.Requests;
 using Contracts.CourtCases.Responses;
 using MapsterMapper;
@@ -29,13 +30,13 @@ public class CourtCaseController : ApiControllerBase
 
     // GET /api/CourtCase
     [HttpGet]
-    [ProducesResponseType(typeof(IEnumerable<CourtCasesResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(IEnumerable<CourtCaseResponse>), StatusCodes.Status200OK)]
     [EndpointName("GetAllCourtCases")]
     public async Task<IActionResult> GetAll()
     {
         var result = await _sender.Send(new GetQuery());
 
-        return MatchAndMapOkResult<IEnumerable<CourtCaseResult>, IEnumerable<CourtCasesResponse>>(result, _mapper);
+        return MatchAndMapOkResult<IEnumerable<CourtCaseResult>, IEnumerable<CourtCaseResponse>>(result, _mapper);
     }
 
 
@@ -53,16 +54,28 @@ public class CourtCaseController : ApiControllerBase
 
     // GET /api/CourtCase/{id}
     [HttpGet("{id}")]
-    [ProducesResponseType(typeof(CourtCasesResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(CourtCaseResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [EndpointName("GetCourtCasesById")]
     public async Task<IActionResult> GetById(Guid id)
     {
         var result = await _sender.Send(new GetByIdCommand(id));
 
-        var mapped = _mapper.Map<CourtCasesResponse>(result);
+        var mapped = _mapper.Map<CourtCaseResponse>(result);
 
-        return MatchAndMapOkResult<CourtCaseResult, CourtCasesResponse>(result, _mapper);
+        return MatchAndMapOkResult<CourtCaseResult, CourtCaseResponse>(result, _mapper);
+    }
+
+    // GET /api/court-case-information/{id}
+    [HttpGet("court-case-information/{id}")]
+    [ProducesResponseType(typeof(CourtCaseInformationResult), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [EndpointName("GetCourtCaseInformation")]
+    public async Task<IActionResult> GetCourtCaseInformation(Guid id)
+    {
+        var result = await _sender.Send(new GetCourtCaseInformationQuery(id));
+
+        return MatchAndMapOkResult<CourtCaseInformationResult, CourtCaseInformationResponse>(result, _mapper);
     }
 
     // POST /api/CourtCase

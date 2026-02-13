@@ -13,10 +13,14 @@ public class FirmRepository : BaseRepository<Firm>, IFirmRepository
     {
     }
 
-    public async Task<Firm?> GetLatest(CancellationToken cancellationToken)
+    public async Task<Firm?> GetUserFirm(CancellationToken cancellationToken)
     {
+        var userId = Guid.Parse(_sessionResolver.UserId);
         return await _dbSet
+            .Include(f => f.Users)
+            .Where(f => f.Users.Any(u => u.Id == userId))
             .OrderByDescending(f => f.Created)
             .FirstOrDefaultAsync(cancellationToken);
+
     }
 }

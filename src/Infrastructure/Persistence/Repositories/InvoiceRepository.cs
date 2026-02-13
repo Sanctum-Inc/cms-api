@@ -13,6 +13,13 @@ public class InvoiceRepository : BaseRepository<Invoice>, IInvoiceRepository
     {
     }
 
+    public override async Task<Invoice?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+    {
+        return await _dbSet
+            .Include(c => c.Items)
+            .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
+    }
+
     public override async Task<IEnumerable<Invoice>> GetAll(CancellationToken cancellationToken = default)
     {
         return await _dbSet

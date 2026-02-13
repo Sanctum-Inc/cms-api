@@ -18,8 +18,8 @@ public class CourtCaseControllerTests : IntegrationTestBase
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
         var content =
-            await response.Content.ReadFromJsonAsync(typeof(IEnumerable<CourtCasesResponse>)) as
-                IEnumerable<CourtCasesResponse>;
+            await response.Content.ReadFromJsonAsync(typeof(IEnumerable<CourtCaseResponse>)) as
+                IEnumerable<CourtCaseResponse>;
         content.Should().NotBeNull();
     }
 

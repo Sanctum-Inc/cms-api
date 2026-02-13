@@ -9,4 +9,5 @@ namespace Application.Common.Interfaces.Services;
 public interface ICourtCaseService : IBaseService<CourtCaseResult>
 {
     Task<ErrorOr<IEnumerable<CourtCaseNumberResult>?>> GetCaseNumbers(CancellationToken cancellationToken);
+    Task<ErrorOr<CourtCaseInformationResult>> GetCourtCaseInformationById(Guid id, CancellationToken cancellationToken);
 }
