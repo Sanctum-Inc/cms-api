@@ -2,18 +2,20 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using Application.Common.Interfaces.Services;
+using Infrastructure.Config;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
 namespace test;
 
 public class JwtService : IJwtService
 {
-    private readonly IConfiguration _config;
+    private readonly JwtOptions _jwtOptions;
 
-    public JwtService(IConfiguration config)
+    public JwtService(IOptions<JwtOptions> options)
     {
-        _config = config;
+        _jwtOptions = options.Value;
     }
 
     public string GenerateToken(
@@ -22,30 +24,48 @@ public class JwtService : IJwtService
         string id,
         string name,
         string surname,
-        string firmId)
+        string firmId,
+        int version,
+        bool isEmailVerification,
+        string? expiry = null)
     {
-        var jwtSettings = _config.GetSection("Jwt");
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["Key"]!));
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtOptions.Key!));
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
         var claims = new[]
         {
-            new Claim(ClaimTypes.GivenName, name),
-            new Claim(ClaimTypes.Surname, surname),
-            new Claim(ClaimTypes.Role, role),
-            new Claim(ClaimTypes.Email, email),
-            new Claim("custom:user_id", id),
-            new Claim("custom:firm_id", firmId)
+            new Claim(JwtRegisteredClaimNames.Sid, id),
+            new Claim(JwtRegisteredClaimNames.Name, name),
+            new Claim(JwtRegisteredClaimNames.FamilyName, surname),
+            new Claim(JwtRegisteredClaimNames.Email, email),
+            new Claim("version", version.ToString()),
+            new Claim("purpose", isEmailVerification ? "email_verification" : "access"),
+            new Claim("roles", role),
+            new Claim("firmId", firmId)
         };
 
         var token = new JwtSecurityToken(
-            jwtSettings["Issuer"],
-            jwtSettings["Audience"],
+            _jwtOptions.Issuer,
+            _jwtOptions.Audience,
             claims,
-            expires: DateTime.UtcNow.AddMinutes(Convert.ToDouble(jwtSettings["ExpireMinutes"])),
+            expires: DateTime.UtcNow.AddMinutes(Convert.ToDouble(expiry ?? _jwtOptions.ExpireMinutes)),
             signingCredentials: creds
         );
 
         return new JwtSecurityTokenHandler().WriteToken(token);
+    }
+
+    public async Task<TokenValidationResult> VerifyToken(string token)
+    {
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtOptions.Key!));
+        var result = await new JwtSecurityTokenHandler().ValidateTokenAsync(token, new()
+        {
+            IssuerSigningKey = key,
+            ValidIssuer = _jwtOptions.Issuer,
+            ValidAudience = _jwtOptions.Audience,
+            ClockSkew = TimeSpan.Zero,
+         });
+
+        return result;
     }
 }

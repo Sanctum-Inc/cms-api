@@ -25,6 +25,12 @@ public class User : AuditableEntity
 
     public required UserRole Role { get; set; } = UserRole.FirmUser;
 
+    public required bool IsEmailVerified { get; set; }
+
+    public DateTime? LastVerificationEmailSentAt { get; set; }
+    public int VerificationEmailSentCount { get; set; }
+    public int EmailVerificationTokenVersion { get; set; }
+
     // Relations
     public required Guid FirmId { get; set; }
     public Firm? Firm { get; set; }

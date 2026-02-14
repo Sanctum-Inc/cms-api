@@ -1,3 +1,5 @@
+using Microsoft.IdentityModel.Tokens;
+
 namespace Application.Common.Interfaces.Services;
 
 /// <summary>
@@ -13,6 +15,10 @@ public interface IJwtService
     /// <param name="id">The unique identifier of the user.</param>
     /// <param name="name">The first name of the user.</param>
     /// <param name="surname">The last name of the user.</param>
+    /// <param name="firmId">The firm of the user.</param>
+    /// <param name="version">The version of the token.</param>
+    /// <param name="isEmailVerification">Is this token for email verification.</param>
+    /// <param name="expiry">The expiry of the token.</param>
     /// <returns>
     ///     A signed JWT string that can be used for authenticated requests.
     /// </returns>
@@ -22,5 +28,10 @@ public interface IJwtService
         string id,
         string name,
         string surname,
-        string firmId);
+        string firmId,
+        int version,
+        bool isEmailVerification,
+        string? expiry = null);
+
+    Task<TokenValidationResult> VerifyToken(string token);
 }

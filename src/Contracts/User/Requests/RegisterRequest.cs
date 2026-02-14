@@ -6,4 +6,4 @@ public record RegisterRequest(
     string Surname,
     string MobileNumber,
     string Password,
-    string FirmId);
+    Guid FirmId);
