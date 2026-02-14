@@ -75,21 +75,42 @@ public class EmailService : BaseService<Email, EmailResult, AddCommand, UpdateCo
         return email;
     }
 
-    public async Task SendEmails(Email email, CancellationToken cancellationToken)
+    public async Task SendEmails(Email? email, CancellationToken cancellationToken)
     {
-        var message = new MimeMessage();
-        message.From.Add(new MailboxAddress(_emailOptions.EmailName, _emailOptions.EmailAddress));
-        message.To.Add(new MailboxAddress(email.ToAddresses, email.ToAddresses));
-        message.Bcc.Add(new MailboxAddress(email.BccAddresses, email.BccAddresses));
-        message.Subject = email.Subject;
-        message.Body = new TextPart("plain")
-        {
-            Text = email.Body
-        };
+        if (email is null)
+            return;
 
         using var client = new SmtpClient();
         try
         {
+            email.Status = EmailStatus.Sending;
+            await _emailRepository.SaveChangesAsync(cancellationToken);
+
+            var message = new MimeMessage();
+            message.From.Add(new MailboxAddress(_emailOptions.EmailName, _emailOptions.EmailAddress));
+            message.To.Add(new MailboxAddress(email.ToAddresses, email.ToAddresses));
+            if (email.BccAddresses is not null)
+            {
+                message.Bcc.Add(new MailboxAddress(email.BccAddresses, email.BccAddresses));
+            }
+            message.Subject = email.Subject;
+
+            if (email.IsHtml)
+            {
+                message.Body = new TextPart("html")
+                {
+                    Text = email.Body
+                };
+            }
+            else
+            {
+                message.Body = new TextPart("plain")
+                {
+                    Text = email.Body
+                };
+            }
+
+
             // Connect to your SMTP server (e.g., Gmail, Outlook, or a transactional service)
             await client.ConnectAsync(_emailOptions.Host, _emailOptions.Port, MailKit.Security.SecureSocketOptions.StartTls,
                 cancellationToken);
@@ -98,10 +119,30 @@ public class EmailService : BaseService<Email, EmailResult, AddCommand, UpdateCo
             await client.AuthenticateAsync(_emailOptions.Username, _emailOptions.Password, cancellationToken);
 
             await client.SendAsync(message, cancellationToken);
+
+            email.SentAt = DateTime.UtcNow;
+            email.Status = EmailStatus.Sent;
+            await _emailRepository.SaveChangesAsync(cancellationToken);
+            await client.DisconnectAsync(true, cancellationToken);
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error sending email: {ex.Message}");
+
+
+            if (email.RetryCount >= 3)
+            {
+                email.ErrorMessage  = $"{ex.Message} {DateTime.UtcNow}";
+                email.Status = EmailStatus.Failed;
+                await _emailRepository.SaveChangesAsync(cancellationToken);
+            }
+            else
+            {
+                email.RetryCount++;
+                email.Status = EmailStatus.Retrying;
+                await _emailRepository.SaveChangesAsync(cancellationToken);
+                await SendEmails(email, cancellationToken);
+            }
+
         }
         finally
         {
