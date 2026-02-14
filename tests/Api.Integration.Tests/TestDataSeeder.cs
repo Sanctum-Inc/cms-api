@@ -115,7 +115,8 @@ public static class TestDataSeeder
             PasswordHash = "BFqr1L1tvZ2mmThXw9i13LtCaHa/caTOr/uBMuQ6d/k=",
             PasswordSalt = "qxAHZlcWRdQdB4+Nb+RpTg==",
             FirmId = firmId, // ✅ FIXED
-            Role = UserRole.FirmUser
+            Role = UserRole.FirmUser,
+            IsEmailVerified = true,
         };
 
         db.Users.Add(user);

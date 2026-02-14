@@ -1,5 +1,7 @@
+using Application.Users.Commands.ConfirmEmailOtp;
 using Application.Users.Commands.Login;
 using Application.Users.Commands.Register;
+using Application.Users.Commands.ResendConfirmEmailOtp;
 using Application.Users.Queries;
 using Contracts.User.Requests;
 using Contracts.User.Responses;
@@ -64,5 +66,34 @@ public class UserController : ApiControllerBase
         var result = await _sender.Send(query);
 
         return MatchAndMapOkResult<UserResult, UserResponse>(result, _mapper);
+    }
+
+    [HttpGet("confirm-email")]
+    [EndpointName("ConfirmEmail")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
+    public async Task<IActionResult> ConfirmEmail([FromQuery] string token, [FromQuery] string email)
+    {
+        var query = new ConfirmEmailOtpCommand(token, email);
+
+        var result = await _sender.Send(query);
+
+        return Redirect(result.Value);
+    }
+
+    [HttpGet("confirm-email/resend/{email}")]
+    [EndpointName("ResendConfirmEmail")]
+    [ProducesResponseType(typeof(bool), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> ResendConfirmEmail([FromRoute] string email)
+    {
+        var query = new ResendConfirmEmailOtpCommand(email);
+
+        var result = await _sender.Send(query);
+
+        return MatchAndMapOkResult<bool, bool>(result, _mapper);
     }
 }

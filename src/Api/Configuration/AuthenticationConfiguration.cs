@@ -11,7 +11,7 @@ public static class AuthenticationConfiguration
     {
         if (!environment.IsEnvironment("Test"))
         {
-            var jwtSettings = configuration.GetSection("Jwt");
+            var jwtSettings = configuration.GetSection("JwtOptions");
             var key = Encoding.UTF8.GetBytes(jwtSettings["Key"] ??
                                              throw new InvalidOperationException("JWT Key is not configured"));
 
@@ -40,24 +40,15 @@ public static class AuthenticationConfiguration
                     // Add event handlers for debugging
                     options.Events = new JwtBearerEvents
                     {
-                        OnAuthenticationFailed = context =>
-                        {
-                            Console.WriteLine($"Authentication failed: {context.Exception.Message}");
-                            return Task.CompletedTask;
-                        },
                         OnTokenValidated = context =>
                         {
-                            var claims = context.Principal?.Claims.Select(c => $"{c.Type}: {c.Value}");
-                            Console.WriteLine("Token validated successfully");
-                            Console.WriteLine($"Claims: {string.Join(", ", claims ?? [])}");
-                            Console.WriteLine($"User Identity Name: {context.Principal?.Identity?.Name}");
-                            Console.WriteLine($"Is Authenticated: {context.Principal?.Identity?.IsAuthenticated}");
-                            return Task.CompletedTask;
-                        },
-                        OnMessageReceived = context =>
-                        {
-                            Console.WriteLine(
-                                $"Token received: {context.Token?[..Math.Min(20, context.Token?.Length ?? 0)]}...");
+                            var purpose = context.Principal?.FindFirst("purpose")?.Value;
+
+                            if (purpose != "access")
+                            {
+                                context.Fail("Invalid token purpose.");
+                            }
+
                             return Task.CompletedTask;
                         }
                     };

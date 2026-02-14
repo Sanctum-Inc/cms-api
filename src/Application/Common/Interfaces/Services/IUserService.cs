@@ -43,4 +43,8 @@ public interface IUserService
     ///     or an error if the operation failed (e.g., duplicate username or invalid data).
     /// </returns>
     Task<ErrorOr<bool>> Register(RegisterCommand request, CancellationToken cancellationToken);
+
+    Task<ErrorOr<string>> ConfirmEmailOtp(string token, string email, CancellationToken cancellationToken);
+    Task<ErrorOr<bool>> ResendConfirmEmailOtp(string email, CancellationToken cancellationToken);
+
 }

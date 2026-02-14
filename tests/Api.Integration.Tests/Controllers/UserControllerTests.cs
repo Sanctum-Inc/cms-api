@@ -40,7 +40,7 @@ public class UserControllerTests : IntegrationTestBase
             "Motlatle",
             "+27821234567",
             "P@ssword123",
-            Guid.NewGuid().ToString());
+            new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"));
 
         // Act
         var response = await _client.PostAsJsonAsync("/api/user/register", request);

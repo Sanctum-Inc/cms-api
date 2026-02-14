@@ -9,4 +9,4 @@ public record RegisterCommand(
     string Surname,
     string MobileNumber,
     string Password,
-    string FirmId) : IRequest<ErrorOr<bool>>;
+    Guid FirmId) : IRequest<ErrorOr<bool>>;

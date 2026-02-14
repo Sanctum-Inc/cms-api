@@ -6,8 +6,11 @@ using Api.Configuration;
 using Application;
 using FluentValidation;
 using Infrastructure;
+using Infrastructure.Config;
 using QuestPDF;
 using QuestPDF.Infrastructure;
+using Worker;
+using Worker.EmailWorker;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,14 +19,7 @@ builder.Services
     .AddApplication(builder.Configuration);
 
 var env = builder.Environment.EnvironmentName;
-var connString = builder.Configuration.GetConnectionString("DefaultConnection");
-
-Console.WriteLine($"Current Environment: {env}");
-Console.WriteLine($"Connection String Found: {!string.IsNullOrEmpty(connString)}");
-
-if (string.IsNullOrEmpty(connString)) {
-    throw new Exception($"Connection string is missing! Check appsettings.{env}.json");
-}
+var connString = builder.Configuration.GetSection("EmailOptions");
 
 builder.Services.AddPersistence(builder.Configuration, builder.Environment);
 builder.Services.AddMediatR(builder.Configuration);
@@ -43,6 +39,8 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddJwtAuthentication(builder.Configuration, builder.Environment);
 
 builder.Services.AddCustomCors();
+
+builder.Services.AddHostedService<EmailHandler>();
 
 var app = builder.Build();
 

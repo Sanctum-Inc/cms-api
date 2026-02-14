@@ -41,6 +41,16 @@ public class UserConfiguration : BaseConfiguration<User>
             .IsRequired()
             .HasConversion<int>();
 
+        builder.Property(u => u.VerificationEmailSentCount)
+            .HasDefaultValue(0);
+
+        builder.Property(u => u.EmailVerificationTokenVersion)
+            .HasDefaultValue(1);
+
+        builder.Property(u => u.IsEmailVerified)
+            .IsRequired()
+            .HasDefaultValue(false);
+
         // Relationship with Firm - RESTRICT
         builder
             .HasOne(u => u.Firm)

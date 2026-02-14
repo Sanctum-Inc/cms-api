@@ -23,15 +23,21 @@ public static class DependecyInjection
 
         AddPersistence(services);
 
-        AddDocumentStorage(services, configuration);
+        AddOptions(services, configuration);
 
         return services;
     }
 
-    private static void AddDocumentStorage(IServiceCollection services, IConfiguration configuration)
+    private static void AddOptions(IServiceCollection services, IConfiguration configuration)
     {
         services.Configure<DocumentStorageOptions>(
             configuration.GetSection(DocumentStorageOptions.SectionName));
+        services.Configure<EmailOptions>(
+            configuration.GetSection(EmailOptions.SectionName));
+        services.Configure<EnvironmentOptions>(
+            configuration.GetSection(EnvironmentOptions.SectionName));
+        services.Configure<JwtOptions>(
+            configuration.GetSection(JwtOptions.SectionName));
     }
 
     private static void AddPersistence(IServiceCollection services)

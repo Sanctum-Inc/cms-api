@@ -61,7 +61,16 @@ public class BaseRepository<T> : IBaseRepository<T> where T : class
         if (entity is AuditableEntity auditable)
         {
             auditable.LastModified = DateTime.UtcNow;
-            auditable.LastModifiedBy = new Guid(_sessionResolver.UserId!);
+            if (!string.IsNullOrEmpty(_sessionResolver.UserId))
+            {
+                var userId = new Guid(_sessionResolver.UserId);
+                auditable.LastModifiedBy = userId;
+            }
+            else
+            {
+                // Optionally set system or anonymous ID
+                auditable.LastModifiedBy = Guid.Empty;
+            }
         }
 
         _dbSet.Update(entity);
