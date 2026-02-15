@@ -36,7 +36,7 @@ public class LawyerController : ApiControllerBase
     /// </summary>
     /// <returns>Status message.</returns>
     [HttpGet]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(IEnumerable<LawyerResponse>),StatusCodes.Status200OK)]
     [EndpointName("GetAllLawyers")]
     public async Task<IActionResult> GetAll()
     {
@@ -53,7 +53,7 @@ public class LawyerController : ApiControllerBase
     /// <param name="id">The ID of the lawyer.</param>
     /// <returns>The lawyer with the specified ID.</returns>
     [HttpGet("{id}")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(LawyerResponse),StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [EndpointName("GetLawyersById")]
     public async Task<IActionResult> GetById([FromRoute] [Required] string id)

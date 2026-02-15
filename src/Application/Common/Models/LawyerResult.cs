@@ -1,3 +1,5 @@
+using Domain.Lawyers;
+
 namespace Application.Common.Models;
 
 public class LawyerResult
@@ -7,4 +9,6 @@ public class LawyerResult
     public required string Name { get; set; }
     public required string Surname { get; set; }
     public required string MobileNumber { get; set; }
+    public required Speciality Speciality { get; set; }
+    public required int TotalCases { get; set; }
 }

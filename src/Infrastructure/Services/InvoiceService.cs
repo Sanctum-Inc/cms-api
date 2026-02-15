@@ -16,15 +16,18 @@ public class InvoiceService : BaseService<Invoice, InvoiceResult, AddCommand, Up
 {
     private readonly IFirmRepository _firmRepository;
     private readonly IInvoiceRepository _invoiceRepository;
+    private readonly IPdfService _pdfService;
 
     public InvoiceService(
         IInvoiceRepository invoiceRepository,
         IMapper mapper,
         IFirmRepository firmRepository,
-        ISessionResolver sessionResolver) : base(invoiceRepository, mapper, sessionResolver)
+        ISessionResolver sessionResolver,
+        IPdfService pdfService) : base(invoiceRepository, mapper, sessionResolver)
     {
         _invoiceRepository = invoiceRepository;
         _firmRepository = firmRepository;
+        _pdfService  = pdfService;
     }
 
     public async Task<ErrorOr<DownloadDocumentResult>> GenerateInvoicePdf(Guid id, CancellationToken cancellationToken)
@@ -36,15 +39,14 @@ public class InvoiceService : BaseService<Invoice, InvoiceResult, AddCommand, Up
             return Error.NotFound("Invoice.NotFound", "Invoice with given Id was not found.");
         }
 
-        var firm = await _firmRepository.GetLatest(cancellationToken);
+        var firm = await _firmRepository.GetUserFirm(cancellationToken);
 
         if (firm == null)
         {
             return Error.NotFound("Firm.NotFound", "Firm details not found.");
         }
 
-        var document = new PdfService(invoice, firm);
-        var pdfBytes = document.GeneratePdf();
+        var pdfBytes = _pdfService.GeneratePdf();
 
         // COnvert bytes to stream
         var stream = new MemoryStream(pdfBytes);
@@ -103,6 +105,16 @@ public class InvoiceService : BaseService<Invoice, InvoiceResult, AddCommand, Up
         return result.Value
             .Select(x => new InvoiceNumbersResult(x.Id.ToString(), x.InvoiceNumber))
             .ToErrorOr();
+    }
+
+    public Task<ErrorOr<DownloadDocumentResult>> ViewPdf(Guid invoiceId, long expiry, string signature, Guid firmId, CancellationToken cancellationToken)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<ErrorOr<string>> CreatePdfLink(Guid invoiceId, CancellationToken cancellationToken)
+    {
+        throw new NotImplementedException();
     }
 
     public async Task<string> GetNewInvoiceNumber(CancellationToken cancellationToken)

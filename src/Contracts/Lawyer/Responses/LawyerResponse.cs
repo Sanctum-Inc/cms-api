@@ -1,3 +1,5 @@
+using Domain.Lawyers;
+
 namespace Contracts.Lawyer.Responses;
 
 public record LawyerResponse(
@@ -5,4 +7,6 @@ public record LawyerResponse(
     string Name,
     string Surname,
     string MobileNumber,
-    string Email);
+    string Email,
+    Speciality Speciality,
+    int TotalCases);

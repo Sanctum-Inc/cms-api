@@ -50,24 +50,22 @@ public class CourtCaseControllerTests
             }
         };
 
-        var expectedResponse = expectedCases.Select(c => new CourtCasesResponse
-        {
-            CaseNumber = c.CaseNumber,
-            Location = c.Location,
-            Plaintiff = c.Plaintiff,
-            Defendant = c.Defendant,
-            Status = c.Status,
-            Type = c.Type,
-            Outcome = c.Outcome,
-            Id = c.Id
-        });
+        var expectedResponse = expectedCases.Select(c => new CourtCaseResponse
+        (
+            CaseNumber: c.CaseNumber,
+            Location: c.Location,
+            Plaintiff: c.Plaintiff,
+            Status: c.Status,
+            Type: c.Type,
+            Id: c.Id,
+            NextDate: ""));
 
         _mockSender
             .Setup(s => s.Send(It.IsAny<GetQuery>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(expectedCases);
 
         _mockMapper
-            .Setup(m => m.Map<IEnumerable<CourtCasesResponse>>(It.IsAny<IEnumerable<CourtCaseResult>>()))
+            .Setup(m => m.Map<IEnumerable<CourtCaseResponse>>(It.IsAny<IEnumerable<CourtCaseResult>>()))
             .Returns((IEnumerable<CourtCaseResult> source) => expectedResponse);
 
         // Act
@@ -78,7 +76,7 @@ public class CourtCaseControllerTests
         ok.Value.Should().BeEquivalentTo(expectedResponse);
 
         _mockSender.Verify(s => s.Send(It.IsAny<GetQuery>(), It.IsAny<CancellationToken>()), Times.Once);
-        _mockMapper.Verify(m => m.Map<IEnumerable<CourtCasesResponse>>(It.IsAny<IEnumerable<CourtCaseResult>>()),
+        _mockMapper.Verify(m => m.Map<IEnumerable<CourtCaseResponse>>(It.IsAny<IEnumerable<CourtCaseResult>>()),
             Times.Once);
     }
 

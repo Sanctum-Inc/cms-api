@@ -12,11 +12,14 @@ namespace Infrastructure.Services;
 
 public class LawyerService : BaseService<Lawyer, LawyerResult, AddCommand, UpdateCommand>, ILawyerService
 {
+    private readonly ILawyerRepository _lawyerRepository;
+
     public LawyerService(
-        ILawyerRepository lawyerRepository,
+        ILawyerRepository lawyerLawyerRepository,
         ISessionResolver sessionResolver,
-        IMapper mapper) : base(lawyerRepository, mapper, sessionResolver)
+        IMapper mapper) : base(lawyerLawyerRepository, mapper, sessionResolver)
     {
+        _lawyerRepository = lawyerLawyerRepository;
     }
 
     protected override ErrorOr<Lawyer> MapFromAddCommand(AddCommand command, string? userId = null)
@@ -50,5 +53,23 @@ public class LawyerService : BaseService<Lawyer, LawyerResult, AddCommand, Updat
     protected override Guid GetIdFromUpdateCommand(UpdateCommand command)
     {
         return command.Id;
+    }
+
+    public async override Task<ErrorOr<IEnumerable<LawyerResult>>> Get(CancellationToken cancellationToken)
+    {
+        var result = await _lawyerRepository.GetAll(cancellationToken);
+
+        return result
+            .Select(x => new LawyerResult()
+            {
+                Email = x.Email,
+                MobileNumber = x.MobileNumber,
+                Name = x.Name,
+                Speciality = x.Specialty,
+                Surname = x.Surname,
+                Id = x.Id,
+                TotalCases = x.CourtCases.Count
+            })
+            .ToList();
     }
 }
