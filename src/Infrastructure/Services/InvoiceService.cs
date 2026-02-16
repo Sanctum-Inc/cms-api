@@ -1,3 +1,5 @@
+using System.Security.Cryptography;
+using System.Text;
 using Application.Common.Interfaces.Repositories;
 using Application.Common.Interfaces.Services;
 using Application.Common.Interfaces.Session;
@@ -17,6 +19,7 @@ public class InvoiceService : BaseService<Invoice, InvoiceResult, AddCommand, Up
     private readonly IFirmRepository _firmRepository;
     private readonly IInvoiceRepository _invoiceRepository;
     private readonly IPdfService _pdfService;
+    private readonly ISessionResolver _sessionResolver;
 
     public InvoiceService(
         IInvoiceRepository invoiceRepository,
@@ -28,6 +31,7 @@ public class InvoiceService : BaseService<Invoice, InvoiceResult, AddCommand, Up
         _invoiceRepository = invoiceRepository;
         _firmRepository = firmRepository;
         _pdfService  = pdfService;
+        _sessionResolver = sessionResolver;
     }
 
     public async Task<ErrorOr<DownloadDocumentResult>> GenerateInvoicePdf(Guid id, CancellationToken cancellationToken)
@@ -46,6 +50,8 @@ public class InvoiceService : BaseService<Invoice, InvoiceResult, AddCommand, Up
             return Error.NotFound("Firm.NotFound", "Firm details not found.");
         }
 
+        _pdfService.Firm = firm;
+        _pdfService.Invoice = invoice;
         var pdfBytes = _pdfService.GeneratePdf();
 
         // COnvert bytes to stream
@@ -107,14 +113,61 @@ public class InvoiceService : BaseService<Invoice, InvoiceResult, AddCommand, Up
             .ToErrorOr();
     }
 
-    public Task<ErrorOr<DownloadDocumentResult>> ViewPdf(Guid invoiceId, long expiry, string signature, Guid firmId, CancellationToken cancellationToken)
+    public async Task<ErrorOr<DownloadDocumentResult>> ViewPdf(Guid invoiceId, long expiry, string signature, Guid firmId, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        var now = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+        if (now > expiry)
+            return Error.Validation("PdfLink.Expired", "Expired Invoice.");
+
+        if (!_pdfService.IsValidSignature(invoiceId, expiry, signature))
+        {
+            return Error.Forbidden("PdfLink.LinkNotValid", "Link is not valid.");
+        }
+
+        var invoice = await _invoiceRepository.GetByIdAsync(invoiceId, cancellationToken);
+
+        if (invoice == null)
+        {
+            return Error.NotFound("Invoice.NotFound", "Invoice with given Id was not found.");
+        }
+
+        var firm = await _firmRepository.GetByIdAsync(firmId, cancellationToken);
+
+        if (firm == null)
+        {
+            return Error.NotFound("Firm.NotFound", "Firm details not found.");
+        }
+
+        _pdfService.Firm = firm;
+        _pdfService.Invoice = invoice;
+        var pdfBytes = _pdfService.GeneratePdf();
+
+        // COnvert bytes to stream
+        var stream = new MemoryStream(pdfBytes);
+        stream.Position = 0; // reset to beginning
+
+        return new DownloadDocumentResult(
+            FileName: $"Invoice_{invoice.InvoiceNumber}.pdf",
+            ContentType: "application/pdf",
+            Stream: stream
+        );
     }
 
-    public Task<ErrorOr<string>> CreatePdfLink(Guid invoiceId, CancellationToken cancellationToken)
+    public async Task<ErrorOr<string>> CreatePdfLink(Guid invoiceId, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        var invoice = await _invoiceRepository
+            .GetByIdAsync(invoiceId, cancellationToken);
+
+        if (invoice is null)
+            return Error.NotFound("Invoice.NotFound");
+
+        var url = _pdfService.GenerateSignedPdfUrl(
+            invoice.Id,
+            "http",
+            "localhost:5158",
+            new Guid(_sessionResolver.FirmId!));
+
+        return url;
     }
 
     public async Task<string> GetNewInvoiceNumber(CancellationToken cancellationToken)

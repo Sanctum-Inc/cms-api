@@ -1,3 +1,5 @@
+using System.Threading;
+using System.Threading.Tasks;
 using Application.Common.Interfaces.Persistence;
 using Application.Common.Interfaces.Repositories;
 using Application.Common.Interfaces.Session;
@@ -16,6 +18,7 @@ public class EmailRepository : BaseRepository<Email>, IEmailRepository
     public async Task<Email?> GetUnsentEmails(CancellationToken cancellationToken)
     {
         return await _dbSet
+            .Include(x => x.User)
             .FirstOrDefaultAsync(x => x.Status == EmailStatus.Pending, cancellationToken);
     }
 }

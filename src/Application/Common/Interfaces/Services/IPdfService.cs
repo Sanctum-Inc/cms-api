@@ -9,7 +9,7 @@ public interface IPdfService : IDocument
 
     bool IsValidSignature(Guid id, long exp, string sig);
 
-    string GenerateSignedPdfUrl(Guid id, string scheme, string host);
+    string GenerateSignedPdfUrl(Guid id, string scheme, string host, Guid firmId);
 
     string Sign(string data);
 }

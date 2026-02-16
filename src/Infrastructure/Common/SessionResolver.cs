@@ -34,7 +34,7 @@ public class SessionResolver : ISessionResolver
     }
 
     public string? UserId => GetClaim(JwtRegisteredClaimNames.Sid) ?? GetClaim("sid");
-    public string? FirmId => GetClaim("custom:firm_id");
+    public string? FirmId => GetClaim("firmId");
 
     public string? UserEmail => GetClaim(JwtRegisteredClaimNames.Email) ?? GetClaim("email");
 

@@ -35,8 +35,8 @@ public class PdfService : IPdfService
                 column.Spacing(3);
 
                 column.Item().Text(Firm.Name).Bold().FontSize(16);
-                column.Item().Text($"Date of admission as an Attorney: {Firm.AttorneyAdmissionDate}").FontSize(10);
-                column.Item().Text($"Date of admission as an Advocate: {Firm.AdvocateAdmissionDate}").FontSize(10);
+                column.Item().Text($"Date of admission as an Attorney: {Firm.AttorneyAdmissionDate:yyyy MMMM dd}").FontSize(10);
+                column.Item().Text($"Date of admission as an Advocate: {Firm.AdvocateAdmissionDate:yyyy MMMM dd}").FontSize(10);
 
                 column.Item().PaddingTop(5).Text(Firm.Address).FontSize(10);
                 column.Item().Text($"TEL: {Firm.Telephone}").FontSize(10);
@@ -120,11 +120,11 @@ public class PdfService : IPdfService
     }
 
     /// <summary>Generate a signed PDF URL</summary>
-    public string GenerateSignedPdfUrl(Guid id, string scheme, string host)
+    public string GenerateSignedPdfUrl(Guid id, string scheme, string host, Guid firmId)
     {
-        var expires = DateTimeOffset.UtcNow.AddMinutes(1).ToUnixTimeSeconds();
+        var expires = DateTimeOffset.UtcNow.AddMinutes(30).ToUnixTimeSeconds();
         var sig = Sign($"{id}:{expires}");
-        return $"{scheme}://{host}/api/invoice/pdf/view/{id}?exp={expires}&sig={sig}";
+        return $"{scheme}://{host}/api/invoice/pdf/view/{id}?exp={expires}&sig={sig}&firmId={firmId}";
     }
 
     /// <summary>Check if the provided signature is valid</summary>

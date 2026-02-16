@@ -1,3 +1,6 @@
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 using Application.Common.Interfaces.Repositories;
 using Application.Common.Interfaces.Services;
 using Application.Common.Interfaces.Session;
@@ -80,6 +83,13 @@ public class EmailService : BaseService<Email, EmailResult, AddCommand, UpdateCo
         if (email is null)
             return;
 
+        if (email.User is null)
+        {
+            email.ErrorMessage  = $"No user linked to this email.";
+            email.Status = EmailStatus.Failed;
+            await _emailRepository.SaveChangesAsync(cancellationToken);
+        }
+
         using var client = new SmtpClient();
         try
         {
@@ -87,8 +97,9 @@ public class EmailService : BaseService<Email, EmailResult, AddCommand, UpdateCo
             await _emailRepository.SaveChangesAsync(cancellationToken);
 
             var message = new MimeMessage();
-            message.From.Add(new MailboxAddress(_emailOptions.EmailName, _emailOptions.EmailAddress));
+            message.From.Add(new MailboxAddress($"{email.User.Name} {email.User.Surname} via LexCase", _emailOptions.EmailAddress));
             message.To.Add(new MailboxAddress(email.ToAddresses, email.ToAddresses));
+            message.ReplyTo.Add(new MailboxAddress($"{email.User.Name} {email.User.Surname}", email.User.Email));
             if (email.BccAddresses is not null)
             {
                 message.Bcc.Add(new MailboxAddress(email.BccAddresses, email.BccAddresses));

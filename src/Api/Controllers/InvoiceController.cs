@@ -108,11 +108,11 @@ public class InvoiceController : ApiControllerBase
     [Produces("application/pdf")]
     public async Task<IActionResult> ViewPdf(
         Guid id,
-        [FromQuery] long expiry,
-        [FromQuery] string signature,
+        [FromQuery] long exp,
+        [FromQuery] string sig,
         [FromQuery] Guid firmId)
     {
-        var result = await _sender.Send(new ViewPdfCommand(id, expiry, signature, firmId));
+        var result = await _sender.Send(new ViewPdfCommand(id, exp, sig, firmId));
 
         return result.Match<IActionResult>(
             pdf =>
