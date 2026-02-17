@@ -1,4 +1,5 @@
 using Application.Common.Models;
+using ErrorOr;
 
 namespace Application.Common.Interfaces.Services;
 
@@ -7,4 +8,5 @@ namespace Application.Common.Interfaces.Services;
 /// </summary>
 public interface ILawyerService : IBaseService<LawyerResult>
 {
+    Task<ErrorOr<LawyerReportResult>> GetLawyerReport(Guid requestLawyerId, CancellationToken cancellationToken);
 }

@@ -506,6 +506,11 @@ namespace Infrastructure.Persistence.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
+                    b.Property<decimal>("AmountPaid")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("decimal(18,2)")
+                        .HasDefaultValue(0m);
+
                     b.Property<string>("Bank")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -553,6 +558,9 @@ namespace Infrastructure.Persistence.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid?>("LawyerId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("Reference")
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
@@ -569,6 +577,8 @@ namespace Infrastructure.Persistence.Migrations
 
                     b.HasIndex("InvoiceNumber")
                         .IsUnique();
+
+                    b.HasIndex("LawyerId");
 
                     b.HasIndex("UserId");
 
@@ -851,6 +861,11 @@ namespace Infrastructure.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Domain.Lawyers.Lawyer", "Lawyer")
+                        .WithMany("Invoices")
+                        .HasForeignKey("LawyerId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
                     b.HasOne("Domain.Users.User", "User")
                         .WithMany("Invoices")
                         .HasForeignKey("UserId")
@@ -858,6 +873,8 @@ namespace Infrastructure.Persistence.Migrations
                         .IsRequired();
 
                     b.Navigation("Case");
+
+                    b.Navigation("Lawyer");
 
                     b.Navigation("User");
                 });
@@ -907,6 +924,11 @@ namespace Infrastructure.Persistence.Migrations
             modelBuilder.Entity("Domain.Invoices.Invoice", b =>
                 {
                     b.Navigation("Items");
+                });
+
+            modelBuilder.Entity("Domain.Lawyers.Lawyer", b =>
+                {
+                    b.Navigation("Invoices");
                 });
 
             modelBuilder.Entity("Domain.Users.User", b =>

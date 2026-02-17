@@ -5,6 +5,7 @@ using Application.Lawyer.Commands.Delete;
 using Application.Lawyer.Commands.Update;
 using Application.Lawyer.Queries.Get;
 using Application.Lawyer.Queries.GetById;
+using Application.Lawyer.Queries.GetReportInformation;
 using Contracts.Lawyer.Requests;
 using Contracts.Lawyer.Responses;
 using MapsterMapper;
@@ -63,6 +64,24 @@ public class LawyerController : ApiControllerBase
         var result = await _sender.Send(command);
 
         return MatchAndMapOkResult<LawyerResult, LawyerResponse>(result, _mapper);
+    }
+
+    /// <summary>
+    ///     Gets a lawyer report by its ID.
+    /// </summary>
+    /// <param name="id">The ID of the lawyer.</param>
+    /// <returns>The lawyer with the specified ID.</returns>
+    [HttpGet("report/{id}")]
+    [ProducesResponseType(typeof(LawyerReportResponse),StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [EndpointName("GetLawyerReportInformation")]
+    public async Task<IActionResult> GetReportInformation([FromRoute] [Required] string id)
+    {
+        var command = new GetReportInformationQuery(new Guid(id));
+
+        var result = await _sender.Send(command);
+
+        return MatchAndMapOkResult<LawyerReportResult, LawyerReportResponse>(result, _mapper);
     }
 
     /// <summary>

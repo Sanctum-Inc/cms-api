@@ -1,5 +1,3 @@
-using System.Security.Cryptography;
-using System.Text;
 using Application.Common.Interfaces.Repositories;
 using Application.Common.Interfaces.Services;
 using Application.Common.Interfaces.Session;
@@ -219,7 +217,8 @@ public class InvoiceService : BaseService<Invoice, InvoiceResult, AddCommand, Up
             Bank = command.Bank,
             BranchCode = command.BranchCode,
             IsDeleted = false,
-            CaseId = command.CaseId
+            CaseId = command.CaseId,
+            AmountPaid = 0,
         };
     }
 
@@ -233,5 +232,6 @@ public class InvoiceService : BaseService<Invoice, InvoiceResult, AddCommand, Up
         entity.AccountNumber = command.AccountNumber;
         entity.Bank = command.Bank;
         entity.BranchCode = command.BranchCode;
+        entity.AmountPaid = command.AmountPaid;
     }
 }

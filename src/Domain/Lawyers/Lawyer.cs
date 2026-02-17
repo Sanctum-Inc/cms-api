@@ -2,6 +2,7 @@ using System.ComponentModel.DataAnnotations;
 using Domain.Common;
 using Domain.CourtCaseDates;
 using Domain.CourtCases;
+using Domain.Invoices;
 using Domain.Users;
 
 namespace Domain.Lawyers;
@@ -28,4 +29,6 @@ public class Lawyer : AuditableEntity
     // Relations - Many-to-Many with CourtCases and CourtCaseDates
     public List<CourtCase> CourtCases { get; set; } = [];
     public List<CourtCaseDate> CourtCaseDates { get; set; } = [];
+
+    public List<Invoice> Invoices { get; set; } = [];
 }

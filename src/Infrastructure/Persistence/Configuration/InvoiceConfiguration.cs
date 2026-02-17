@@ -49,6 +49,10 @@ public class InvoiceConfiguration : BaseConfiguration<Invoice>
             .IsRequired()
             .HasConversion<int>();
 
+        builder.Property(i => i.AmountPaid)
+            .HasDefaultValue(0)
+            .IsRequired();
+
         // Relationship with CourtCase - CASCADE (primary relationship)
         builder
             .HasOne(i => i.Case)
@@ -61,6 +65,12 @@ public class InvoiceConfiguration : BaseConfiguration<Invoice>
             .HasOne(i => i.User)
             .WithMany(u => u.Invoices)
             .HasForeignKey(i => i.UserId)
+            .OnDelete(DeleteBehavior.NoAction);
+
+        builder
+            .HasOne(i => i.Lawyer)
+            .WithMany(u => u.Invoices)
+            .HasForeignKey(i => i.LawyerId)
             .OnDelete(DeleteBehavior.NoAction);
     }
 }

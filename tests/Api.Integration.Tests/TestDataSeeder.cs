@@ -164,7 +164,8 @@ public static class TestDataSeeder
             BranchCode = "12345",
             AccountNumber = "987654321",
             CreatedBy = userId,
-            Created = DateTime.UtcNow
+            Created = DateTime.UtcNow,
+            AmountPaid = 0
         };
         db.Invoices.Add(invoice);
 

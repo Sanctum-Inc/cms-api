@@ -69,7 +69,7 @@ public class UserService : IUserService
         CancellationToken cancellationToken)
     {
         // 1. Find user by email
-        var user = await _userRepository.GetByEmail(username, cancellationToken);
+        var user = await _userRepository.GetByEmailAsync(username, cancellationToken);
         if (user == null)
         {
             return Error.Unauthorized("Authentication.Unauthorized", "Username or password is incorrect");
@@ -114,7 +114,7 @@ public class UserService : IUserService
     public async Task<ErrorOr<bool>> Register(RegisterCommand request, CancellationToken cancellationToken)
     {
         // 1. Check if user already exists
-        var existingUser = await _userRepository.GetByEmail(request.Email, cancellationToken);
+        var existingUser = await _userRepository.GetByEmailAsync(request.Email, cancellationToken);
         if (existingUser != null)
         {
             return Error.Validation("Email", "A user with this email already exists.");
@@ -159,7 +159,7 @@ public class UserService : IUserService
 
     public async Task<ErrorOr<bool>> ResendConfirmEmailOtp(string email, CancellationToken cancellationToken)
     {
-        var user = await _userRepository.GetByEmail(email, cancellationToken);
+        var user = await _userRepository.GetByEmailAsync(email, cancellationToken);
 
         if (user == null)
             return Error.NotFound();
@@ -231,7 +231,7 @@ public class UserService : IUserService
             return _environmentOptions.FrontendUrl + "email-verified?status=error&email="  + email;
         }
 
-        var user = await _userRepository.GetByEmail(tokenEmail, cancellationToken);
+        var user = await _userRepository.GetByEmailAsync(tokenEmail, cancellationToken);
         if (user == null)
         {
             return _environmentOptions.FrontendUrl + "email-verified?status=error&email="  + email;

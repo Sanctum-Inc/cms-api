@@ -1,6 +1,7 @@
 using Domain.Common;
 using Domain.CourtCases;
 using Domain.InvoiceItems;
+using Domain.Lawyers;
 using Domain.Users;
 
 namespace Domain.Invoices;
@@ -27,4 +28,9 @@ public class Invoice : AuditableEntity
     public CourtCase? Case { get; set; }
 
     public InvoiceStatus Status { get; set; }
+
+    public Guid? LawyerId { get; set; }
+    public Lawyer? Lawyer { get; set; }
+
+    public required decimal AmountPaid { get; set; }
 }

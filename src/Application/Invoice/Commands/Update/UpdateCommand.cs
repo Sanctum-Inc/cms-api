@@ -14,5 +14,6 @@ public record UpdateCommand(
     string Bank,
     string BranchCode,
     string AccountNumber,
-    InvoiceStatus Status
+    InvoiceStatus Status,
+    decimal AmountPaid
 ) : IRequest<ErrorOr<bool>>;
