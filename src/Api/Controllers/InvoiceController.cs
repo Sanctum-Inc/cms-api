@@ -1,3 +1,4 @@
+using System.Reflection.Metadata;
 using Application.Common.Models;
 using Application.Invoice.Commands.Add;
 using Application.Invoice.Commands.CreatePdfLink;
@@ -70,11 +71,8 @@ public class InvoiceController : ApiControllerBase
         return MatchAndMapOkResult<InvoiceResult, InvoiceResponse>(result, _mapper);
     }
 
-    /// <summary>Generate PDF for invoice to Download</summary>
-    /// <param name="id">Invoice Id</param>
-    /// <returns>PDF file</returns>
     [HttpGet("pdf/download/{id}")]
-    [ProducesResponseType(typeof(FileContentResult), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(FileResult), StatusCodes.Status200OK)] // Tells generator it's a file
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [Produces("application/pdf")]
     [EndpointName("GeneratePDF")]
@@ -83,16 +81,18 @@ public class InvoiceController : ApiControllerBase
         var result = await _sender.Send(new GeneratePdfCommand(id));
 
         return result.Match<IActionResult>(
-            data => File(data.Stream, data.ContentType, data.FileName),
+            data => File(data.Stream, "application/pdf", data.FileName), // Filename is passed here
             errors => Problem(
                 string.Join(", ", errors.Select(e => e.Description)),
-                    statusCode: StatusCodes.Status404NotFound) );
+                statusCode: StatusCodes.Status404NotFound)
+        );
     }
 
     /// <summary>Generate PDF for invoice to View</summary>
     /// <param name="id">Invoice Id</param>
     /// <returns>PDF file</returns>
     [HttpGet("pdf/{id}")]
+    [Produces("application/pdf")]
     [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [EndpointName("CreateLink")]
