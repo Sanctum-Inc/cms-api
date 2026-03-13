@@ -97,18 +97,6 @@ public class DocumentController : ApiControllerBase
         return MatchAndMapOkResult<IEnumerable<DocumentResult>, IEnumerable<DocumentResponse>>(result, _mapper);
     }
 
-    // GET /api/CourtCase/{id}
-    [HttpGet("{id}")]
-    [ProducesResponseType(typeof(DocumentResponse), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [EndpointName("GetDocumentById")]
-    public async Task<IActionResult> GetById(Guid id)
-    {
-        var result = await _sender.Send(new GetByIdCommand(id));
-
-        return MatchAndMapOkResult<DocumentResult, DocumentResponse>(result, _mapper);
-    }
-
     // PUT /api/CourtCase/{id}
     [HttpPut("{id}")]
     [ProducesResponseType(typeof(bool), StatusCodes.Status204NoContent)]

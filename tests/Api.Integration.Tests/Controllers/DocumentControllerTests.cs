@@ -20,21 +20,7 @@ public class DocumentControllerTests : IntegrationTestBase
         // Assert
         documents.Should().NotBeNull();
         documents.Should().NotBeEmpty();
-        documents![0].Name.Should().NotBeNullOrWhiteSpace();
-    }
-
-    [Fact]
-    public async Task GetById_Should_Return_Seeded_Document()
-    {
-        // ⚠️ Use a known seeded document ID from your test DB seed
-        var seededDocumentId = "8f1b1dbf-0c63-4e0e-a16c-4cc78e66ad98";
-
-        var response = await _client.GetAsync($"/api/document/{seededDocumentId}");
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
-
-        var document = await response.Content.ReadFromJsonAsync<DocumentResponse>();
-        document.Should().NotBeNull();
-        document!.Id.Should().Be(Guid.Parse(seededDocumentId));
+        documents![0].CaseNumber.Should().NotBeNullOrWhiteSpace();
     }
 
     [Fact]

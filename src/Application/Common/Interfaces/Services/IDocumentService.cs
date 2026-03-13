@@ -29,4 +29,6 @@ public interface IDocumentService : IBaseService<DocumentResult>
     ///     An <see cref="ErrorOr{T}" /> containing a boolean value indicating whether the file was added successfully.
     /// </returns>
     Task<ErrorOr<bool>> AddFile(IRequest<ErrorOr<bool>> request, CancellationToken cancellationToken);
+
+    Task<ErrorOr<IEnumerable<DocumentResult>>> GetAllDocuments(CancellationToken cancellationToken);
 }

@@ -1,12 +1,15 @@
 namespace Contracts.Documents.Responses;
 
 public record DocumentResponse(
-    Guid Id,
-    string Name,
-    string FileName,
-    long Size,
-    DateTime Created,
-    Guid CaseId,
-    string ContentType,
-    Guid CreatedBy
+    string CaseNumber,
+    string Client,
+    IList<FolderResponse> Folders
 );
+
+public record FolderResponse(
+    Guid Id,
+    string Description,
+    string ContentType,
+    string Version,
+    string Date,
+    IList<FolderResponse> Folders);

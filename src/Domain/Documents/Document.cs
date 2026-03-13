@@ -17,4 +17,8 @@ public class Document : AuditableEntity
 
     public required Guid CaseId { get; set; }
     public CourtCase? Case { get; set; }
+
+    public Guid? ParentId { get; set; }
+    public Document? Parent { get; set; }
+    public ICollection<Document> Children { get; set; } = new List<Document>();
 }

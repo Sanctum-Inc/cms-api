@@ -46,5 +46,6 @@ public interface IUserService
 
     Task<ErrorOr<string>> ConfirmEmailOtp(string token, string email, CancellationToken cancellationToken);
     Task<ErrorOr<bool>> ResendConfirmEmailOtp(string email, CancellationToken cancellationToken);
-
+    Task<ErrorOr<bool>> InitiateForgotPassword(string email, CancellationToken cancellationToken);
+    Task<ErrorOr<bool>> ChangePassword(string token, string password, CancellationToken cancellationToken);
 }

@@ -92,7 +92,7 @@ public class CourtCaseDatesService : BaseService<CourtCaseDate, CourtCaseDateRes
                         x.Type,
                         $"{x.Case.Plaintiff} vs {x.Case.Defendant}",
                         x.Description,
-                        GetCourtCaseDateStatus(x.Date)
+                        GetCourtCaseDateStatus(x.Date, x.IsCanceled, x.IsComplete)
                     ))
                     .OrderBy(x => x.Date)
             )
@@ -178,7 +178,7 @@ public class CourtCaseDatesService : BaseService<CourtCaseDate, CourtCaseDateRes
     private int GetOverDueItems(IEnumerable<CourtCaseDate> result)
     {
         return result
-            .Count(x => GetCourtCaseDateStatus(x.Date) == "Overdue");
+            .Count(x => GetCourtCaseDateStatus(x.Date, x.IsCanceled, x.IsComplete) == "Overdue");
     }
 
     private CourtCaseDateItem? FindDeadlineCase(IList<CourtCaseDate>? result)
@@ -193,17 +193,25 @@ public class CourtCaseDatesService : BaseService<CourtCaseDate, CourtCaseDateRes
                 x.Type,
                 $"{x.Case.Plaintiff} vs {x.Case.Defendant}",
                 x.Description,
-                GetCourtCaseDateStatus(x.Date)
+                GetCourtCaseDateStatus(x.Date, x.IsCanceled, x.IsComplete)
             ))
             .OrderBy(x => x.Date)
             .FirstOrDefault();
     }
 
 
-    private string GetCourtCaseDateStatus(string dateString)
+    private string GetCourtCaseDateStatus(string dateString, bool IsCancelled, bool IsComplete)
     {
         var date = DateTime.Parse(dateString);
-        if (date.Day == DateTime.Now.Day && date.Month == DateTime.Now.Month && date.Year == DateTime.Now.Year)
+        if (IsCancelled)
+        {
+            return "Cancelled";
+        }
+        else if (IsComplete)
+        {
+            return "Completed";
+        }
+        else if (date.Day == DateTime.Now.Day && date.Month == DateTime.Now.Month && date.Year == DateTime.Now.Year)
         {
             return "DueToday";
         }

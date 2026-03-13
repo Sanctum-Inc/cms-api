@@ -92,7 +92,6 @@ public class InvoiceController : ApiControllerBase
     /// <param name="id">Invoice Id</param>
     /// <returns>PDF file</returns>
     [HttpGet("pdf/{id}")]
-    [Produces("application/pdf")]
     [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [EndpointName("CreateLink")]

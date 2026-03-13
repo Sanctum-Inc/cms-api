@@ -1,12 +1,15 @@
 namespace Application.Document.Queries.Get;
 
 public record DocumentResult(
-    Guid Id,
-    string Name,
-    string FileName,
-    long Size,
-    DateTime Created,
-    Guid CaseId,
-    string ContentType,
-    Guid CreatedBy
+    string CaseNumber,
+    string Client,
+    IList<FolderResult> Folders
 );
+
+public record FolderResult(
+    Guid Id,
+    string Description,
+    string ContentType,
+    string Version,
+    string Date,
+    IList<FolderResult> Folders);

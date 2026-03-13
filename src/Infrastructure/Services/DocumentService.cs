@@ -5,6 +5,7 @@ using Application.Common.Models;
 using Application.Document.Commands.Add;
 using Application.Document.Commands.Update;
 using Application.Document.Queries.Get;
+using Domain.Common.CommonErrors;
 using Domain.Documents;
 using ErrorOr;
 using Infrastructure.Config;
@@ -137,5 +138,49 @@ public class DocumentService : BaseService<Document, DocumentResult, AddCommand,
     protected override void MapFromUpdateCommand(Document entity, UpdateCommand command)
     {
         entity.Name = command.FileName;
+    }
+
+    public async Task<ErrorOr<IEnumerable<DocumentResult>>> GetAllDocuments(CancellationToken cancellationToken)
+    {
+        var result = await _documentRepository.GetAll(cancellationToken);
+
+        var documents = result as Document[] ?? result.ToArray();
+        if (documents.Length == 0)
+        {
+            return Errors.Document.NotFound;
+        }
+
+        var documentResults = documents
+            .GroupBy(d => d.CaseId)
+            .Select(group =>
+            {
+                var courtCase = group.First().Case;
+                var rootDocuments = group
+                    .Where(d => d.ParentId == null)
+                    .ToList();
+
+                return new DocumentResult(
+                    courtCase.CaseNumber,
+                    $"{courtCase.Defendant} vs {courtCase.Plaintiff}",
+                    rootDocuments.Select(MapToFolder).ToList()
+                );
+            })
+            .ToList();
+
+        return documentResults;
+    }
+
+    private static FolderResult MapToFolder(Document document)
+    {
+        return new FolderResult(
+            document.Id,
+            document.FileName,
+            document.ContentType,
+            "1.0",
+            document.Created.ToString("yyyy-MM-dd"),
+            document.Children
+                .Select(child => MapToFolder(child))
+                .ToList()
+        );
     }
 }

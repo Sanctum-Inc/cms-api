@@ -6,6 +6,7 @@ using Application.Email.Commands.Add;
 using Application.Users.Commands.Login;
 using Application.Users.Commands.Register;
 using Application.Users.Queries;
+using Domain.Common.CommonErrors;
 using Domain.Emails;
 using Domain.Users;
 using ErrorOr;
@@ -13,6 +14,7 @@ using Infrastructure.Common;
 using Infrastructure.Config;
 using MapsterMapper;
 using Microsoft.Extensions.Options;
+using MimeKit.Cryptography;
 
 namespace Infrastructure.Services;
 
@@ -253,6 +255,83 @@ public class UserService : IUserService
         return _environmentOptions.FrontendUrl + "email-verified?status=success";
     }
 
+    public async Task<ErrorOr<bool>> InitiateForgotPassword(string email, CancellationToken cancellationToken)
+    {
+        var user = await _userRepository.GetByEmailAsync(email, cancellationToken);
+        if (user == null)
+        {
+            return Errors.User.NotFound;
+        }
+
+        if (!user.IsEmailVerified)
+        {
+            return Errors.User.EmailNotVerified;
+        }
+
+        var token = _jwtService.GenerateToken(
+            user.Role.ToString(),
+            user.Email,
+            user.Id.ToString(),
+            user.Name,
+            user.Surname,
+            user.FirmId.ToString(),
+            1,
+            true,
+            "60");
+
+        var emailToSend = new Email()
+        {
+            Status = EmailStatus.Pending,
+            ToAddresses = user.Email,
+            Subject = "Lexcase Forgot Password",
+            Body = GenerateForgotPasswordEmailContent(token),
+            RetryCount = 0,
+            IsHtml = true,
+            UserId = user.Id,
+            CreatedBy =  user.Id,
+            User = user,
+        };
+
+        await _emailRepository.AddAsync(emailToSend, cancellationToken);
+        await _emailRepository.SaveChangesAsync(cancellationToken);
+
+        return true;
+    }
+
+    public async Task<ErrorOr<bool>> ChangePassword(string token, string password, CancellationToken cancellationToken)
+    {
+        var tokenValidationResult = await _jwtService.VerifyToken(token);
+        if (!tokenValidationResult.IsValid || !tokenValidationResult.Claims.ContainsKey("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress"))
+        {
+            return Errors.User.InvalidToken;
+        }
+
+        var tokenEmail = tokenValidationResult.Claims["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress"].ToString();
+
+        if (string.IsNullOrEmpty(tokenEmail))
+        {
+            return Errors.User.InvalidToken;
+        }
+
+        var user = await _userRepository.GetByEmailAsync(tokenEmail, cancellationToken);
+        if (user == null)
+        {
+            return Errors.User.NotFound;
+        }
+
+        if (!user.IsEmailVerified)
+        {
+            return Errors.User.EmailNotVerified;
+        }
+
+        var (hash, salt) = PasswordHasher.HashPassword(password);
+        user.PasswordHash = hash;
+        user.PasswordSalt = salt;
+
+        await _userRepository.SaveChangesAsync(cancellationToken);
+        return true;
+    }
+
     private string GenerateOtpEmailContent(string token, string email)
     {
         var encodedToken = WebUtility.UrlEncode(token);
@@ -267,85 +346,41 @@ public class UserService : IUserService
                    <head>
                        <meta charset="UTF-8">
                        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                       <meta http-equiv="X-UA-Compatible" content="IE=edge">
-                       <title>Verify Your Email</title>
                        <style>
-                           /* Reset styles for email clients */
-                           body, table, td, a { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
-                           table, td { mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
-                           img { -ms-interpolation-mode: bicubic; border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; }
+                           body { height: 100% !important; margin: 0 !important; padding: 0 !important; width: 100% !important; background-color: #f9fafb; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
                            table { border-collapse: collapse !important; }
-                           body { height: 100% !important; margin: 0 !important; padding: 0 !important; width: 100% !important; background-color: #f1f5f9; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-
-                           /* Mobile responsive styles */
-                           @media screen and (max-width: 600px) {
-                               .container { width: 100% !important; }
-                               .content-padding { padding: 20px !important; }
-                           }
+                           .container { background-color: #ffffff; border: 1px solid #d1d5dc; border-radius: 12px; overflow: hidden; }
+                           @media screen and (max-width: 600px) { .container { width: 100% !important; } }
                        </style>
                    </head>
                    <body>
-                       <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                       <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #f9fafb;">
                            <tr>
                                <td align="center" style="padding: 40px 0;">
-                                   <!-- Main Container -->
-                                   <table border="0" cellpadding="0" cellspacing="0" width="600" class="container" style="background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);">
-
-                                       <!-- Header/Logo Section -->
+                                   <table border="0" cellpadding="0" cellspacing="0" width="600" class="container">
                                        <tr>
-                                           <td align="center" style="padding: 40px 40px 20px 40px; background-color: #0f172a;">
-                                               <!-- Fallback to text if image fails -->
+                                           <td align="center" style="padding: 30px; background-color: #1e3a8a;">
                                                <h1 style="color: #ffffff; margin: 0; font-size: 24px; font-weight: 800; letter-spacing: -1px; text-transform: uppercase;">
-                                                   LexCase <span style="font-weight: 300; color: #94a3b8;">CMS</span>
+                                                   LexCase <span style="font-weight: 300; color: #3b82f6;">CMS</span>
                                                </h1>
                                            </td>
                                        </tr>
-
-                                       <!-- Body Content -->
                                        <tr>
-                                           <td class="content-padding" style="padding: 40px; color: #1e293b;">
-                                               <h2 style="margin: 0 0 20px 0; font-size: 22px; font-weight: 700; line-height: 1.2;">Verify your email address</h2>
-                                               <p style="margin: 0 0 24px 0; font-size: 16px; line-height: 1.6; color: #475569;">
-                                                   Hello there,<br><br>
-                                                   Thank you for joining LexCase CMS. To complete your account setup and ensure the security of your legal data, please verify your email address by clicking the button below.
+                                           <td style="padding: 40px; color: #1e293b;">
+                                               <h2 style="margin: 0 0 20px 0; font-size: 22px; font-weight: 700; color: #1e3a8a;">Verify your email</h2>
+                                               <p style="margin: 0 0 24px 0; font-size: 16px; line-height: 1.6;">
+                                                   Hello,<br><br>
+                                                   Thank you for joining LexCase CMS. Please verify your email address to secure your legal workspace.
                                                </p>
-
-                                               <!-- CTA Button -->
                                                <table border="0" cellpadding="0" cellspacing="0" width="100%">
                                                    <tr>
                                                        <td align="center" style="padding: 10px 0 30px 0;">
-                                                           <a href="__VERIFY_URL__" target="_blank" style="background-color: #1b3b5f; border-radius: 8px; color: #ffffff; display: inline-block; font-size: 16px; font-weight: 700; line-height: 50px; text-align: center; text-decoration: none; width: 240px; -webkit-text-size-adjust: none;">Verify Email Address</a>
+                                                           <a href="__VERIFY_URL__" target="_blank" style="background-color: #2563eb; border-radius: 8px; color: #ffffff; display: inline-block; font-size: 16px; font-weight: 700; line-height: 50px; text-align: center; text-decoration: none; width: 240px;">Verify Email Address</a>
                                                        </td>
                                                    </tr>
                                                </table>
-
-                                               <p style="margin: 0 0 10px 0; font-size: 14px; line-height: 1.6; color: #64748b;">
-                                                   If the button above doesn't work, copy and paste this link into your browser:
-                                               </p>
-                                               <p style="margin: 0 0 24px 0; font-size: 13px; line-height: 1.6; color: #3b82f6; word-break: break-all;">
-                                                   __VERIFY_URL__
-                                               </p>
-
-                                               <hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 30px 0;">
-
-                                               <p style="margin: 0; font-size: 13px; line-height: 1.6; color: #94a3b8;">
-                                                   <strong>Why did I receive this?</strong><br>
-                                                   You're receiving this because a LexCase CMS account was created using this email address. If you didn't create an account, you can safely ignore this email.
-                                               </p>
-                                           </td>
-                                       </tr>
-
-                                       <!-- Footer -->
-                                       <tr>
-                                           <td style="padding: 0 40px 40px 40px; background-color: #ffffff;">
-                                               <table border="0" cellpadding="0" cellspacing="0" width="100%" style="border-top: 1px solid #f1f5f9; padding-top: 20px;">
-                                                   <tr>
-                                                       <td align="center" style="color: #94a3b8; font-size: 12px; line-height: 1.4;">
-                                                           &copy; 2026 LexCase Legal Solutions. All rights reserved.<br>
-                                                           123 Legal Square, Sandton, Johannesburg, 2196
-                                                       </td>
-                                                   </tr>
-                                               </table>
+                                               <p style="margin: 0 0 10px 0; font-size: 14px; color: #64748b;">Or copy this link:</p>
+                                               <p style="margin: 0 0 24px 0; font-size: 13px; color: #3b82f6; word-break: break-all;">__VERIFY_URL__</p>
                                            </td>
                                        </tr>
                                    </table>
@@ -357,5 +392,69 @@ public class UserService : IUserService
                    """;
 
         return html.Replace("__VERIFY_URL__", verificationUrl);
+    }
+
+    private string GenerateForgotPasswordEmailContent(string token)
+    {
+        var encodedToken = WebUtility.UrlEncode(token);
+
+        // Frontend URL for the password reset page
+        var resetUrl = $"{_environmentOptions.FrontendUrl}change-password?token={encodedToken}";
+
+        var html = """
+                   <!DOCTYPE html>
+                   <html lang="en">
+                   <head>
+                       <meta charset="UTF-8">
+                       <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                       <style>
+                           body { height: 100% !important; margin: 0 !important; padding: 0 !important; width: 100% !important; background-color: #f9fafb; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+                           table { border-collapse: collapse !important; }
+                           .container { background-color: #ffffff; border: 1px solid #d1d5dc; border-radius: 12px; overflow: hidden; }
+                       </style>
+                   </head>
+                   <body>
+                       <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #f9fafb;">
+                           <tr>
+                               <td align="center" style="padding: 40px 0;">
+                                   <table border="0" cellpadding="0" cellspacing="0" width="600" class="container">
+                                       <tr>
+                                           <td align="center" style="padding: 30px; background-color: #1e3a8a;">
+                                               <h1 style="color: #ffffff; margin: 0; font-size: 24px; font-weight: 800; text-transform: uppercase;">
+                                                   LexCase <span style="font-weight: 300; color: #3b82f6;">CMS</span>
+                                               </h1>
+                                           </td>
+                                       </tr>
+                                       <tr>
+                                           <td style="padding: 40px; color: #1e293b;">
+                                               <h2 style="margin: 0 0 20px 0; font-size: 22px; font-weight: 700; color: #1e3a8a;">Reset your password</h2>
+                                               <p style="margin: 0 0 24px 0; font-size: 16px; line-height: 1.6;">
+                                                   Hello,<br><br>
+                                                   We received a request to reset your password for LexCase CMS. Click the button below to set a new one.
+                                               </p>
+                                               <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                                                   <tr>
+                                                       <td align="center" style="padding: 10px 0 30px 0;">
+                                                           <a href="__VERIFY_URL__" target="_blank" style="background-color: #2563eb; border-radius: 8px; color: #ffffff; display: inline-block; font-size: 16px; font-weight: 700; line-height: 50px; text-align: center; text-decoration: none; width: 240px;">Reset Password</a>
+                                                       </td>
+                                                   </tr>
+                                               </table>
+                                               <p style="margin: 0 0 10px 0; font-size: 14px; color: #64748b;">If the button doesn't work, use this link:</p>
+                                               <p style="margin: 0 0 24px 0; font-size: 13px; color: #3b82f6; word-break: break-all;">__VERIFY_URL__</p>
+                                               <hr style="border: 0; border-top: 1px solid #d1d5dc; margin: 30px 0;">
+                                               <p style="margin: 0; font-size: 12px; color: #94a3b8; text-align: center;">
+                                                   If you did not request this, you can safely ignore this email.
+                                               </p>
+                                           </td>
+                                       </tr>
+                                   </table>
+                               </td>
+                           </tr>
+                       </table>
+                   </body>
+                   </html>
+                   """;
+
+        return html.Replace("__VERIFY_URL__", resetUrl);
     }
 }

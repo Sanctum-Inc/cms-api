@@ -16,7 +16,7 @@ public class GetCommandHandler : IRequestHandler<GetCommand, ErrorOr<IEnumerable
     public async Task<ErrorOr<IEnumerable<DocumentResult>>> Handle(GetCommand request,
         CancellationToken cancellationToken)
     {
-        var result = await _documentService.Get(cancellationToken);
+        var result = await _documentService.GetAllDocuments(cancellationToken);
 
         return result;
     }

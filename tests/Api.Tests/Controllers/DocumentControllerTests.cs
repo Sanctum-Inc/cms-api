@@ -83,35 +83,37 @@ public class DocumentControllerTests
     public async Task GetStructure_ShouldReturnOk_WithDocuments()
     {
         // Arrange
-        var documents = new List<DocumentResult>
-        {
-            new(
-                Guid.NewGuid(),
-                "Doc1",
-                "file.pdf",
-                2651,
-                DateTime.UtcNow,
-                Guid.NewGuid(),
-                "application/pdf",
-                Guid.NewGuid())
-        };
+        IEnumerable<DocumentResult?> documentResult = [new DocumentResult(
+            "CC-4033/2026",
+            "Shaun Zulauf vs Neoma Legros",
+            [
+                new FolderResult(
+                    new Guid("00000000-0000-0000-0000-000000000000"),
+                    "logo-white.png",
+                    "image/png",
+                    "1.0",
+                    "2026-12-01",
+                    [])
+            ]
+        )];
 
-        IEnumerable<DocumentResponse> documentsResponse =
-        [
-            new(
-                Guid.NewGuid(),
-                "Doc1",
-                "file.pdf",
-                2651,
-                DateTime.UtcNow,
-                Guid.NewGuid(),
-                "application/pdf",
-                Guid.NewGuid())
-        ];
+        IEnumerable<DocumentResponse> documentsResponse = [new DocumentResponse(
+            "CC-4033/2026",
+            "Shaun Zulauf vs Neoma Legros",
+            [
+                new FolderResponse(
+                    new Guid("00000000-0000-0000-0000-000000000000"),
+                    "logo-white.png",
+                    "image/png",
+                    "1.0",
+                    "2026-12-01",
+                    [])
+            ]
+        )];
 
         _mediatorMock
             .Setup(m => m.Send(It.IsAny<GetCommand>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(documents);
+            .ReturnsAsync(documentResult.ToErrorOr());
 
         _mapperMock
             .Setup(m => m.Map<IEnumerable<DocumentResponse>>(It.IsAny<IEnumerable<DocumentResult>>()))
@@ -125,55 +127,6 @@ public class DocumentControllerTests
         okResult.Should().NotBeNull();
         okResult!.StatusCode.Should().Be((int)HttpStatusCode.OK);
         (okResult.Value as IEnumerable<DocumentResponse>).Should().NotBeNull();
-    }
-
-    [Fact]
-    public async Task GetById_ShouldReturnOk_WhenFound()
-    {
-        // Arrange
-        var id = Guid.NewGuid();
-        var documentResult = new DocumentResult(
-            id,
-            "Doc1",
-            "file.pdf",
-            1000,
-            DateTime.UtcNow,
-            Guid.NewGuid(),
-            "application/pdf",
-            Guid.NewGuid()
-        );
-
-        _mediatorMock
-            .Setup(m => m.Send(It.IsAny<GetByIdCommand>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(documentResult.ToErrorOr()); // ✅ returning ErrorOr<DocumentResult>
-
-        _mapperMock
-            .Setup(m => m.Map<DocumentResponse>(It.IsAny<DocumentResult>())) // ✅ correct types
-            .Returns(new DocumentResponse(
-                documentResult.Id,
-                documentResult.Name,
-                documentResult.FileName,
-                documentResult.Size,
-                documentResult.Created,
-                documentResult.CaseId,
-                documentResult.ContentType,
-                documentResult.CreatedBy
-            ));
-
-        var controller = new DocumentController(_mapperMock.Object, _mediatorMock.Object);
-
-        // Act
-        var result = await controller.GetById(id);
-
-        // Assert
-        var okResult = result as OkObjectResult;
-        okResult.Should().NotBeNull();
-        okResult!.StatusCode.Should().Be((int)HttpStatusCode.OK);
-        okResult.Value.Should().BeOfType<DocumentResponse>();
-
-        var response = okResult.Value as DocumentResponse;
-        response!.Id.Should().Be(documentResult.Id);
-        response.Name.Should().Be(documentResult.Name);
     }
 
 

@@ -1,4 +1,6 @@
+using Application.Users.Commands.ChangePassword;
 using Application.Users.Commands.ConfirmEmailOtp;
+using Application.Users.Commands.ForgotPassword;
 using Application.Users.Commands.Login;
 using Application.Users.Commands.Register;
 using Application.Users.Commands.ResendConfirmEmailOtp;
@@ -51,6 +53,34 @@ public class UserController : ApiControllerBase
         var result = await _sender.Send(command);
 
         return MatchAndMapNoContentResult(result, _mapper);
+    }
+
+    [HttpPost("forgot-password")]
+    [ProducesResponseType(typeof(bool), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
+    [EndpointName("ForgotPassword")]
+    public async Task<IActionResult> ForgotPassword(ForgotPasswordRequest forgotPasswordRequest)
+    {
+        var command = _mapper.Map<ForgotPasswordCommand>(forgotPasswordRequest);
+
+        var result = await _sender.Send(command);
+
+        return MatchAndMapOkResult<bool, bool>(result, _mapper);
+    }
+
+    [HttpPost("change-password")]
+    [ProducesResponseType(typeof(bool), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
+    [EndpointName("ChangePassword")]
+    public async Task<IActionResult> ChangePassword(ChangePasswordRequest forgotPasswordRequest)
+    {
+        var command = _mapper.Map<ChangePasswordCommand>(forgotPasswordRequest);
+
+        var result = await _sender.Send(command);
+
+        return MatchAndMapOkResult<bool, bool>(result, _mapper);
     }
 
     [HttpGet("{id}")]

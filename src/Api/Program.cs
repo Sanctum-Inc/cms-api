@@ -51,9 +51,9 @@ app.ExecutePendingMigrations(builder.Environment);
 
 app.UseStaticFiles();
 
-app.UseHttpsRedirection();
-
 app.UseCors("AllowUI");
+
+app.UseHttpsRedirection();
 
 app.UseAuthentication();
 

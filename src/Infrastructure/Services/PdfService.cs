@@ -39,9 +39,9 @@ public class PdfService : IPdfService
                 column.Item().Text($"Date of admission as an Advocate: {Firm.AdvocateAdmissionDate:yyyy MMMM dd}").FontSize(10);
 
                 column.Item().PaddingTop(5).Text(Firm.Address).FontSize(10);
-                column.Item().Text($"TEL: {Firm.Telephone}").FontSize(10);
-                column.Item().Text($"FAX: {Firm.Fax}").FontSize(10);
-                column.Item().Text($"MOBILE: {Firm.Mobile}").FontSize(10);
+                column.Item().Text($"TEL: {FormatTelephone(Firm.Telephone)}").FontSize(10);
+                column.Item().Text($"FAX: {FormatTelephone(Firm.Fax)}").FontSize(10);
+                column.Item().Text($"MOBILE: {FormatTelephone(Firm.Mobile)}").FontSize(10);
 
                 column.Item().PaddingTop(10).PaddingBottom(5).LineHorizontal(1);
             });
@@ -143,5 +143,12 @@ public class PdfService : IPdfService
         using var hmac = new HMACSHA256(keyBytes);
         var hash = hmac.ComputeHash(Encoding.UTF8.GetBytes(data));
         return WebEncoders.Base64UrlEncode(hash);
+    }
+
+    private string FormatTelephone(string phone)
+    {
+        return phone
+            .Insert(3, " ")
+            .Insert(7, " ");
     }
 }

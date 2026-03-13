@@ -20,4 +20,13 @@ public class DocumentRepository : BaseRepository<Document>, IDocumentRepository
             .Where(d => d.UserId == userId)
             .ToListAsync();
     }
+
+    public override async Task<IEnumerable<Document>> GetAll(CancellationToken cancellationToken = default)
+    {
+        return await _dbSet
+            .AsNoTracking()
+            .Include(x => x.Case)
+            .Where(d => d.UserId.ToString() == _sessionResolver.UserId)
+            .ToListAsync(cancellationToken);
+    }
 }

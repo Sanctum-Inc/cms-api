@@ -240,6 +240,9 @@ namespace Infrastructure.Persistence.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
+                    b.Property<Guid?>("ParentId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<long>("Size")
                         .HasColumnType("bigint");
 
@@ -249,6 +252,8 @@ namespace Infrastructure.Persistence.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CaseId");
+
+                    b.HasIndex("ParentId");
 
                     b.HasIndex("UserId");
 
@@ -813,6 +818,10 @@ namespace Infrastructure.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Domain.Documents.Document", "Parent")
+                        .WithMany("Children")
+                        .HasForeignKey("ParentId");
+
                     b.HasOne("Domain.Users.User", "User")
                         .WithMany("Documents")
                         .HasForeignKey("UserId")
@@ -820,6 +829,8 @@ namespace Infrastructure.Persistence.Migrations
                         .IsRequired();
 
                     b.Navigation("Case");
+
+                    b.Navigation("Parent");
 
                     b.Navigation("User");
                 });
@@ -912,6 +923,11 @@ namespace Infrastructure.Persistence.Migrations
                     b.Navigation("Documents");
 
                     b.Navigation("Invoices");
+                });
+
+            modelBuilder.Entity("Domain.Documents.Document", b =>
+                {
+                    b.Navigation("Children");
                 });
 
             modelBuilder.Entity("Domain.Firms.Firm", b =>
