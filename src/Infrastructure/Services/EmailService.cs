@@ -10,28 +10,31 @@ using Application.Email.Commands.Update;
 using Domain.Emails;
 using ErrorOr;
 using Infrastructure.Config;
-using MailKit.Net.Smtp;
 using MapsterMapper;
 using Microsoft.Extensions.Options;
-using MimeKit;
 
 namespace Infrastructure.Services;
 
 public class EmailService : BaseService<Email, EmailResult, AddCommand, UpdateCommand>, IEmailService
 {
+    private const int MaxRetries = 3;
+
     private readonly ISessionResolver _sessionResolver;
     private readonly IEmailRepository _emailRepository;
     private readonly EmailOptions _emailOptions;
+    private readonly IEmailSender _emailSender;
 
     public EmailService(
         IMapper mapper,
         IEmailRepository emailRepository,
         ISessionResolver sessionResolver,
-        IOptions<EmailOptions> options) : base(emailRepository, mapper, sessionResolver)
+        IOptions<EmailOptions> options,
+        IEmailSender emailSender) : base(emailRepository, mapper, sessionResolver)
     {
         _sessionResolver = sessionResolver;
         _emailRepository = emailRepository;
         _emailOptions = options.Value;
+        _emailSender = emailSender;
     }
 
     protected override Guid GetIdFromUpdateCommand(UpdateCommand command)
@@ -85,79 +88,61 @@ public class EmailService : BaseService<Email, EmailResult, AddCommand, UpdateCo
 
         if (email.User is null)
         {
-            email.ErrorMessage  = $"No user linked to this email.";
+            email.ErrorMessage = "No user linked to this email.";
             email.Status = EmailStatus.Failed;
             await _emailRepository.SaveChangesAsync(cancellationToken);
+            return;
         }
 
-        using var client = new SmtpClient();
-        try
+        var message = new EmailMessage
         {
-            email.Status = EmailStatus.Sending;
-            await _emailRepository.SaveChangesAsync(cancellationToken);
+            FromName = $"{email.User.Name} {email.User.Surname} via LexCase",
+            FromAddress = _emailOptions.EmailAddress,
+            To = SplitAddresses(email.ToAddresses),
+            Cc = SplitAddresses(email.CcAddresses),
+            Bcc = SplitAddresses(email.BccAddresses),
+            ReplyToName = $"{email.User.Name} {email.User.Surname}",
+            ReplyToAddress = email.User.Email,
+            Subject = email.Subject,
+            Body = email.Body,
+            IsHtml = email.IsHtml
+        };
 
-            var message = new MimeMessage();
-            message.From.Add(new MailboxAddress($"{email.User.Name} {email.User.Surname} via LexCase", _emailOptions.EmailAddress));
-            message.To.Add(new MailboxAddress(email.ToAddresses, email.ToAddresses));
-            message.ReplyTo.Add(new MailboxAddress($"{email.User.Name} {email.User.Surname}", email.User.Email));
-            if (email.BccAddresses is not null)
-            {
-                message.Bcc.Add(new MailboxAddress(email.BccAddresses, email.BccAddresses));
-            }
-            message.Subject = email.Subject;
+        email.Status = EmailStatus.Sending;
+        await _emailRepository.SaveChangesAsync(cancellationToken);
 
-            if (email.IsHtml)
-            {
-                message.Body = new TextPart("html")
-                {
-                    Text = email.Body
-                };
-            }
-            else
-            {
-                message.Body = new TextPart("plain")
-                {
-                    Text = email.Body
-                };
-            }
-
-
-            // Connect to your SMTP server (e.g., Gmail, Outlook, or a transactional service)
-            await client.ConnectAsync(_emailOptions.Host, _emailOptions.Port, MailKit.Security.SecureSocketOptions.StartTls,
-                cancellationToken);
-
-            // Note: For services like Gmail, you might need to use an "App Password" instead of your actual password.
-            await client.AuthenticateAsync(_emailOptions.Username, _emailOptions.Password, cancellationToken);
-
-            await client.SendAsync(message, cancellationToken);
-
-            email.SentAt = DateTime.UtcNow;
-            email.Status = EmailStatus.Sent;
-            await _emailRepository.SaveChangesAsync(cancellationToken);
-            await client.DisconnectAsync(true, cancellationToken);
-        }
-        catch (Exception ex)
+        for (var attempt = 0; attempt <= MaxRetries; attempt++)
         {
-
-
-            if (email.RetryCount >= 3)
+            try
             {
-                email.ErrorMessage  = $"{ex.Message} {DateTime.UtcNow}";
+                await _emailSender.SendAsync(message, cancellationToken);
+
+                email.SentAt = DateTime.UtcNow;
+                email.Status = EmailStatus.Sent;
+                await _emailRepository.SaveChangesAsync(cancellationToken);
+                return;
+            }
+            catch (Exception ex) when (attempt < MaxRetries)
+            {
+                email.RetryCount = attempt + 1;
+                email.Status = EmailStatus.Retrying;
+                email.ErrorMessage = ex.Message;
+                await _emailRepository.SaveChangesAsync(cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                email.ErrorMessage = $"{ex.Message} {DateTime.UtcNow}";
                 email.Status = EmailStatus.Failed;
                 await _emailRepository.SaveChangesAsync(cancellationToken);
+                return;
             }
-            else
-            {
-                email.RetryCount++;
-                email.Status = EmailStatus.Retrying;
-                await _emailRepository.SaveChangesAsync(cancellationToken);
-                await SendEmails(email, cancellationToken);
-            }
+        }
+    }
 
-        }
-        finally
-        {
-            await client.DisconnectAsync(true, cancellationToken);
-        }
+    private static List<string> SplitAddresses(string? addresses)
+    {
+        return string.IsNullOrWhiteSpace(addresses)
+            ? []
+            : addresses.Split(';', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).ToList();
     }
 }

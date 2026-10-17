@@ -25,7 +25,24 @@ public static class DependecyInjection
 
         AddOptions(services, configuration);
 
+        AddEmailSender(services, configuration);
+
         return services;
+    }
+
+    private static void AddEmailSender(IServiceCollection services, IConfiguration configuration)
+    {
+        var provider = configuration[$"{EmailOptions.SectionName}:{nameof(EmailOptions.Provider)}"];
+
+        if (string.Equals(provider, EmailProviders.Brevo, StringComparison.OrdinalIgnoreCase))
+        {
+            services.AddHttpClient<BrevoEmailSender>();
+            services.AddTransient<IEmailSender>(serviceProvider =>
+                serviceProvider.GetRequiredService<BrevoEmailSender>());
+            return;
+        }
+
+        services.AddScoped<IEmailSender, SmtpEmailSender>();
     }
 
     private static void AddOptions(IServiceCollection services, IConfiguration configuration)

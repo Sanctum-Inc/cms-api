@@ -19,7 +19,6 @@ builder.Services
     .AddApplication(builder.Configuration);
 
 var env = builder.Environment.EnvironmentName;
-var connString = builder.Configuration.GetSection("EmailOptions");
 
 builder.Services.AddPersistence(builder.Configuration, builder.Environment);
 builder.Services.AddMediatR(builder.Configuration);
@@ -40,7 +39,9 @@ builder.Services.AddJwtAuthentication(builder.Configuration, builder.Environment
 
 builder.Services.AddCustomCors();
 
-builder.Services.AddHostedService<EmailHandler>();
+var emailOptions = builder.Configuration.GetSection(EmailOptions.SectionName);
+if (emailOptions.GetValue<bool>(nameof(EmailOptions.Enabled)))
+    builder.Services.AddHostedService<EmailHandler>();
 
 var app = builder.Build();
 
