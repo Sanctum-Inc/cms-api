@@ -1,0 +1,11 @@
+.git
+.github
+.vs
+.idea
+.vscode
+**/bin
+**/obj
+publish
+tests
+*.user
+cms-api.sln.DotSettings.user
