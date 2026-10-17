@@ -8,42 +8,34 @@ using Application.Document.Queries.Get;
 using Domain.Common.CommonErrors;
 using Domain.Documents;
 using ErrorOr;
-using Infrastructure.Config;
 using MapsterMapper;
 using MediatR;
-using Microsoft.Extensions.Options;
 
 namespace Infrastructure.Services;
 
 public class DocumentService : BaseService<Document, DocumentResult, AddCommand, UpdateCommand>, IDocumentService
 {
+    private const string DocumentsPrefix = "documents";
+
     private readonly ICourtCaseRepository _courtCaseRepository;
     private readonly IDocumentRepository _documentRepository;
-    private readonly string _rootPath;
+    private readonly IFileStorage _fileStorage;
     private readonly ISessionResolver _sessionResolver;
 
     public DocumentService(
         ISessionResolver sessionResolver,
         IDocumentRepository documentRepository,
-        IOptions<DocumentStorageOptions> options,
+        IFileStorage fileStorage,
         IMapper mapper,
         ICourtCaseRepository courtCaseRepository) : base(documentRepository, mapper, sessionResolver)
     {
         _sessionResolver = sessionResolver;
         _documentRepository = documentRepository;
-
-        _rootPath = options.Value.RootPath;
-
-        // Ensure directory exists at startup
-        if (!Directory.Exists(_rootPath))
-        {
-            Directory.CreateDirectory(_rootPath);
-        }
-
+        _fileStorage = fileStorage;
         _courtCaseRepository = courtCaseRepository;
     }
 
-    public async Task<ErrorOr<bool>> AddFile(IRequest<ErrorOr<bool>> request, CancellationToken cancellationToken)
+    public override async Task<ErrorOr<Guid>> Add(IRequest<ErrorOr<Guid>> request, CancellationToken cancellationToken)
     {
         if (request is not AddCommand addCommand)
         {
@@ -65,27 +57,57 @@ public class DocumentService : BaseService<Document, DocumentResult, AddCommand,
 
         if (addCommand.File == null || addCommand.File.Length == 0)
         {
-            return false;
+            return Error.Validation(description: "The file is required.");
         }
 
-        var fileExtension = Path.GetExtension(addCommand.File.FileName);
-        var safeFileName = $"{Guid.NewGuid()}{fileExtension}";
-        var targetPath = Path.Combine(_rootPath, safeFileName);
+        var key = BuildStorageKey(addCommand.File.FileName);
 
         try
         {
-            await using var stream = new FileStream(targetPath, FileMode.Create);
-            await addCommand.File.CopyToAsync(stream, cancellationToken);
-
-            await Add(addCommand, cancellationToken);
-
-            return true;
+            await using var stream = addCommand.File.OpenReadStream();
+            await _fileStorage.UploadAsync(key, stream, addCommand.File.ContentType, cancellationToken);
         }
         catch
         {
-            // optional: log the error here
-            return false;
+            await TryDeleteAsync(key, cancellationToken);
+            return Error.Failure(description: "Failed to store the document file.");
         }
+
+        addCommand.StorageKey = key;
+
+        try
+        {
+            var result = await base.Add(request, cancellationToken);
+
+            if (result.IsError)
+            {
+                await TryDeleteAsync(key, cancellationToken);
+            }
+
+            return result;
+        }
+        catch
+        {
+            await TryDeleteAsync(key, cancellationToken);
+            throw;
+        }
+    }
+
+    public async Task<ErrorOr<bool>> AddFile(IRequest<ErrorOr<bool>> request, CancellationToken cancellationToken)
+    {
+        if (request is not AddCommand addCommand)
+        {
+            return Error.Failure(description: "Invalid request type.");
+        }
+
+        var result = await Add(addCommand, cancellationToken);
+
+        if (result.IsError)
+        {
+            return result.Errors;
+        }
+
+        return true;
     }
 
     public async Task<ErrorOr<DownloadDocumentResult?>> Download(Guid id, CancellationToken cancellationToken = default)
@@ -97,18 +119,31 @@ public class DocumentService : BaseService<Document, DocumentResult, AddCommand,
             return Error.NotFound("Document.NotFound", "The document with the specified Id was not found");
         }
 
-        var filePath = Path.Combine(_rootPath, document.FileName); // placeholder
+        var key = document.StorageKey ?? document.FileName;
 
-        if (!File.Exists(filePath))
+        try
+        {
+            var stream = await _fileStorage.OpenReadAsync(key, cancellationToken);
+            return new DownloadDocumentResult(stream, document.ContentType, document.Name);
+        }
+        catch (FileNotFoundException)
         {
             return Error.NotFound("Document.NotFound", "The document with the specified path was not found");
         }
+    }
 
-        var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
-        var contentType = document.ContentType; // detect from metadata or use FileExtensionContentTypeProvider
-        var fileName = document.Name;
+    public override async Task<ErrorOr<bool>> Delete(Guid id, CancellationToken cancellationToken)
+    {
+        var document = await _documentRepository.GetByIdAndUserIdAsync(id, cancellationToken);
 
-        return new DownloadDocumentResult(stream, contentType, fileName);
+        var result = await base.Delete(id, cancellationToken);
+
+        if (!result.IsError && document != null)
+        {
+            await TryDeleteAsync(document.StorageKey ?? document.FileName, cancellationToken);
+        }
+
+        return result;
     }
 
     protected override Guid GetIdFromUpdateCommand(UpdateCommand command)
@@ -130,6 +165,7 @@ public class DocumentService : BaseService<Document, DocumentResult, AddCommand,
             FileName = command.File.FileName,
             ContentType = command.File.ContentType,
             Size = command.File.Length,
+            StorageKey = command.StorageKey,
             UserId = new Guid(userId),
             CaseId = command.CaseId
         };
@@ -170,6 +206,11 @@ public class DocumentService : BaseService<Document, DocumentResult, AddCommand,
         return documentResults;
     }
 
+    private static string BuildStorageKey(string fileName)
+    {
+        return $"{DocumentsPrefix}/{Guid.NewGuid()}{Path.GetExtension(fileName)}";
+    }
+
     private static FolderResult MapToFolder(Document document)
     {
         return new FolderResult(
@@ -182,5 +223,16 @@ public class DocumentService : BaseService<Document, DocumentResult, AddCommand,
                 .Select(child => MapToFolder(child))
                 .ToList()
         );
+    }
+
+    private async Task TryDeleteAsync(string key, CancellationToken cancellationToken)
+    {
+        try
+        {
+            await _fileStorage.DeleteAsync(key, cancellationToken);
+        }
+        catch
+        {
+        }
     }
 }

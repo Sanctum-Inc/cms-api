@@ -1,3 +1,5 @@
+using Amazon.Runtime;
+using Amazon.S3;
 using Application.Common.Interfaces.Persistence;
 using Application.Common.Interfaces.Repositories;
 using Application.Common.Interfaces.Services;
@@ -9,6 +11,7 @@ using Infrastructure.Persistence.Repositories;
 using Infrastructure.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using test;
 
 namespace Infrastructure;
@@ -27,6 +30,8 @@ public static class DependecyInjection
 
         AddEmailSender(services, configuration);
 
+        AddFileStorage(services, configuration);
+
         return services;
     }
 
@@ -43,6 +48,31 @@ public static class DependecyInjection
         }
 
         services.AddScoped<IEmailSender, SmtpEmailSender>();
+    }
+
+    private static void AddFileStorage(IServiceCollection services, IConfiguration configuration)
+    {
+        var provider = configuration[$"{DocumentStorageOptions.SectionName}:{nameof(DocumentStorageOptions.Provider)}"];
+
+        if (string.Equals(provider, DocumentStorageProviders.R2, StringComparison.OrdinalIgnoreCase))
+        {
+            services.AddSingleton<IAmazonS3>(serviceProvider =>
+            {
+                var options = serviceProvider.GetRequiredService<IOptions<DocumentStorageOptions>>().Value;
+                return new AmazonS3Client(
+                    new BasicAWSCredentials(options.R2.AccessKeyId, options.R2.SecretAccessKey),
+                    new AmazonS3Config
+                    {
+                        ServiceURL = options.R2.Endpoint,
+                        ForcePathStyle = true,
+                        AuthenticationRegion = "auto"
+                    });
+            });
+            services.AddSingleton<IFileStorage, R2FileStorage>();
+            return;
+        }
+
+        services.AddSingleton<IFileStorage, LocalFileStorage>();
     }
 
     private static void AddOptions(IServiceCollection services, IConfiguration configuration)

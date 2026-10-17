@@ -8,6 +8,7 @@ public class Document : AuditableEntity
 {
     public required string Name { get; set; }
     public required string FileName { get; set; }
+    public string? StorageKey { get; set; }
     public required string ContentType { get; set; }
     public required long Size { get; set; }
 

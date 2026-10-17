@@ -7,4 +7,7 @@ namespace Application.Document.Commands.Add;
 public record AddCommand(
     IFormFile File,
     string Name,
-    Guid CaseId) : IRequest<ErrorOr<Guid>>;
+    Guid CaseId) : IRequest<ErrorOr<Guid>>
+{
+    public string? StorageKey { get; set; }
+}
