@@ -7,8 +7,12 @@ public class ApplicationDBContextFactory : IDesignTimeDbContextFactory<Applicati
 {
     public ApplicationDBContext CreateDbContext(string[] args)
     {
+        var connectionString = Environment.GetEnvironmentVariable("DefaultConnection")
+            ?? Environment.GetEnvironmentVariable("DATABASE_URL")
+            ?? "Host=localhost;Database=cmsdb;Username=postgres;Password=postgres";
+
         var optionsBuilder = new DbContextOptionsBuilder<ApplicationDBContext>();
-        optionsBuilder.UseSqlServer("Server=localhost;Database=cmsdb;Trusted_Connection=True;TrustServerCertificate=True");
+        optionsBuilder.UseNpgsql(connectionString);
 
         return new ApplicationDBContext(optionsBuilder.Options);
     }

@@ -45,7 +45,7 @@ var configuration = new ConfigurationBuilder()
 var connectionString = configuration.GetConnectionString("DefaultConnection");
 
 var optionsBuilder = new DbContextOptionsBuilder<ApplicationDBContext>();
-optionsBuilder.UseSqlServer(connectionString);
+optionsBuilder.UseNpgsql(connectionString);
 
 using var context = new ApplicationDBContext(optionsBuilder.Options);
 

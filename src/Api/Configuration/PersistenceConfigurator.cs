@@ -19,9 +19,10 @@ public static class PersistenceConfigurator
         }
         else
         {
-            // Production / Dev database
+            var connectionString = configuration.GetConnectionString("DefaultConnection");
+
             services.AddDbContext<ApplicationDBContext>(options =>
-                options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"))
+                options.UseNpgsql(connectionString)
             );
         }
 

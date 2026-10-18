@@ -12,7 +12,11 @@ public static class MigrationConfiguration
             using (var scope = app.Services.CreateScope())
             {
                 var db = scope.ServiceProvider.GetRequiredService<ApplicationDBContext>();
-                db.Database.Migrate();
+
+                if (db.Database.IsRelational())
+                {
+                    db.Database.EnsureCreated();
+                }
             }
         }
 
