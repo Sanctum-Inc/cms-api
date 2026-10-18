@@ -7,15 +7,15 @@ using Microsoft.Extensions.Options;
 
 namespace Infrastructure.Services;
 
-public class R2FileStorage : IFileStorage
+public class S3FileStorage : IFileStorage
 {
     private readonly string _bucketName;
     private readonly IAmazonS3 _client;
 
-    public R2FileStorage(IAmazonS3 client, IOptions<DocumentStorageOptions> options)
+    public S3FileStorage(IAmazonS3 client, IOptions<DocumentStorageOptions> options)
     {
         _client = client;
-        _bucketName = options.Value.R2.BucketName;
+        _bucketName = options.Value.S3.BucketName;
     }
 
     public async Task UploadAsync(string key, Stream content, string contentType,

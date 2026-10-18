@@ -9,18 +9,18 @@ using Moq;
 
 namespace Api.Tests.Storage;
 
-public class R2FileStorageTests
+public class S3FileStorageTests
 {
     private const string BucketName = "cms-documents";
 
     private readonly Mock<IAmazonS3> _clientMock = new();
-    private readonly R2FileStorage _storage;
+    private readonly S3FileStorage _storage;
 
-    public R2FileStorageTests()
+    public S3FileStorageTests()
     {
-        _storage = new R2FileStorage(_clientMock.Object, Options.Create(new DocumentStorageOptions
+        _storage = new S3FileStorage(_clientMock.Object, Options.Create(new DocumentStorageOptions
         {
-            R2 = new R2StorageOptions { BucketName = BucketName }
+            S3 = new S3StorageOptions { BucketName = BucketName }
         }));
     }
 

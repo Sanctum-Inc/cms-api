@@ -5,10 +5,10 @@ public class DocumentStorageOptions
     public const string SectionName = "DocumentStorage";
     public string Provider { get; set; } = DocumentStorageProviders.Local;
     public string RootPath { get; set; } = string.Empty;
-    public R2StorageOptions R2 { get; set; } = new();
+    public S3StorageOptions S3 { get; set; } = new();
 }
 
-public class R2StorageOptions
+public class S3StorageOptions
 {
     public string Endpoint { get; set; } = string.Empty;
     public string AccessKeyId { get; set; } = string.Empty;
@@ -19,5 +19,5 @@ public class R2StorageOptions
 public static class DocumentStorageProviders
 {
     public const string Local = "Local";
-    public const string R2 = "R2";
+    public const string S3 = "S3";
 }

@@ -54,21 +54,21 @@ public static class DependecyInjection
     {
         var provider = configuration[$"{DocumentStorageOptions.SectionName}:{nameof(DocumentStorageOptions.Provider)}"];
 
-        if (string.Equals(provider, DocumentStorageProviders.R2, StringComparison.OrdinalIgnoreCase))
+        if (string.Equals(provider, DocumentStorageProviders.S3, StringComparison.OrdinalIgnoreCase))
         {
             services.AddSingleton<IAmazonS3>(serviceProvider =>
             {
                 var options = serviceProvider.GetRequiredService<IOptions<DocumentStorageOptions>>().Value;
                 return new AmazonS3Client(
-                    new BasicAWSCredentials(options.R2.AccessKeyId, options.R2.SecretAccessKey),
+                    new BasicAWSCredentials(options.S3.AccessKeyId, options.S3.SecretAccessKey),
                     new AmazonS3Config
                     {
-                        ServiceURL = options.R2.Endpoint,
+                        ServiceURL = options.S3.Endpoint,
                         ForcePathStyle = true,
                         AuthenticationRegion = "auto"
                     });
             });
-            services.AddSingleton<IFileStorage, R2FileStorage>();
+            services.AddSingleton<IFileStorage, S3FileStorage>();
             return;
         }
 
