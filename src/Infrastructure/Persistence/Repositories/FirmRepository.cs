@@ -13,6 +13,13 @@ public class FirmRepository : BaseRepository<Firm>, IFirmRepository
     {
     }
 
+    public override async Task<Firm?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+    {
+        return await _dbSet
+            .Where(f => f.Id == id)
+            .FirstOrDefaultAsync(cancellationToken);
+    }
+
     public async Task<Firm?> GetUserFirm(CancellationToken cancellationToken)
     {
         var userId = Guid.Parse(_sessionResolver.UserId);
