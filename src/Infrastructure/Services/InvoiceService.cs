@@ -7,6 +7,7 @@ using Application.Invoice.Commands.SetIsPaid;
 using Application.Invoice.Commands.Update;
 using Domain.Invoices;
 using ErrorOr;
+using Infrastructure.Common;
 using MapsterMapper;
 using QuestPDF.Fluent;
 
@@ -208,7 +209,7 @@ public class InvoiceService : BaseService<Invoice, InvoiceResult, AddCommand, Up
         {
             Id = Guid.NewGuid(),
             InvoiceNumber = command.InvoiceNumber,
-            InvoiceDate = command.InvoiceDate,
+            InvoiceDate = command.InvoiceDate.AsUtc(),
             UserId = Guid.Parse(userId),
             ClientName = command.ClientName,
             Reference = command.Reference,
@@ -225,7 +226,7 @@ public class InvoiceService : BaseService<Invoice, InvoiceResult, AddCommand, Up
     protected override void MapFromUpdateCommand(Invoice entity, UpdateCommand command)
     {
         entity.InvoiceNumber = command.InvoiceNumber;
-        entity.InvoiceDate = command.InvoiceDate;
+        entity.InvoiceDate = command.InvoiceDate.AsUtc();
         entity.ClientName = command.ClientName;
         entity.Reference = command.Reference;
         entity.AccountName = command.AccountName;

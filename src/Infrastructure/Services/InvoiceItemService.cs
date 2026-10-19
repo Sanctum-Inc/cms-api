@@ -1,4 +1,3 @@
-using System.Globalization;
 using Application.Common.Interfaces.Repositories;
 using Application.Common.Interfaces.Services;
 using Application.Common.Interfaces.Session;
@@ -7,6 +6,7 @@ using Application.InvoiceItem.Commands.Add;
 using Application.InvoiceItem.Commands.Update;
 using Domain.InvoiceItems;
 using ErrorOr;
+using Infrastructure.Common;
 using MapsterMapper;
 
 namespace Infrastructure.Services;
@@ -41,15 +41,13 @@ public class InvoiceItemService : BaseService<InvoiceItem, InvoiceItemResult, Ad
             return Error.Unauthorized(description: "User is not authenticated.");
         }
 
-        var culture = CultureInfo.InvariantCulture;
-
         return new InvoiceItem
         {
             InvoiceId = new Guid(command.InvoiceId),
             Name = command.Name,
             Hours = command.Hours,
             CostPerHour = command.CostPerHour,
-            DateOfService = DateTime.Parse(command.Date, culture),
+            DateOfService = DateTimeExtensions.ParseUtc(command.Date),
             Id = Guid.NewGuid(),
             UserId = new Guid(userId)
         };

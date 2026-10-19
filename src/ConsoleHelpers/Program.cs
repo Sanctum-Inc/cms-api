@@ -8,6 +8,7 @@ using Domain.InvoiceItems;
 using Domain.Invoices;
 using Domain.Lawyers;
 using Domain.Users;
+using Infrastructure.Common;
 using Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -145,8 +146,8 @@ namespace ConsoleHelpers
                 .RuleFor(f => f.Fax, f => f.Phone.PhoneNumber("+27 ## ### ####"))
                 .RuleFor(f => f.Mobile, f => f.Phone.PhoneNumber("+27 ## ### ####"))
                 .RuleFor(f => f.Email, f => f.Internet.Email())
-                .RuleFor(f => f.AttorneyAdmissionDate, f => f.Date.Past(20))
-                .RuleFor(f => f.AdvocateAdmissionDate, f => f.Date.Past(15))
+                .RuleFor(f => f.AttorneyAdmissionDate, f => f.Date.Past(20).AsUtc())
+                .RuleFor(f => f.AdvocateAdmissionDate, f => f.Date.Past(15).AsUtc())
                 .RuleFor(f => f.AccountName, f => f.Company.CompanyName())
                 .RuleFor(f => f.Bank, f => f.PickRandom("Standard Bank", "FNB", "Nedbank", "ABSA", "Capitec"))
                 .RuleFor(f => f.BranchCode, f => f.Random.Number(100000, 999999).ToString())
@@ -410,7 +411,7 @@ namespace ConsoleHelpers
                     var invFaker = new Faker<Invoice>()
                         .RuleFor(i => i.Id, _ => Guid.NewGuid())
                         .RuleFor(i => i.InvoiceNumber, _ => $"INV-{invoiceNumber++}")
-                        .RuleFor(i => i.InvoiceDate, f => f.Date.Recent(90))
+                        .RuleFor(i => i.InvoiceDate, f => f.Date.Recent(90).AsUtc())
                         .RuleFor(i => i.ClientName, _ => courtCase.Plaintiff)
                         .RuleFor(i => i.Reference, f => f.Random.Bool(0.5f) ? $"REF-{f.Random.Number(1000, 9999)}" : null)
                         .RuleFor(i => i.AccountName, f => f.Company.CompanyName())
@@ -444,6 +445,7 @@ namespace ConsoleHelpers
                         "Research", "Travel Time", "Administrative Work", "Expert Witness Fee"))
                     .RuleFor(i => i.Hours, f => f.Random.Number(1, 20))
                     .RuleFor(i => i.CostPerHour, f => f.Finance.Amount(500, 5000))
+                    .RuleFor(i => i.DateOfService, f => f.Date.Recent(90).AsUtc())
                     .RuleFor(i => i.UserId, _ => invoice.UserId)
                     .RuleFor(i => i.Created, _ => DateTime.UtcNow)
                     .RuleFor(i => i.IsDeleted, _ => false);

@@ -6,6 +6,7 @@ using Application.Firm.Commands.Add;
 using Application.Firm.Commands.Update;
 using Domain.Firms;
 using ErrorOr;
+using Infrastructure.Common;
 using MapsterMapper;
 
 namespace Infrastructure.Services;
@@ -66,8 +67,8 @@ public class FirmService : BaseService<Firm, FirmResult, AddCommand, UpdateComma
             Fax = command.Fax,
             Mobile = command.Mobile,
             Email = command.Email,
-            AttorneyAdmissionDate = DateTime.Parse(command.AttorneyAdmissionDate),
-            AdvocateAdmissionDate = DateTime.Parse(command.AdvocateAdmissionDate),
+            AttorneyAdmissionDate = DateTimeExtensions.ParseUtc(command.AttorneyAdmissionDate),
+            AdvocateAdmissionDate = DateTimeExtensions.ParseUtc(command.AdvocateAdmissionDate),
             AccountName = command.AccountName,
             Bank = command.Bank,
             BranchCode = command.BranchCode,
@@ -85,8 +86,8 @@ public class FirmService : BaseService<Firm, FirmResult, AddCommand, UpdateComma
         entity.Fax = command.Fax;
         entity.Mobile = command.Mobile;
         entity.Email = command.Email;
-        entity.AttorneyAdmissionDate = DateTime.Parse(command.AttorneyAdmissionDate);
-        entity.AdvocateAdmissionDate = DateTime.Parse(command.AdvocateAdmissionDate);
+        entity.AttorneyAdmissionDate = DateTimeExtensions.ParseUtc(command.AttorneyAdmissionDate);
+        entity.AdvocateAdmissionDate = DateTimeExtensions.ParseUtc(command.AdvocateAdmissionDate);
         entity.AccountName = command.AccountName;
         entity.Bank = command.Bank;
         entity.BranchCode = command.BranchCode;
