@@ -9,8 +9,7 @@ public static class CorsConfiguration
             options.AddPolicy("AllowUI", policy =>
             {
                 policy.SetIsOriginAllowed(origin =>
-                        origin == "https://lexcase.co.za" ||
-                        origin == "https://www.lexcase.co.za" ||
+                        origin == "https://cms-react-rfh8.onrender.com" ||
                         origin.StartsWith("http://localhost") ||
                         origin.StartsWith("https://sanctum-inc.github.io")
                     )
