@@ -30,7 +30,7 @@ public class FirmController : ApiControllerBase
     [ProducesResponseType(typeof(FirmResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [EndpointName("GetFirmById")]
-    public async Task<IActionResult> GetById([FromRoute] Guid id)
+    public async Task<IActionResult> GetById([FromRoute] Guid? id)
     {
         var query = new GetCommand(id);
 

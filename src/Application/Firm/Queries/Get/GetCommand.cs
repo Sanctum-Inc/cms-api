@@ -4,4 +4,4 @@ using MediatR;
 
 namespace Application.Firm.Queries.Get;
 
-public record GetCommand(Guid Id) : IRequest<ErrorOr<FirmResult>>;
+public record GetCommand(Guid? Id) : IRequest<ErrorOr<FirmResult>>;
