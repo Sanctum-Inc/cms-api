@@ -68,7 +68,13 @@ public class CourtCaseDatesService : BaseService<CourtCaseDate, CourtCaseDateRes
 
         if (!courtCaseDates.Any())
         {
-            return Error.NotFound("CourtCaseDates.Empty", "No court case dates found");
+            return new CourtCaseDateResult(
+                0,
+                0,
+                0,
+                0,
+                null,
+                []);
         }
 
         var overdueItems = GetOverDueItems(courtCaseDates);

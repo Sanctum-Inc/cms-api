@@ -21,7 +21,11 @@ public class GetCommandHandler : IRequestHandler<GetCommand, ErrorOr<FirmResult>
 
     public async Task<ErrorOr<FirmResult>> Handle(GetCommand request, CancellationToken cancellationToken)
     {
-        var result = await _firmService.GetById(new Guid(_sessionResolver.FirmId ?? ""), cancellationToken);
+        var result = await _firmService.GetById(
+            string.IsNullOrEmpty(_sessionResolver.FirmId) ?
+                request.Id:
+                new Guid(_sessionResolver.FirmId!),
+            cancellationToken);
 
         return result;
     }
