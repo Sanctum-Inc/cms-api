@@ -25,14 +25,14 @@ public class FirmController : ApiControllerBase
         _mapper = mapper;
     }
 
-    // GET /api/Firm/{id}
-    [HttpGet("{id}")]
+    // GET /api/Firm/
+    [HttpGet]
     [ProducesResponseType(typeof(FirmResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [EndpointName("GetFirmById")]
-    public async Task<IActionResult> GetById([FromRoute] Guid? id)
+    public async Task<IActionResult> GetById([FromBody] GetFirmRequest request)
     {
-        var query = new GetCommand(id);
+        var query = new GetCommand(request.Id);
 
         var result = await _sender.Send(query);
 
