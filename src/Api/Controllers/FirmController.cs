@@ -30,7 +30,7 @@ public class FirmController : ApiControllerBase
     [HttpGet]
     [ProducesResponseType(typeof(FirmResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [EndpointName("GetFirmById")]
+    [EndpointName("GetFirm")]
     public async Task<IActionResult> Get()
     {
         var query = new GetCommand();
