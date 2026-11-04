@@ -92,11 +92,11 @@ public class UserController : ApiControllerBase
     [Authorize]
     public async Task<IActionResult> GetById([FromRoute] string id)
     {
-        var query = new GetQuery(id);
+        var query = new GetUsersQuery(id);
 
         var result = await _sender.Send(query);
 
-        return MatchAndMapOkResult<UserResult, UserResponse>(result, _mapper);
+        return MatchAndMapOkResult<Application.Common.Models.UserResult, UserResponse>(result, _mapper);
     }
 
     [HttpGet("confirm-email")]

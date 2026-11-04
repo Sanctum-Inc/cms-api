@@ -5,16 +5,16 @@ using MediatR;
 
 namespace Application.CourtCase.Queries.Get;
 
-public class GetQueryHandler : IRequestHandler<GetQuery, ErrorOr<IEnumerable<CourtCaseResult>>>
+public class GetCourtCaseQueryHandler : IRequestHandler<GetCourtCaseQuery, ErrorOr<IEnumerable<CourtCaseResult>>>
 {
     private readonly ICourtCaseService _courtCaseService;
 
-    public GetQueryHandler(ICourtCaseService courtCaseService)
+    public GetCourtCaseQueryHandler(ICourtCaseService courtCaseService)
     {
         _courtCaseService = courtCaseService;
     }
 
-    public async Task<ErrorOr<IEnumerable<CourtCaseResult>>> Handle(GetQuery request,
+    public async Task<ErrorOr<IEnumerable<CourtCaseResult>>> Handle(GetCourtCaseQuery request,
         CancellationToken cancellationToken)
     {
         var result = await _courtCaseService.Get(cancellationToken);

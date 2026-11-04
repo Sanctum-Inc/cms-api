@@ -1,5 +1,5 @@
 namespace Application.Email.Queries.Get;
 
-internal class GetQueryValidator
+internal class GetEmailQueryValidator
 {
 }

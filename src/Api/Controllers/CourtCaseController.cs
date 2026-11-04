@@ -34,7 +34,7 @@ public class CourtCaseController : ApiControllerBase
     [EndpointName("GetAllCourtCases")]
     public async Task<IActionResult> GetAll()
     {
-        var result = await _sender.Send(new GetQuery());
+        var result = await _sender.Send(new GetCourtCaseQuery());
 
         return MatchAndMapOkResult<IEnumerable<CourtCaseResult>, IEnumerable<CourtCaseResponse>>(result, _mapper);
     }

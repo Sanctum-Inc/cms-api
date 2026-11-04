@@ -61,7 +61,7 @@ public class CourtCaseControllerTests
             NextDate: ""));
 
         _mockSender
-            .Setup(s => s.Send(It.IsAny<GetQuery>(), It.IsAny<CancellationToken>()))
+            .Setup(s => s.Send(It.IsAny<GetCourtCaseQuery>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(expectedCases);
 
         _mockMapper
@@ -75,7 +75,7 @@ public class CourtCaseControllerTests
         var ok = result.Should().BeOfType<OkObjectResult>().Subject;
         ok.Value.Should().BeEquivalentTo(expectedResponse);
 
-        _mockSender.Verify(s => s.Send(It.IsAny<GetQuery>(), It.IsAny<CancellationToken>()), Times.Once);
+        _mockSender.Verify(s => s.Send(It.IsAny<GetCourtCaseQuery>(), It.IsAny<CancellationToken>()), Times.Once);
         _mockMapper.Verify(m => m.Map<IEnumerable<CourtCaseResponse>>(It.IsAny<IEnumerable<CourtCaseResult>>()),
             Times.Once);
     }

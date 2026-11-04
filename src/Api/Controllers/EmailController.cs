@@ -35,7 +35,7 @@ public class EmailController : ApiControllerBase
     [EndpointName("GetEmails")]
     public async Task<IActionResult> Get()
     {
-        var query = new GetQuery();
+        var query = new GetEmailQuery();
 
         var result = await _sender.Send(query);
 

@@ -1,10 +1,10 @@
-﻿using FluentValidation;
+using FluentValidation;
 
 namespace Application.Users.Queries.GetQuery;
 
-public class GetQueryValidator : AbstractValidator<GetQuery>
+public class GetUsersQueryValidator : AbstractValidator<GetUsersQuery>
 {
-    public GetQueryValidator()
+    public GetUsersQueryValidator()
     {
         RuleFor(x => x.Id)
             .NotNull().WithMessage("User ID is required.")
