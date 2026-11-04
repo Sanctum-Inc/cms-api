@@ -17,6 +17,6 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, ErrorOr<Authent
     {
         var result = await _userService.Login(request.Email, request.Password, cancellationToken);
 
-        return result!;
+        return result;
     }
 }

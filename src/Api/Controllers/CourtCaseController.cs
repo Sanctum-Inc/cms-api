@@ -61,8 +61,6 @@ public class CourtCaseController : ApiControllerBase
     {
         var result = await _sender.Send(new GetByIdCommand(id));
 
-        var mapped = _mapper.Map<CourtCaseResponse>(result);
-
         return MatchAndMapOkResult<CourtCaseResult, CourtCaseResponse>(result, _mapper);
     }
 

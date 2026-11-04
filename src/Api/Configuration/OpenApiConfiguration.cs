@@ -12,7 +12,7 @@ public static class OpenApiConfiguration
         // Add OpenAPI generator
         services.AddOpenApi(options =>
         {
-            options.AddDocumentTransformer((document, context, cancellationToken) =>
+            options.AddDocumentTransformer((document, _, _) =>
             {
                 // Add JWT Authentication security scheme
                 document.Components ??= new OpenApiComponents();

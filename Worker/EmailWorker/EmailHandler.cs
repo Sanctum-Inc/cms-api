@@ -1,5 +1,4 @@
 using Application.Common.Interfaces.Services;
-using Microsoft.Extensions.Configuration;
 
 namespace Worker.EmailWorker;
 

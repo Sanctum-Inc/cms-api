@@ -1,7 +1,7 @@
 using Application.Common.Interfaces.Persistence;
 using Application.Common.Interfaces.Repositories;
 using Application.Common.Interfaces.Session;
-using Domain.InvoiceItems;
+using Domain.Invoices;
 
 namespace Infrastructure.Persistence.Repositories;
 

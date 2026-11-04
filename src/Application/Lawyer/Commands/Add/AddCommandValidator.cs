@@ -1,7 +1,6 @@
-using Application.Lawyer.Commands.Add;
 using FluentValidation;
 
-namespace Application.Lawyers.Commands;
+namespace Application.Lawyer.Commands.Add;
 
 public class AddCommandValidator : AbstractValidator<AddCommand>
 {

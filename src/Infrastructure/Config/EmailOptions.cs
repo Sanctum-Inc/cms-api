@@ -1,6 +1,4 @@
-﻿using System.Text;
-
-namespace Infrastructure.Config;
+﻿namespace Infrastructure.Config;
 
 public class EmailOptions
 {

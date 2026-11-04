@@ -1,6 +1,5 @@
 using Application.Common.Models;
 using Application.Dashboard.Queries.GetDashboardInformation;
-using Contracts.CourtCases.Responses;
 using Contracts.Dashboard.Responses;
 using MapsterMapper;
 using MediatR;

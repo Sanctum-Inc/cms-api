@@ -5,18 +5,12 @@ using MediatR;
 
 namespace Application.Lawyer.Queries.GetById;
 
-public class GetByIdCommandHandler : IRequestHandler<GetByIdCommand, ErrorOr<LawyerResult?>>
+public class GetByIdCommandHandler(ILawyerService lawyerService)
+    : IRequestHandler<GetByIdCommand, ErrorOr<LawyerResult>>
 {
-    private readonly ILawyerService _lawyerService;
-
-    public GetByIdCommandHandler(ILawyerService lawyerService)
+    public async Task<ErrorOr<LawyerResult>> Handle(GetByIdCommand request, CancellationToken cancellationToken)
     {
-        _lawyerService = lawyerService;
-    }
-
-    public async Task<ErrorOr<LawyerResult?>> Handle(GetByIdCommand request, CancellationToken cancellationToken)
-    {
-        var result = await _lawyerService.GetById(request.Id, cancellationToken);
+        var result = await lawyerService.GetById(request.Id, cancellationToken);
 
         return result;
     }

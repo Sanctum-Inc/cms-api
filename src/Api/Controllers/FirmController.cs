@@ -3,6 +3,7 @@ using Application.Firm.Commands.Add;
 using Application.Firm.Commands.Delete;
 using Application.Firm.Commands.Update;
 using Application.Firm.Queries.Get;
+using Application.Firm.Queries.GetById;
 using Contracts.Firm.Requests;
 using Contracts.Firm.Responses;
 using MapsterMapper;
@@ -30,9 +31,23 @@ public class FirmController : ApiControllerBase
     [ProducesResponseType(typeof(FirmResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [EndpointName("GetFirmById")]
-    public async Task<IActionResult> GetById([FromBody] GetFirmRequest request)
+    public async Task<IActionResult> Get()
     {
-        var query = new GetCommand(request.Id);
+        var query = new GetCommand();
+
+        var result = await _sender.Send(query);
+
+        return MatchAndMapOkResult<FirmResult, FirmResponse>(result, _mapper);
+    }
+
+    // GET /api/Firm/
+    [HttpGet("{id:guid}")]
+    [ProducesResponseType(typeof(FirmResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [EndpointName("GetFirmById")]
+    public async Task<IActionResult> GetById([FromRoute] Guid id)
+    {
+        var query = new GetByIdCommand(id);
 
         var result = await _sender.Send(query);
 

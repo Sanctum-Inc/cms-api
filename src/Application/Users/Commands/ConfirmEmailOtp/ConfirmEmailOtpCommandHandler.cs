@@ -1,8 +1,6 @@
-using Application.Common.Interfaces.Repositories;
 using Application.Common.Interfaces.Services;
 using ErrorOr;
 using MediatR;
-using Microsoft.Extensions.Options;
 namespace Application.Users.Commands.ConfirmEmailOtp;
 
 public class ConfirmEmailOtpCommandHandler : IRequestHandler<ConfirmEmailOtpCommand, ErrorOr<string>>

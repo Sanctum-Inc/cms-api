@@ -5,18 +5,12 @@ using MediatR;
 
 namespace Application.InvoiceItem.Queries.GetById;
 
-public class GetByIdCommandHandler : IRequestHandler<GetByIdCommand, ErrorOr<InvoiceItemResult?>>
+public class GetByIdCommandHandler(IInvoiceItemService invoiceItemService)
+    : IRequestHandler<GetByIdCommand, ErrorOr<InvoiceItemResult>>
 {
-    private readonly IInvoiceItemService _invoiceItemService;
-
-    public GetByIdCommandHandler(IInvoiceItemService invoiceItemService)
+    public async Task<ErrorOr<InvoiceItemResult>> Handle(GetByIdCommand request, CancellationToken cancellationToken)
     {
-        _invoiceItemService = invoiceItemService;
-    }
-
-    public async Task<ErrorOr<InvoiceItemResult?>> Handle(GetByIdCommand request, CancellationToken cancellationToken)
-    {
-        var result = await _invoiceItemService.GetById(request.Id, cancellationToken);
+        var result = await invoiceItemService.GetById(request.Id, cancellationToken);
 
         return result;
     }

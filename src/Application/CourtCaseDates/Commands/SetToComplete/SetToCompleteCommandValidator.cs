@@ -1,4 +1,3 @@
-using Application.CourtCaseDates.Commands.SetToCancelled;
 using FluentValidation;
 
 namespace Application.CourtCaseDates.Commands.SetToComplete;

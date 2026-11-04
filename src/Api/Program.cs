@@ -9,7 +9,6 @@ using Infrastructure;
 using Infrastructure.Config;
 using QuestPDF;
 using QuestPDF.Infrastructure;
-using Worker;
 using Worker.EmailWorker;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -17,8 +16,6 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services
     .AddInfrastructure(builder.Configuration)
     .AddApplication(builder.Configuration);
-
-var env = builder.Environment.EnvironmentName;
 
 builder.Services.AddPersistence(builder.Configuration, builder.Environment);
 builder.Services.AddMediatR(builder.Configuration);

@@ -22,7 +22,7 @@ public class FirmRepository : BaseRepository<Firm>, IFirmRepository
 
     public async Task<Firm?> GetUserFirm(CancellationToken cancellationToken)
     {
-        var userId = Guid.Parse(_sessionResolver.UserId);
+        var userId = Guid.Parse(_sessionResolver.UserId ?? throw new InvalidOperationException());
         return await _dbSet
             .Include(f => f.Users)
             .Where(f => f.Users.Any(u => u.Id == userId))

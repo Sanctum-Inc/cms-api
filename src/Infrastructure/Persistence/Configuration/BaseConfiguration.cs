@@ -2,7 +2,7 @@ using Domain.Common;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Infrastructure.Persistence.Configurations;
+namespace Infrastructure.Persistence.Configuration;
 
 public class BaseConfiguration<T> : IEntityTypeConfiguration<T>
     where T : AuditableEntity

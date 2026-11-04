@@ -38,7 +38,7 @@ public class CourtCaseDateController : ApiControllerBase
         var result = await _sender.Send(new GetCommand());
 
         return MatchAndMapOkResult<CourtCaseDateResult, CourtCaseDateResponse>(result,
-            _mapper)!;
+            _mapper);
     }
 
     // GET /api/CourtCaseDate/{id}
@@ -50,7 +50,7 @@ public class CourtCaseDateController : ApiControllerBase
     {
         var result = await _sender.Send(new GetByIdCommand(id));
 
-        return MatchAndMapOkResult<CourtCaseDateResult, CourtCaseDateResponse>(result, _mapper)!;
+        return MatchAndMapOkResult<CourtCaseDateResult, CourtCaseDateResponse>(result, _mapper);
     }
 
     // POST /api/CourtCaseDate

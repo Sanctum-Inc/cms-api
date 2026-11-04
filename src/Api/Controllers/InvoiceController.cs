@@ -1,4 +1,3 @@
-using System.Reflection.Metadata;
 using Application.Common.Models;
 using Application.Invoice.Commands.Add;
 using Application.Invoice.Commands.CreatePdfLink;
@@ -12,7 +11,6 @@ using Application.Invoice.Queries.GetById;
 using Application.Invoice.Queries.GetInvoiceNumbers;
 using Contracts.Invoice.Requests;
 using Contracts.Invoice.Responses;
-using Contracts.InvoiceItem.Responses;
 using MapsterMapper;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;

@@ -1,27 +1,19 @@
 using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
 using Application.Common.Interfaces.Session;
 using Microsoft.AspNetCore.Http;
 
 namespace Infrastructure.Common;
 
-public class SessionResolver : ISessionResolver
+public class SessionResolver(IHttpContextAccessor httpContextAccessor) : ISessionResolver
 {
-    private readonly IHttpContextAccessor _httpContextAccessor;
-
-    public SessionResolver(IHttpContextAccessor httpContextAccessor)
-    {
-        _httpContextAccessor = httpContextAccessor;
-    }
-
     public bool IsAuthenticated =>
-        _httpContextAccessor.HttpContext?.User?.Identity?.IsAuthenticated ?? false;
+        httpContextAccessor.HttpContext?.User.Identity?.IsAuthenticated ?? false;
 
     public string? Token
     {
         get
         {
-            var authHeader = _httpContextAccessor.HttpContext?.Request.Headers.Authorization.FirstOrDefault();
+            var authHeader = httpContextAccessor.HttpContext?.Request.Headers.Authorization.FirstOrDefault();
             if (string.IsNullOrWhiteSpace(authHeader))
             {
                 return null;
@@ -40,6 +32,6 @@ public class SessionResolver : ISessionResolver
 
     private string? GetClaim(string claimType)
     {
-        return _httpContextAccessor.HttpContext?.User?.FindFirst(claimType)?.Value;
+        return httpContextAccessor.HttpContext?.User.FindFirst(claimType)?.Value;
     }
 }

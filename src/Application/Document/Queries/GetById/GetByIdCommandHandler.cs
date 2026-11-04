@@ -5,18 +5,12 @@ using MediatR;
 
 namespace Application.Document.Queries.GetById;
 
-public class GetByIdCommandHandler : IRequestHandler<GetByIdCommand, ErrorOr<DocumentResult?>>
+public class GetByIdCommandHandler(IDocumentService documentService)
+    : IRequestHandler<GetByIdCommand, ErrorOr<DocumentResult>>
 {
-    private readonly IDocumentService _documentService;
-
-    public GetByIdCommandHandler(IDocumentService documentService)
+    public async Task<ErrorOr<DocumentResult>> Handle(GetByIdCommand request, CancellationToken cancellationToken)
     {
-        _documentService = documentService;
-    }
-
-    public async Task<ErrorOr<DocumentResult?>> Handle(GetByIdCommand request, CancellationToken cancellationToken)
-    {
-        var result = await _documentService.GetById(request.Id, cancellationToken);
+        var result = await documentService.GetById(request.Id, cancellationToken);
 
         return result;
     }

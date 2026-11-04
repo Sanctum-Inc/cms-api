@@ -5,6 +5,7 @@ using Application.Users.Commands.Login;
 using Application.Users.Commands.Register;
 using Application.Users.Commands.ResendConfirmEmailOtp;
 using Application.Users.Queries;
+using Application.Users.Queries.GetQuery;
 using Contracts.User.Requests;
 using Contracts.User.Responses;
 using MapsterMapper;

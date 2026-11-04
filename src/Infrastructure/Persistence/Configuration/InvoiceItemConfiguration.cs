@@ -1,8 +1,8 @@
-using Domain.InvoiceItems;
+using Domain.Invoices;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Infrastructure.Persistence.Configurations;
+namespace Infrastructure.Persistence.Configuration;
 
 public class InvoiceItemConfiguration : BaseConfiguration<InvoiceItem>
 {

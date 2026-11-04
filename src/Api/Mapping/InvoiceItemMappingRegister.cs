@@ -7,13 +7,12 @@ using Contracts.Lawyer.Responses;
 using Contracts.User.Responses;
 using Domain.CourtCases;
 using Domain.Documents;
-using Domain.InvoiceItems;
 using Domain.Invoices;
 using Domain.Lawyers;
 using Domain.Users;
 using Mapster;
 
-namespace Api.Mappings;
+namespace Api.Mapping;
 
 // 🔹 Create explicit mapping registers for your models
 public class InvoiceItemMappingRegister : IRegister

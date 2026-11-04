@@ -15,7 +15,7 @@ public class Result<T>
     private Result(List<string> errors)
     {
         IsSuccess = false;
-        _errors = errors ?? new List<string>();
+        _errors = errors;
     }
 
     public bool IsSuccess { get; }

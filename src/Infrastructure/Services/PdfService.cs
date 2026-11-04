@@ -3,9 +3,7 @@ using System.Text;
 using Application.Common.Interfaces.Services;
 using Domain.Firms;
 using Domain.Invoices;
-using Infrastructure.Config;
 using Microsoft.AspNetCore.WebUtilities;
-using Microsoft.Extensions.Options;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
@@ -14,8 +12,8 @@ namespace Infrastructure.Services;
 
 public class PdfService : IPdfService
 {
-    public Firm Firm { set; get;  }
-    public Invoice Invoice { set; get; }
+    public required Firm Firm { set; get;  }
+    public required Invoice Invoice { set; get; }
     public DocumentMetadata GetMetadata()
     {
         return DocumentMetadata.Default;

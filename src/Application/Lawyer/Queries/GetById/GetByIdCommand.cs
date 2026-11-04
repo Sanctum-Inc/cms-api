@@ -4,4 +4,4 @@ using MediatR;
 
 namespace Application.Lawyer.Queries.GetById;
 
-public record GetByIdCommand(Guid Id) : IRequest<ErrorOr<LawyerResult?>>;
+public record GetByIdCommand(Guid Id) : IRequest<ErrorOr<LawyerResult>>;

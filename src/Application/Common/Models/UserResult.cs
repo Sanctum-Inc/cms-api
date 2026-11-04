@@ -1,4 +1,4 @@
-namespace Application.Users.Queries;
+namespace Application.Common.Models;
 
 public class UserResult
 {

@@ -15,7 +15,7 @@ public class CourtCaseDate : AuditableEntity
     public required CourtCaseDateTypes Type { get; set; }
 
     public required Guid CaseId { get; set; }
-    public CourtCase Case { get; set; }
+    public required CourtCase Case { get; set; }
 
     public required Guid UserId { get; set; }
     public User? User { get; set; }

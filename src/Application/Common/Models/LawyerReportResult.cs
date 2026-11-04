@@ -1,6 +1,5 @@
 using Domain.CourtCases;
 using Domain.Invoices;
-using Domain.Lawyers;
 
 namespace Application.Common.Models;
 

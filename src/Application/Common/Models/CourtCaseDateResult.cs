@@ -1,5 +1,4 @@
 using Domain.CourtCaseDates;
-using Domain.CourtCases;
 
 namespace Application.Common.Models;
 

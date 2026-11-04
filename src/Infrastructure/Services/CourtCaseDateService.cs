@@ -1,4 +1,3 @@
-using System.Runtime.InteropServices.JavaScript;
 using Application.Common.Interfaces.Repositories;
 using Application.Common.Interfaces.Services;
 using Application.Common.Interfaces.Session;
@@ -93,7 +92,7 @@ public class CourtCaseDatesService : BaseService<CourtCaseDate, CourtCaseDateRes
                         x.Id,
                         x.Date,
                         x.Title,
-                        x.Case.CaseNumber,
+                        x.Case!.CaseNumber,
                         x.CaseId,
                         x.Type,
                         $"{x.Case.Plaintiff} vs {x.Case.Defendant}",

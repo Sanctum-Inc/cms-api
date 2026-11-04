@@ -38,7 +38,7 @@ public abstract class BaseService<TEntity, TResult, TAddCommand, TUpdateCommand>
             return entity.Errors;
         }
 
-        await _repository.AddAsync(entity.Value!, cancellationToken);
+        await _repository.AddAsync(entity.Value, cancellationToken);
         await _repository.SaveChangesAsync(cancellationToken);
 
         return entity.Value.Id;

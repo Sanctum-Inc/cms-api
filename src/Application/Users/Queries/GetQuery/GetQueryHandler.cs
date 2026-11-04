@@ -1,8 +1,9 @@
 ﻿using Application.Common.Interfaces.Services;
+using Application.Common.Models;
 using ErrorOr;
 using MediatR;
 
-namespace Application.Users.Queries;
+namespace Application.Users.Queries.GetQuery;
 
 public class GetQueryHandler : IRequestHandler<GetQuery, ErrorOr<UserResult>>
 {

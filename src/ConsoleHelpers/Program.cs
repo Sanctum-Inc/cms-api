@@ -4,7 +4,6 @@ using Domain.CourtCaseDates;
 using Domain.CourtCases;
 using Domain.Documents;
 using Domain.Firms;
-using Domain.InvoiceItems;
 using Domain.Invoices;
 using Domain.Lawyers;
 using Domain.Users;
@@ -68,7 +67,6 @@ namespace ConsoleHelpers
     {
         private readonly ApplicationDBContext _context;
         private readonly Random _random = new Random();
-        private readonly Faker _faker = new Faker();
 
         public SeedDataGenerator(ApplicationDBContext context)
         {
@@ -102,25 +100,25 @@ namespace ConsoleHelpers
             Console.WriteLine($"   Created {courtCases.Count} court cases");
 
             Console.WriteLine("\n📅 Generating Court Case Dates...");
-            var courtCaseDates = GenerateCourtCaseDates(courtCases, users);
+            var courtCaseDates = GenerateCourtCaseDates(courtCases);
             await _context.CourtCaseDates.AddRangeAsync(courtCaseDates);
             await _context.SaveChangesAsync();
             Console.WriteLine($"   Created {courtCaseDates.Count} court case dates");
 
             Console.WriteLine("\n📄 Generating Documents...");
-            var documents = GenerateDocuments(courtCases, users);
+            var documents = GenerateDocuments(courtCases);
             await _context.Documents.AddRangeAsync(documents);
             await _context.SaveChangesAsync();
             Console.WriteLine($"   Created {documents.Count} documents");
 
             Console.WriteLine("\n🧾 Generating Invoices...");
-            var invoices = GenerateInvoices(courtCases, users);
+            var invoices = GenerateInvoices(courtCases);
             await _context.Invoices.AddRangeAsync(invoices);
             await _context.SaveChangesAsync();
             Console.WriteLine($"   Created {invoices.Count} invoices");
 
             Console.WriteLine("\n📝 Generating Invoice Items...");
-            var invoiceItems = GenerateInvoiceItems(invoices, users);
+            var invoiceItems = GenerateInvoiceItems(invoices);
             await _context.InvoiceItems.AddRangeAsync(invoiceItems);
             await _context.SaveChangesAsync();
             Console.WriteLine($"   Created {invoiceItems.Count} invoice items");
@@ -234,7 +232,7 @@ namespace ConsoleHelpers
             return cases;
         }
 
-        private List<CourtCaseDate> GenerateCourtCaseDates(List<CourtCase> courtCases, List<User> users)
+        private List<CourtCaseDate> GenerateCourtCaseDates(List<CourtCase> courtCases)
 {
     var dates = new List<CourtCaseDate>();
 
@@ -352,11 +350,15 @@ namespace ConsoleHelpers
                 return new CourtCaseDate
                 {
                     Id = Guid.NewGuid(),
-                    Date = f.Date.Future(1).ToString("yyyy-MM-dd HH:mm"),
+                    Date = f.Date.Future().ToString("yyyy-MM-dd HH:mm"),
                     Title = scenario.Title,
                     Description = scenario.Description,
                     Type = (CourtCaseDateTypes)_random.Next(1, 14),
                     CaseId = courtCase.Id,
+                    Case = new()
+                    {
+                        
+                    },
                     UserId = courtCase.UserId,
                     Created = DateTime.UtcNow,
                     IsDeleted = false,
@@ -372,7 +374,7 @@ namespace ConsoleHelpers
     return dates;
 }
 
-        private List<Document> GenerateDocuments(List<CourtCase> courtCases, List<User> users)
+        private List<Document> GenerateDocuments(List<CourtCase> courtCases)
         {
             var documents = new List<Document>();
 
@@ -398,7 +400,7 @@ namespace ConsoleHelpers
             return documents;
         }
 
-        private List<Invoice> GenerateInvoices(List<CourtCase> courtCases, List<User> users)
+        private List<Invoice> GenerateInvoices(List<CourtCase> courtCases)
         {
             var invoices = new List<Invoice>();
             var invoiceNumber = 1000;
@@ -431,7 +433,7 @@ namespace ConsoleHelpers
             return invoices;
         }
 
-        private List<InvoiceItem> GenerateInvoiceItems(List<Invoice> invoices, List<User> users)
+        private List<InvoiceItem> GenerateInvoiceItems(List<Invoice> invoices)
         {
             var items = new List<InvoiceItem>();
 

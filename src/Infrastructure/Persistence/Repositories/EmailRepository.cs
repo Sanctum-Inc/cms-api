@@ -1,5 +1,3 @@
-using System.Threading;
-using System.Threading.Tasks;
 using Application.Common.Interfaces.Persistence;
 using Application.Common.Interfaces.Repositories;
 using Application.Common.Interfaces.Session;
@@ -8,13 +6,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Persistence.Repositories;
 
-public class EmailRepository : BaseRepository<Email>, IEmailRepository
+public class EmailRepository(IApplicationDBContext context, ISessionResolver sessionResolver)
+    : BaseRepository<Email>(context,
+        sessionResolver), IEmailRepository
 {
-    public EmailRepository(IApplicationDBContext context, ISessionResolver sessionResolver) : base(context,
-        sessionResolver)
-    {
-    }
-
     public async Task<Email?> GetUnsentEmails(CancellationToken cancellationToken)
     {
         return await _dbSet

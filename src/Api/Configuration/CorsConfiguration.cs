@@ -1,3 +1,5 @@
+using System;
+
 namespace Api.Configuration;
 
 public static class CorsConfiguration
@@ -9,7 +11,7 @@ public static class CorsConfiguration
             options.AddPolicy("AllowUI", policy =>
             {
                 policy.SetIsOriginAllowed(origin =>
-                        origin == "https://cms-react-rfh8.onrender.com" ||
+                        origin.StartsWith("https://cms-react-rfh8.onrender.com") ||
                         origin.StartsWith("http://localhost") ||
                         origin.StartsWith("https://sanctum-inc.github.io")
                     )

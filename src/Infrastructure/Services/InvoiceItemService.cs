@@ -4,7 +4,7 @@ using Application.Common.Interfaces.Session;
 using Application.Common.Models;
 using Application.InvoiceItem.Commands.Add;
 using Application.InvoiceItem.Commands.Update;
-using Domain.InvoiceItems;
+using Domain.Invoices;
 using ErrorOr;
 using Infrastructure.Common;
 using MapsterMapper;

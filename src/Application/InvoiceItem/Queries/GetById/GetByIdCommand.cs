@@ -4,4 +4,4 @@ using MediatR;
 
 namespace Application.InvoiceItem.Queries.GetById;
 
-public record GetByIdCommand(Guid Id) : IRequest<ErrorOr<InvoiceItemResult?>>;
+public record GetByIdCommand(Guid Id) : IRequest<ErrorOr<InvoiceItemResult>>;

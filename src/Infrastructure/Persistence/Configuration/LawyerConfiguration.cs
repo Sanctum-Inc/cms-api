@@ -2,7 +2,7 @@ using Domain.Lawyers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Infrastructure.Persistence.Configurations;
+namespace Infrastructure.Persistence.Configuration;
 
 public class LawyerConfiguration : BaseConfiguration<Lawyer>
 {

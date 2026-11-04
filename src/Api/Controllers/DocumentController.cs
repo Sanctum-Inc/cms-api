@@ -4,7 +4,6 @@ using Application.Document.Commands.Delete;
 using Application.Document.Commands.Update;
 using Application.Document.Queries.Download;
 using Application.Document.Queries.Get;
-using Application.Document.Queries.GetById;
 using Contracts.Documents.Requests;
 using Contracts.Documents.Responses;
 using MapsterMapper;
@@ -34,6 +33,7 @@ public class DocumentController : ApiControllerBase
     /// </summary>
     /// <param name="file">The file to upload.</param>
     /// <param name="name">The name to assign to the uploaded document.</param>
+    /// <param name="caseId">The case Id of the document</param>
     /// <remarks>
     ///     Sample request:
     ///     POST /api/document

@@ -1,6 +1,5 @@
 using Domain.Common;
 using Domain.CourtCases;
-using Domain.InvoiceItems;
 using Domain.Lawyers;
 using Domain.Users;
 

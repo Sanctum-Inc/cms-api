@@ -1,8 +1,7 @@
 using Domain.Common;
-using Domain.Invoices;
 using Domain.Users;
 
-namespace Domain.InvoiceItems;
+namespace Domain.Invoices;
 
 public class InvoiceItem : AuditableEntity
 {

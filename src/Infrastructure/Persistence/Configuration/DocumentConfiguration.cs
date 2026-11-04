@@ -2,7 +2,7 @@ using Domain.Documents;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Infrastructure.Persistence.Configurations;
+namespace Infrastructure.Persistence.Configuration;
 
 public class DocumentConfiguration : BaseConfiguration<Document>
 {

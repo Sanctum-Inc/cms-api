@@ -5,7 +5,6 @@ using Domain.CourtCaseDates;
 using Domain.CourtCases;
 using Domain.Documents;
 using Domain.Firms;
-using Domain.InvoiceItems;
 using Domain.Invoices;
 using Domain.Lawyers;
 using Domain.Users;

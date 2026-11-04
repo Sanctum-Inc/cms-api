@@ -2,7 +2,7 @@ using System.Net;
 using Application.Common.Interfaces.Repositories;
 using Application.Common.Interfaces.Services;
 using Application.Common.Interfaces.Session;
-using Application.Email.Commands.Add;
+using Application.Common.Models;
 using Application.Users.Commands.Login;
 using Application.Users.Commands.Register;
 using Application.Users.Queries;
@@ -14,7 +14,6 @@ using Infrastructure.Common;
 using Infrastructure.Config;
 using MapsterMapper;
 using Microsoft.Extensions.Options;
-using MimeKit.Cryptography;
 
 namespace Infrastructure.Services;
 
@@ -49,7 +48,7 @@ public class UserService : IUserService
 
     public async Task<ErrorOr<UserResult>> GetUserById(string id, CancellationToken cancellationToken)
     {
-        User? user = null;
+        User? user;
         if (id is "current")
         {
             user = await _userRepository.GetByIdAsync(Guid.Parse(_sessionResolver.UserId!), cancellationToken);
@@ -94,7 +93,7 @@ public class UserService : IUserService
             user.Id.ToString(),
             user.Name,
             user.Surname,
-            user.FirmId.ToString() ?? "",
+            user.FirmId.ToString(),
             1,
             false); // ToDo: Ensure that on register FirmId is set properly
 

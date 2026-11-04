@@ -1,6 +1,6 @@
+using Application.Common.Models;
 using Application.Users.Commands.Login;
 using Application.Users.Commands.Register;
-using Application.Users.Queries;
 using ErrorOr;
 
 namespace Application.Common.Interfaces.Services;
